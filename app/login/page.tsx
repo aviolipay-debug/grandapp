@@ -34,12 +34,12 @@ export default function LoginPage() {
     <main className="flex min-h-screen items-center justify-center bg-paper px-6">
       <div className="w-full max-w-sm">
         <Link href="/" className="font-display text-2xl font-semibold text-ledger-deep">
-          Grand<span className="text-stamp">.</span>
+          OliPay<span className="text-stamp">.</span>
         </Link>
         <h1 className="mt-8 font-display text-2xl font-medium text-ledger-deep">
           Content de vous revoir
         </h1>
-        <p className="mt-1 text-sm text-[#5a5544]">Connectez-vous à votre registre.</p>
+        <p className="mt-1 text-sm text-[#4B5563]">Connectez-vous à votre registre.</p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
@@ -78,7 +78,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-[#5a5544]">
+        <p className="mt-6 text-center text-sm text-[#4B5563]">
           Pas encore de compte ?{" "}
           <Link href="/signup" className="font-semibold text-stamp">
             Créez-en un

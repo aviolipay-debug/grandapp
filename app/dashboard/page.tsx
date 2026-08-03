@@ -22,7 +22,7 @@ export default async function DashboardOverview() {
     { label: "Clients", value: clientsCount ?? 0 },
     { label: "Devis en attente", value: pendingQuotes },
     { label: "Factures en retard", value: overdueCount },
-    { label: "Montant en attente", value: `${outstanding.toLocaleString("fr-FR")} XOF` },
+    { label: "Montant en attente", value: `${outstanding.toLocaleString("fr-FR")} CFA` },
   ];
 
   return (
@@ -31,7 +31,7 @@ export default async function DashboardOverview() {
       <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="rounded-md border border-paperline bg-white p-5">
-            <div className="font-mono text-xs uppercase tracking-wide text-[#8a8368]">
+            <div className="font-mono text-xs uppercase tracking-wide text-[#6B7280]">
               {s.label}
             </div>
             <div className="mt-2 font-display text-2xl font-semibold text-ledger-deep">

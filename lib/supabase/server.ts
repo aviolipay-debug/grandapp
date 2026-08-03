@@ -20,7 +20,8 @@ export function createClient() {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // appelé depuis un Server Component
+            // appelé depuis un Server Component : peut être ignoré si un
+            // middleware rafraîchit déjà la session
           }
         },
       },

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Grand — Devis, factures et comptes, tenus au propre",
+  title: "OliPay — Devis, factures et comptes, tenus au propre",
   description:
     "Créez des devis, transformez-les en factures, et suivez vos paiements sans ouvrir un tableur.",
 };

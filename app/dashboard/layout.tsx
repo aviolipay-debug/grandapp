@@ -26,21 +26,21 @@ export default async function DashboardLayout({
     <div className="flex min-h-screen bg-paper">
       <aside className="flex w-60 flex-col border-r border-paperline px-6 py-8">
         <Link href="/" className="font-display text-xl font-semibold text-ledger-deep">
-          Grand<span className="text-stamp">.</span>
+          OliPay<span className="text-stamp">.</span>
         </Link>
         <nav className="mt-10 flex flex-col gap-1">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="rounded px-3 py-2 text-sm font-medium text-[#3A3527] hover:bg-white"
+              className="rounded px-3 py-2 text-sm font-medium text-[#374151] hover:bg-white"
             >
               {item.label}
             </Link>
           ))}
         </nav>
         <div className="mt-auto pt-8">
-          <p className="mb-2 truncate text-xs text-[#8a8368]">{user.email}</p>
+          <p className="mb-2 truncate text-xs text-[#6B7280]">{user.email}</p>
           <SignOutButton />
         </div>
       </aside>

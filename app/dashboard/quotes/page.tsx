@@ -30,13 +30,13 @@ export default async function QuotesPage() {
 
       <div className="mt-8 overflow-hidden rounded-md border border-paperline bg-white">
         {!quotes || quotes.length === 0 ? (
-          <p className="p-8 text-center text-sm text-[#8a8368]">
+          <p className="p-8 text-center text-sm text-[#6B7280]">
             Aucun devis pour l&apos;instant.
           </p>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-paperline text-left font-mono text-xs uppercase tracking-wide text-[#8a8368]">
+              <tr className="border-b border-paperline text-left font-mono text-xs uppercase tracking-wide text-[#6B7280]">
                 <th className="px-6 py-3 font-medium">N°</th>
                 <th className="px-6 py-3 font-medium">Client</th>
                 <th className="px-6 py-3 font-medium">Statut</th>
@@ -52,11 +52,11 @@ export default async function QuotesPage() {
                       {q.quote_number}
                     </Link>
                   </td>
-                  <td className="px-6 py-4 text-[#3A3527]">{q.clients?.name ?? "—"}</td>
-                  <td className="px-6 py-4 text-[#3A3527]">
+                  <td className="px-6 py-4 text-[#374151]">{q.clients?.name ?? "—"}</td>
+                  <td className="px-6 py-4 text-[#374151]">
                     {statusLabels[q.status] ?? q.status}
                   </td>
-                  <td className="px-6 py-4 text-[#3A3527]">{q.issue_date}</td>
+                  <td className="px-6 py-4 text-[#374151]">{q.issue_date}</td>
                   <td className="px-6 py-4 text-right font-mono text-ledger-deep">
                     {Number(q.total).toLocaleString("fr-FR")} {q.currency}
                   </td>

@@ -30,36 +30,36 @@ const styles = StyleSheet.create({
     padding: 48,
     fontSize: 10,
     fontFamily: "Helvetica",
-    color: "#17140D",
+    color: "#0E1318",
   },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 36,
   },
-  brand: { fontSize: 20, fontWeight: 700, color: "#0A2E22" },
-  docType: { fontSize: 14, fontWeight: 700, textAlign: "right", color: "#B23A2E" },
-  docNumber: { fontSize: 10, textAlign: "right", marginTop: 4, color: "#4a4534" },
+  brand: { fontSize: 20, fontWeight: 700, color: "#7D2AE7" },
+  docType: { fontSize: 14, fontWeight: 700, textAlign: "right", color: "#FE6F61" },
+  docNumber: { fontSize: 10, textAlign: "right", marginTop: 4, color: "#4B5563" },
   metaRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 28 },
   metaBlock: { maxWidth: 220 },
   metaLabel: {
     fontSize: 8,
     textTransform: "uppercase",
     letterSpacing: 1,
-    color: "#8a8368",
+    color: "#6B7280",
     marginBottom: 4,
   },
-  metaValue: { fontSize: 10, color: "#17140D", marginBottom: 2 },
-  table: { marginTop: 12, borderTop: "1px solid #D8CBAA" },
+  metaValue: { fontSize: 10, color: "#0E1318", marginBottom: 2 },
+  table: { marginTop: 12, borderTop: "1px solid #E5E7EB" },
   tableHeaderRow: {
     flexDirection: "row",
-    borderBottom: "1px solid #D8CBAA",
+    borderBottom: "1px solid #E5E7EB",
     paddingVertical: 8,
-    backgroundColor: "#F3ECDC",
+    backgroundColor: "#F7F7FB",
   },
   tableRow: {
     flexDirection: "row",
-    borderBottom: "1px solid #EDE6D6",
+    borderBottom: "1px solid #E5E7EB",
     paddingVertical: 8,
   },
   colDesc: { flex: 3, paddingHorizontal: 6 },
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     fontSize: 8,
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    color: "#8a8368",
+    color: "#6B7280",
   },
   totalsBlock: { marginTop: 20, alignItems: "flex-end" },
   totalsRow: {
@@ -85,20 +85,20 @@ const styles = StyleSheet.create({
     width: 200,
     paddingTop: 8,
     marginTop: 4,
-    borderTop: "1px solid #17140D",
+    borderTop: "1px solid #0E1318",
   },
   grandTotalLabel: { fontSize: 11, fontWeight: 700 },
   grandTotalValue: { fontSize: 11, fontWeight: 700 },
-  notes: { marginTop: 32, fontSize: 9, color: "#4a4534" },
+  notes: { marginTop: 32, fontSize: 9, color: "#4B5563" },
   footer: {
     position: "absolute",
     bottom: 32,
     left: 48,
     right: 48,
     fontSize: 8,
-    color: "#8a8368",
+    color: "#6B7280",
     textAlign: "center",
-    borderTop: "1px solid #EDE6D6",
+    borderTop: "1px solid #E5E7EB",
     paddingTop: 10,
   },
 });
@@ -182,7 +182,7 @@ export default function DocumentPDF({ data }: { data: DocumentData }) {
         )}
 
         <Text style={styles.footer}>
-          {data.companyName} — {data.kind} généré{data.kind === "Facture" ? "e" : ""} avec Grand
+          {data.companyName} — {data.kind} généré{data.kind === "Facture" ? "e" : ""} avec OliPay
         </Text>
       </Page>
     </Document>

@@ -40,7 +40,7 @@ export default async function QuoteDetailPage({ params }: { params: { id: string
           <h1 className="font-display text-2xl font-medium text-ledger-deep">
             Devis {quote.quote_number}
           </h1>
-          <p className="mt-1 text-sm text-[#8a8368]">{quote.clients?.name}</p>
+          <p className="mt-1 text-sm text-[#6B7280]">{quote.clients?.name}</p>
         </div>
         <a
           href={`/api/quotes/${quote.id}/pdf`}
@@ -66,7 +66,7 @@ export default async function QuoteDetailPage({ params }: { params: { id: string
       <div className="mt-8 overflow-hidden rounded-md border border-paperline bg-white">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-paperline text-left font-mono text-xs uppercase tracking-wide text-[#8a8368]">
+            <tr className="border-b border-paperline text-left font-mono text-xs uppercase tracking-wide text-[#6B7280]">
               <th className="px-6 py-3 font-medium">Description</th>
               <th className="px-6 py-3 text-right font-medium">Qté</th>
               <th className="px-6 py-3 text-right font-medium">Prix</th>
@@ -125,7 +125,7 @@ function StatusPill({ active, label }: { active: boolean; label: string }) {
       className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${
         active
           ? "border-ledger-deep bg-ledger-deep text-paper"
-          : "border-paperline bg-white text-[#5a5544] hover:border-ledger-deep"
+          : "border-paperline bg-white text-[#4B5563] hover:border-ledger-deep"
       }`}
     >
       {label}

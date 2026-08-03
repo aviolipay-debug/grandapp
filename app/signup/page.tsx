@@ -41,7 +41,7 @@ export default function SignupPage() {
           <h1 className="font-display text-2xl font-medium text-ledger-deep">
             Vérifiez votre boîte mail
           </h1>
-          <p className="mt-3 text-sm text-[#5a5544]">
+          <p className="mt-3 text-sm text-[#4B5563]">
             On vous a envoyé un lien de confirmation à {email}. Cliquez dessus
             pour activer votre compte.
           </p>
@@ -54,12 +54,12 @@ export default function SignupPage() {
     <main className="flex min-h-screen items-center justify-center bg-paper px-6">
       <div className="w-full max-w-sm">
         <Link href="/" className="font-display text-2xl font-semibold text-ledger-deep">
-          Grand<span className="text-stamp">.</span>
+          OliPay<span className="text-stamp">.</span>
         </Link>
         <h1 className="mt-8 font-display text-2xl font-medium text-ledger-deep">
           Ouvrez votre registre
         </h1>
-        <p className="mt-1 text-sm text-[#5a5544]">
+        <p className="mt-1 text-sm text-[#4B5563]">
           Gratuit jusqu&apos;à 5 factures par mois.
         </p>
 
@@ -114,7 +114,7 @@ export default function SignupPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-[#5a5544]">
+        <p className="mt-6 text-center text-sm text-[#4B5563]">
           Déjà un compte ?{" "}
           <Link href="/login" className="font-semibold text-stamp">
             Connectez-vous

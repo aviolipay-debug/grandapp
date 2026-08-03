@@ -23,13 +23,13 @@ export default async function ClientsPage() {
 
       <div className="mt-8 overflow-hidden rounded-md border border-paperline bg-white">
         {!clients || clients.length === 0 ? (
-          <p className="p-8 text-center text-sm text-[#8a8368]">
+          <p className="p-8 text-center text-sm text-[#6B7280]">
             Aucun client pour l&apos;instant. Ajoutez-en un pour créer votre premier devis.
           </p>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-paperline text-left font-mono text-xs uppercase tracking-wide text-[#8a8368]">
+              <tr className="border-b border-paperline text-left font-mono text-xs uppercase tracking-wide text-[#6B7280]">
                 <th className="px-6 py-3 font-medium">Nom</th>
                 <th className="px-6 py-3 font-medium">Email</th>
                 <th className="px-6 py-3 font-medium">Téléphone</th>
@@ -39,8 +39,8 @@ export default async function ClientsPage() {
               {(clients as Client[]).map((c) => (
                 <tr key={c.id} className="border-b border-paperline last:border-0">
                   <td className="px-6 py-4 font-medium text-ledger-deep">{c.name}</td>
-                  <td className="px-6 py-4 text-[#3A3527]">{c.email ?? "—"}</td>
-                  <td className="px-6 py-4 text-[#3A3527]">{c.phone ?? "—"}</td>
+                  <td className="px-6 py-4 text-[#374151]">{c.email ?? "—"}</td>
+                  <td className="px-6 py-4 text-[#374151]">{c.phone ?? "—"}</td>
                 </tr>
               ))}
             </tbody>

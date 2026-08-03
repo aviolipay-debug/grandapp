@@ -6,19 +6,19 @@ const config: Config = {
     extend: {
       colors: {
         ledger: {
-          DEFAULT: "#0F3D2E",
-          deep: "#0A2E22",
+          DEFAULT: "#00C4CC",
+          deep: "#7D2AE7",
         },
-        paper: "#F3ECDC",
-        paperline: "#D8CBAA",
-        ink: "#17140D",
-        stamp: "#B23A2E",
-        gold: "#C9A227",
+        paper: "#F7F7FB",
+        paperline: "#E5E7EB",
+        ink: "#0E1318",
+        stamp: "#FE6F61",
+        gold: "#2A89DA",
       },
       fontFamily: {
-        display: ["Fraunces", "serif"],
+        display: ["Poppins", "sans-serif"],
         body: ["Inter", "sans-serif"],
-        mono: ["Space Mono", "monospace"],
+        mono: ["Inter", "sans-serif"],
       },
     },
   },
