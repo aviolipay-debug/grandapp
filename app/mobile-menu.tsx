@@ -50,7 +50,7 @@ export default function MobileMenu() {
                 key={link.label}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="rounded px-3 py-3 text-sm font-medium text-ledger-deep hover:bg-white"
+                className="rounded px-3 py-3 text-sm font-medium text-ink hover:bg-white"
               >
                 {link.label}
               </a>

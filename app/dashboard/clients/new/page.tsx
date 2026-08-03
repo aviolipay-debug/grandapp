@@ -46,11 +46,11 @@ export default function NewClientPage() {
 
   return (
     <div className="max-w-lg">
-      <h1 className="font-display text-2xl font-medium text-ledger-deep">Nouveau client</h1>
+      <h1 className="font-display text-2xl font-bold text-ink">Nouveau client</h1>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-ledger-deep">Nom</label>
+          <label className="mb-1.5 block text-sm font-medium text-ink">Nom</label>
           <input
             required
             value={form.name}
@@ -59,7 +59,7 @@ export default function NewClientPage() {
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-ledger-deep">Email</label>
+          <label className="mb-1.5 block text-sm font-medium text-ink">Email</label>
           <input
             type="email"
             value={form.email}
@@ -68,7 +68,7 @@ export default function NewClientPage() {
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-ledger-deep">Téléphone</label>
+          <label className="mb-1.5 block text-sm font-medium text-ink">Téléphone</label>
           <input
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
@@ -76,7 +76,7 @@ export default function NewClientPage() {
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-ledger-deep">Adresse</label>
+          <label className="mb-1.5 block text-sm font-medium text-ink">Adresse</label>
           <textarea
             value={form.address}
             onChange={(e) => setForm({ ...form, address: e.target.value })}

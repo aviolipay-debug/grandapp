@@ -19,7 +19,7 @@ export default async function QuotesPage() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-medium text-ledger-deep">Devis</h1>
+        <h1 className="font-display text-2xl font-bold text-ink">Devis</h1>
         <Link
           href="/dashboard/quotes/new"
           className="rounded bg-ledger-deep px-4 py-2 text-sm font-semibold text-paper hover:bg-stamp"
@@ -47,7 +47,7 @@ export default async function QuotesPage() {
             <tbody>
               {quotes.map((q: any) => (
                 <tr key={q.id} className="border-b border-paperline last:border-0">
-                  <td className="px-6 py-4 font-medium text-ledger-deep">
+                  <td className="px-6 py-4 font-medium text-ink">
                     <Link href={`/dashboard/quotes/${q.id}`} className="hover:text-stamp">
                       {q.quote_number}
                     </Link>
@@ -57,7 +57,7 @@ export default async function QuotesPage() {
                     {statusLabels[q.status] ?? q.status}
                   </td>
                   <td className="px-6 py-4 text-[#374151]">{q.issue_date}</td>
-                  <td className="px-6 py-4 text-right font-mono text-ledger-deep">
+                  <td className="px-6 py-4 text-right font-mono text-ink">
                     {Number(q.total).toLocaleString("fr-FR")} {q.currency}
                   </td>
                 </tr>

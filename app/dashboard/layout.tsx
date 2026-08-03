@@ -25,7 +25,7 @@ export default async function DashboardLayout({
   return (
     <div className="flex min-h-screen bg-paper">
       <aside className="flex w-60 flex-col border-r border-paperline px-6 py-8">
-        <Link href="/" className="font-display text-xl font-semibold text-ledger-deep">
+        <Link href="/" className="font-display text-xl font-semibold text-ink">
           OliPay<span className="text-stamp">.</span>
         </Link>
         <nav className="mt-10 flex flex-col gap-1">

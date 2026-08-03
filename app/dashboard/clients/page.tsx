@@ -12,7 +12,7 @@ export default async function ClientsPage() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-medium text-ledger-deep">Clients</h1>
+        <h1 className="font-display text-2xl font-bold text-ink">Clients</h1>
         <Link
           href="/dashboard/clients/new"
           className="rounded bg-ledger-deep px-4 py-2 text-sm font-semibold text-paper hover:bg-stamp"
@@ -38,7 +38,7 @@ export default async function ClientsPage() {
             <tbody>
               {(clients as Client[]).map((c) => (
                 <tr key={c.id} className="border-b border-paperline last:border-0">
-                  <td className="px-6 py-4 font-medium text-ledger-deep">{c.name}</td>
+                  <td className="px-6 py-4 font-medium text-ink">{c.name}</td>
                   <td className="px-6 py-4 text-[#374151]">{c.email ?? "—"}</td>
                   <td className="px-6 py-4 text-[#374151]">{c.phone ?? "—"}</td>
                 </tr>

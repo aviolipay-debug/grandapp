@@ -101,12 +101,12 @@ export default function NewQuotePage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="font-display text-2xl font-medium text-ledger-deep">Nouveau devis</h1>
+      <h1 className="font-display text-2xl font-bold text-ink">Nouveau devis</h1>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-6">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-ledger-deep">Client</label>
+            <label className="mb-1.5 block text-sm font-medium text-ink">Client</label>
             <select
               required
               value={clientId}
@@ -122,7 +122,7 @@ export default function NewQuotePage() {
             </select>
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-ledger-deep">
+            <label className="mb-1.5 block text-sm font-medium text-ink">
               Numéro de devis
             </label>
             <input
@@ -136,7 +136,7 @@ export default function NewQuotePage() {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-ledger-deep">Articles</label>
+          <label className="mb-2 block text-sm font-medium text-ink">Articles</label>
           <div className="space-y-2">
             {items.map((item, i) => (
               <div key={i} className="grid grid-cols-[1fr_90px_120px_28px] gap-2">
@@ -185,7 +185,7 @@ export default function NewQuotePage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <label className="text-sm font-medium text-ledger-deep">TVA (%)</label>
+          <label className="text-sm font-medium text-ink">TVA (%)</label>
           <input
             type="number"
             min={0}
@@ -201,7 +201,7 @@ export default function NewQuotePage() {
             <span>Sous-total</span>
             <span>{subtotal.toLocaleString("fr-FR")}</span>
           </div>
-          <div className="mt-1 flex justify-between font-bold text-ledger-deep">
+          <div className="mt-1 flex justify-between font-bold text-ink">
             <span>Total</span>
             <span>{total.toLocaleString("fr-FR")}</span>
           </div>

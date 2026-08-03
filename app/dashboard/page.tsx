@@ -27,14 +27,14 @@ export default async function DashboardOverview() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-medium text-ledger-deep">Vue d&apos;ensemble</h1>
+      <h1 className="font-display text-2xl font-bold text-ink">Vue d&apos;ensemble</h1>
       <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="rounded-md border border-paperline bg-white p-5">
             <div className="font-mono text-xs uppercase tracking-wide text-[#6B7280]">
               {s.label}
             </div>
-            <div className="mt-2 font-display text-2xl font-semibold text-ledger-deep">
+            <div className="mt-2 font-display text-2xl font-semibold text-ink">
               {s.value}
             </div>
           </div>

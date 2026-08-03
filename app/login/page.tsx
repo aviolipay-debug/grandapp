@@ -33,17 +33,17 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-paper px-6">
       <div className="w-full max-w-sm">
-        <Link href="/" className="font-display text-2xl font-semibold text-ledger-deep">
+        <Link href="/" className="font-display text-2xl font-semibold text-ink">
           OliPay<span className="text-stamp">.</span>
         </Link>
-        <h1 className="mt-8 font-display text-2xl font-medium text-ledger-deep">
+        <h1 className="mt-8 font-display text-2xl font-bold text-ink">
           Content de vous revoir
         </h1>
         <p className="mt-1 text-sm text-[#4B5563]">Connectez-vous à votre registre.</p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-ledger-deep">Email</label>
+            <label className="mb-1.5 block text-sm font-medium text-ink">Email</label>
             <input
               type="email"
               required
@@ -54,7 +54,7 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-ledger-deep">
+            <label className="mb-1.5 block text-sm font-medium text-ink">
               Mot de passe
             </label>
             <input

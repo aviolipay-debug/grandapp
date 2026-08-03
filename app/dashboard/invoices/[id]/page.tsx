@@ -41,7 +41,7 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
     <div className="max-w-2xl">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-display text-2xl font-medium text-ledger-deep">
+          <h1 className="font-display text-2xl font-bold text-ink">
             Facture {invoice.invoice_number}
           </h1>
           <p className="mt-1 text-sm text-[#6B7280]">
@@ -87,7 +87,7 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
           <div className="text-[#6B7280]">
             Payé : {Number(invoice.amount_paid).toLocaleString("fr-FR")} {invoice.currency}
           </div>
-          <div className="font-bold text-ledger-deep">
+          <div className="font-bold text-ink">
             Restant dû : {remaining.toLocaleString("fr-FR")} {invoice.currency}
           </div>
         </div>
@@ -95,12 +95,12 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
 
       {remaining > 0 && (
         <div className="mt-8 rounded-md border border-paperline bg-white p-6">
-          <h2 className="font-display text-lg font-semibold text-ledger-deep">
+          <h2 className="font-display text-lg font-semibold text-ink">
             Enregistrer un paiement
           </h2>
           <form action={boundRecordPayment} className="mt-4 flex items-end gap-3">
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-ledger-deep">
+              <label className="mb-1.5 block text-sm font-medium text-ink">
                 Montant
               </label>
               <input
@@ -114,7 +114,7 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-ledger-deep">
+              <label className="mb-1.5 block text-sm font-medium text-ink">
                 Méthode
               </label>
               <select
@@ -140,7 +140,7 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
 
       {payments && payments.length > 0 && (
         <div className="mt-8">
-          <h2 className="font-display text-lg font-semibold text-ledger-deep">
+          <h2 className="font-display text-lg font-semibold text-ink">
             Historique des paiements
           </h2>
           <div className="mt-3 divide-y divide-paperline rounded-md border border-paperline bg-white">
@@ -149,7 +149,7 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
                 <span className="text-[#374151]">
                   {new Date(p.paid_at).toLocaleDateString("fr-FR")} — {p.method}
                 </span>
-                <span className="font-mono text-ledger-deep">
+                <span className="font-mono text-ink">
                   {Number(p.amount).toLocaleString("fr-FR")} {invoice.currency}
                 </span>
               </div>

@@ -37,7 +37,7 @@ export default async function QuoteDetailPage({ params }: { params: { id: string
     <div className="max-w-2xl">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-display text-2xl font-medium text-ledger-deep">
+          <h1 className="font-display text-2xl font-bold text-ink">
             Devis {quote.quote_number}
           </h1>
           <p className="mt-1 text-sm text-[#6B7280]">{quote.clients?.name}</p>
@@ -89,7 +89,7 @@ export default async function QuoteDetailPage({ params }: { params: { id: string
           </tbody>
         </table>
         <div className="flex justify-end border-t border-paperline px-6 py-4">
-          <div className="font-mono text-base font-bold text-ledger-deep">
+          <div className="font-mono text-base font-bold text-ink">
             Total : {Number(quote.total).toLocaleString("fr-FR")} {quote.currency}
           </div>
         </div>

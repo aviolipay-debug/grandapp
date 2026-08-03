@@ -19,7 +19,7 @@ export default async function InvoicesPage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-medium text-ledger-deep">Factures</h1>
+      <h1 className="font-display text-2xl font-bold text-ink">Factures</h1>
       <p className="mt-1 text-sm text-[#6B7280]">
         Les factures naissent d&apos;un devis accepté. Ouvrez un devis pour le convertir.
       </p>
@@ -43,7 +43,7 @@ export default async function InvoicesPage() {
             <tbody>
               {invoices.map((inv: any) => (
                 <tr key={inv.id} className="border-b border-paperline last:border-0">
-                  <td className="px-6 py-4 font-medium text-ledger-deep">
+                  <td className="px-6 py-4 font-medium text-ink">
                     <Link href={`/dashboard/invoices/${inv.id}`} className="hover:text-stamp">
                       {inv.invoice_number}
                     </Link>
@@ -53,7 +53,7 @@ export default async function InvoicesPage() {
                     {statusLabels[inv.status] ?? inv.status}
                   </td>
                   <td className="px-6 py-4 text-[#374151]">{inv.due_date ?? "—"}</td>
-                  <td className="px-6 py-4 text-right font-mono text-ledger-deep">
+                  <td className="px-6 py-4 text-right font-mono text-ink">
                     {(Number(inv.total) - Number(inv.amount_paid)).toLocaleString("fr-FR")}{" "}
                     {inv.currency}
                   </td>
