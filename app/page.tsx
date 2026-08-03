@@ -129,18 +129,20 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className="flex justify-center">
-          <div className="relative w-[280px] -rotate-2 bg-white p-7 pb-10 font-mono text-sm text-ink shadow-[0_24px_60px_-20px_rgba(125,42,231,0.35)]">
-            <div className="mb-4 text-center font-bold tracking-widest">FACTURE N˚ 0142</div>
-            <div className="flex justify-between border-b border-dashed border-paperline py-1.5">
+        <div className="order-first flex justify-center md:order-none">
+          <div className="relative w-[300px] -rotate-2 rounded-[20px] bg-white px-6 py-[30px] text-sm text-ink shadow-[0_24px_60px_-20px_rgba(125,42,231,0.35)]">
+            <div className="mb-[18px] inline-block rounded-full bg-gradient-to-r from-ledger to-ledger-deep px-3 py-1 text-[11px] font-bold tracking-wide text-white">
+              FACTURE N˚ 0142
+            </div>
+            <div className="flex justify-between border-b border-paperline py-[7px] text-[0.88rem]">
               <span>Remplacement vitre</span>
               <span>85 000</span>
             </div>
-            <div className="flex justify-between border-b border-dashed border-paperline py-1.5">
+            <div className="flex justify-between border-b border-paperline py-[7px] text-[0.88rem]">
               <span>Pose double vitrage</span>
               <span>220 000</span>
             </div>
-            <div className="flex justify-between border-b border-dashed border-paperline py-1.5">
+            <div className="flex justify-between border-b border-paperline py-[7px] text-[0.88rem]">
               <span>Main d&apos;œuvre</span>
               <span>25 000</span>
             </div>
@@ -148,7 +150,7 @@ export default function LandingPage() {
               <span>TOTAL CFA</span>
               <span>330 000</span>
             </div>
-            <div className="absolute -right-3.5 -top-3.5 flex h-16 w-16 rotate-[10deg] items-center justify-center rounded-full bg-stamp text-center font-mono text-[11px] font-bold tracking-wide text-white shadow-[0_8px_20px_-6px_rgba(254,111,97,0.6)]">
+            <div className="absolute -right-3.5 -top-3.5 flex h-[62px] w-[62px] rotate-[10deg] items-center justify-center rounded-full bg-stamp text-center text-[11px] font-bold tracking-wide text-white shadow-[0_8px_20px_-6px_rgba(254,111,97,0.6)]">
               PAYÉ
               <br />✓
             </div>
