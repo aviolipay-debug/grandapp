@@ -67,19 +67,19 @@ export default function LandingPage() {
           OliPay<span className="text-stamp">.</span>
         </div>
         <nav className="hidden gap-8 md:flex">
-          <a href="#top" className="text-sm font-medium text-ink hover:text-ledger-deep">
+          <a href="#top" className="text-sm font-bold text-ink hover:text-ledger-deep">
             Accueil
           </a>
-          <a href="#fonctionnalites" className="text-sm font-medium text-ink hover:text-ledger-deep">
+          <a href="#fonctionnalites" className="text-sm font-bold text-ink hover:text-ledger-deep">
             Fonctionnalités
           </a>
-          <a href="#cibles" className="text-sm font-medium text-ink hover:text-ledger-deep">
+          <a href="#cibles" className="text-sm font-bold text-ink hover:text-ledger-deep">
             Pour qui
           </a>
-          <a href="#faq" className="text-sm font-medium text-ink hover:text-ledger-deep">
+          <a href="#faq" className="text-sm font-bold text-ink hover:text-ledger-deep">
             FAQ
           </a>
-          <a href="mailto:" className="text-sm font-medium text-ink hover:text-ledger-deep">
+          <a href="mailto:" className="text-sm font-bold text-ink hover:text-ledger-deep">
             Contactez-nous
           </a>
         </nav>
@@ -98,12 +98,13 @@ export default function LandingPage() {
             <span className="inline-block h-0.5 w-5 rounded bg-stamp" />
             Facturation &amp; devis
           </div>
-          <h1 className="font-display text-4xl font-bold leading-[1.08] tracking-tight text-ink md:text-6xl">
-            Vos comptes, tenus <em className="not-italic font-bold text-ledger-deep">au propre</em>.
+          <h1 className="font-title text-center text-4xl font-bold leading-[1.08] tracking-tight text-ink md:text-left md:text-6xl">
+            Simplifiez la gestion de vos <span className="text-ledger-deep">devis</span>,{" "}
+            <span className="text-ledger-deep">factures</span> et finances
           </h1>
-          <p className="mt-6 max-w-[46ch] text-lg text-[#4B5563]">
-            Avec OliPay, simplifiez la gestion de vos devis, vos factures et vos
-            données financières sur votre téléphone.
+          <p className="mx-auto mt-6 max-w-[46ch] text-center text-lg text-[#4B5563] md:mx-0 md:text-left">
+            Créez des devis professionnels depuis votre smartphone et
+            envoyez-les à vos clients en moins de 2 minutes.
           </p>
           <div className="mt-9 hidden items-center gap-4 md:flex">
             <Link
@@ -112,25 +113,32 @@ export default function LandingPage() {
             >
               Ouvrir mon compte
             </Link>
-            <a
-              href="#fonctionnalites"
+            <Link
+              href="/login"
               className="rounded-lg border-[1.5px] border-ledger-deep px-6 py-3 text-sm font-semibold text-ledger-deep"
             >
-              Voir comment ça marche
-            </a>
+              Se connecter
+            </Link>
           </div>
-          <div className="mt-9 flex justify-center md:hidden">
+          <div className="mt-9 flex flex-col items-center gap-3 md:hidden">
             <Link
               href="/signup"
-              className="rounded-lg border-[1.5px] border-ledger-deep bg-ledger-deep px-6 py-3 text-sm font-semibold text-white hover:bg-stamp hover:border-stamp"
+              className="w-[280px] whitespace-nowrap rounded-lg border-[1.5px] border-ledger-deep bg-ledger-deep px-6 py-3 text-center text-sm font-semibold text-white hover:bg-stamp hover:border-stamp"
             >
               Commencer gratuitement
+            </Link>
+            <Link
+              href="/login"
+              className="w-[280px] whitespace-nowrap rounded-lg border-[1.5px] border-ledger-deep px-6 py-3 text-center text-sm font-semibold text-ledger-deep"
+            >
+              Se connecter
             </Link>
           </div>
         </div>
 
-        <div className="order-first flex justify-center md:order-none">
-          <div className="relative w-[300px] -rotate-2 rounded-[20px] bg-white px-6 py-[30px] text-sm text-ink shadow-[0_24px_60px_-20px_rgba(125,42,231,0.35)]">
+        <div className="relative order-last flex justify-center md:order-none">
+          <div className="absolute h-[260px] w-[260px] rounded-full bg-gradient-to-br from-ledger-deep to-ledger opacity-40 blur-3xl" />
+          <div className="relative w-[300px] -rotate-6 rounded-[20px] bg-white px-6 py-[30px] text-sm text-ink shadow-[0_24px_60px_-20px_rgba(125,42,231,0.35)]">
             <div className="mb-[18px] inline-block rounded-full bg-gradient-to-r from-ledger to-ledger-deep px-3 py-1 text-[11px] font-bold tracking-wide text-white">
               FACTURE N˚ 0142
             </div>

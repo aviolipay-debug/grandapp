@@ -17,8 +17,9 @@ const config: Config = {
       },
       fontFamily: {
         display: ["Poppins", "sans-serif"],
-        body: ["Inter", "sans-serif"],
-        mono: ["Inter", "sans-serif"],
+        body: ["Poppins", "sans-serif"],
+        mono: ["Poppins", "sans-serif"],
+        title: ["Montserrat", "sans-serif"],
       },
     },
   },
