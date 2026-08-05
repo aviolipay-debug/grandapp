@@ -19,7 +19,6 @@ const config: Config = {
         display: ["Montserrat", "sans-serif"],
         body: ["Poppins", "sans-serif"],
         mono: ["Poppins", "sans-serif"],
-        title: ["Montserrat", "sans-serif"],
       },
     },
   },
