@@ -16,9 +16,10 @@ const config: Config = {
         gold: "#2A89DA",
       },
       fontFamily: {
-        display: ["Montserrat", "sans-serif"],
+        display: ["Poppins", "sans-serif"],
         body: ["Poppins", "sans-serif"],
         mono: ["Poppins", "sans-serif"],
+        title: ["Montserrat", "sans-serif"],
       },
     },
   },
