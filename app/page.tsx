@@ -25,7 +25,7 @@ const features = [
 const audiences = [
   {
     tag: "PME",
-    title: "Petites équipes",
+    title: "Petites entreprises",
     body: "Centralisez devis, factures et relances clients sans jongler entre plusieurs outils.",
   },
   {
