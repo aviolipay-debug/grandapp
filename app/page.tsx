@@ -63,39 +63,47 @@ const faqs = [
 export default function LandingPage() {
   return (
     <main id="top">
-      <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center bg-[#0a0d12] px-[6vw] py-4">
+      {/* Header mobile : nouvelle version (fond sombre, logo centré, toggle jour/nuit) */}
+      <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center bg-[#0a0d12] px-[6vw] py-4 md:hidden">
         <div className="flex items-center">
           <ThemeToggle />
         </div>
         <div className="font-display justify-self-center text-2xl font-semibold text-white">
           OliPay<span className="text-stamp">.</span>
         </div>
-        <div className="flex items-center justify-end gap-8">
-          <nav className="hidden gap-8 md:flex">
-            <a href="#top" className="text-sm font-bold text-white/90 hover:text-ledger">
-              Accueil
-            </a>
-            <a href="#fonctionnalites" className="text-sm font-bold text-white/90 hover:text-ledger">
-              Fonctionnalités
-            </a>
-            <a href="#cibles" className="text-sm font-bold text-white/90 hover:text-ledger">
-              Pour qui
-            </a>
-            <a href="#faq" className="text-sm font-bold text-white/90 hover:text-ledger">
-              FAQ
-            </a>
-            <a href="mailto:" className="text-sm font-bold text-white/90 hover:text-ledger">
-              Contactez-nous
-            </a>
-          </nav>
-          <Link
-            href="/signup"
-            className="hidden rounded-lg border-[1.5px] border-ledger-deep bg-ledger-deep px-6 py-3 text-sm font-semibold text-white hover:bg-stamp hover:border-stamp md:inline-block"
-          >
-            Commencer gratuitement
-          </Link>
+        <div className="flex items-center justify-end">
           <MobileMenu />
         </div>
+      </header>
+
+      {/* Header desktop : version précédente restaurée (fond clair, logo à gauche, nav au centre, CTA à droite) */}
+      <header className="sticky top-0 z-50 hidden items-center justify-between border-b border-paperline bg-paper px-[6vw] py-7 md:flex">
+        <div className="font-display text-2xl font-semibold text-ink">
+          OliPay<span className="text-stamp">.</span>
+        </div>
+        <nav className="hidden gap-8 md:flex">
+          <a href="#top" className="text-sm font-bold text-ink hover:text-ledger-deep">
+            Accueil
+          </a>
+          <a href="#fonctionnalites" className="text-sm font-bold text-ink hover:text-ledger-deep">
+            Fonctionnalités
+          </a>
+          <a href="#cibles" className="text-sm font-bold text-ink hover:text-ledger-deep">
+            Pour qui
+          </a>
+          <a href="#faq" className="text-sm font-bold text-ink hover:text-ledger-deep">
+            FAQ
+          </a>
+          <a href="mailto:" className="text-sm font-bold text-ink hover:text-ledger-deep">
+            Contactez-nous
+          </a>
+        </nav>
+        <Link
+          href="/signup"
+          className="hidden rounded-lg border-[1.5px] border-ledger-deep bg-ledger-deep px-6 py-3 text-sm font-semibold text-white hover:bg-stamp hover:border-stamp md:inline-block"
+        >
+          Commencer gratuitement
+        </Link>
       </header>
 
       <section className="grid grid-cols-1 items-center gap-10 bg-white px-[6vw] pb-16 pt-6 md:grid-cols-[1.1fr_0.9fr] md:pb-24 md:pt-8">
