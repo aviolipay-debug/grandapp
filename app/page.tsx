@@ -165,11 +165,6 @@ export default function LandingPage() {
         </div>
       </section>
 
->>>>>>> 3745cbc9751cffd4c9d3ed67b2072fcbd9550d08
-          </div>
-        </div>
-      </section>
-
       <section id="fonctionnalites" className="ruled px-[6vw] py-16">
         <div className="mb-14 max-w-xl">
           <div className="mb-3 text-[13px] font-bold uppercase tracking-widest text-stamp">
