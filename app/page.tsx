@@ -92,7 +92,7 @@ export default function LandingPage() {
         <MobileMenu />
       </header>
 
-      <section className="grid grid-cols-1 items-center gap-10 px-[6vw] py-16 md:grid-cols-[1.1fr_0.9fr] md:py-24">
+      <section className="grid grid-cols-1 items-center gap-10 bg-white px-[6vw] py-16 md:grid-cols-[1.1fr_0.9fr] md:py-24">
         <div>
           <div className="mb-5 flex items-center gap-2.5 font-sans text-[13px] font-semibold uppercase tracking-widest text-ledger">
             <span className="inline-block h-0.5 w-5 rounded bg-stamp" />
@@ -165,7 +165,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="fonctionnalites" className="ruled px-[6vw] py-16">
+      <section id="fonctionnalites" className="bg-paper px-[6vw] py-16">
         <div className="mb-14 max-w-xl">
           <div className="mb-3 text-[13px] font-bold uppercase tracking-widest text-stamp">
             Fonctionnalités
@@ -194,7 +194,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="cibles" className="px-[6vw] py-16">
+      <section id="cibles" className="bg-white px-[6vw] py-16">
         <div className="mb-14 max-w-xl">
           <div className="mb-3 text-[13px] font-bold uppercase tracking-widest text-stamp">
             Pour qui
@@ -216,7 +216,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="faq" className="ruled px-[6vw] py-16">
+      <section id="faq" className="bg-paper px-[6vw] py-16">
         <div className="mb-14 max-w-xl">
           <div className="mb-3 text-[13px] font-bold uppercase tracking-widest text-stamp">
             Questions fréquentes
@@ -261,7 +261,7 @@ export default function LandingPage() {
         </Link>
       </section>
 
-      <footer className="flex flex-col items-center justify-between gap-2.5 border-t border-paperline px-[6vw] py-10 text-sm text-[#6B7280] md:flex-row">
+      <footer className="flex flex-col items-center justify-between gap-2.5 border-t border-paperline bg-white px-[6vw] py-10 text-sm text-[#6B7280] md:flex-row">
         <div>© 2026 OliPay.</div>
         <div>Fait pour les entrepreneurs qui n&apos;ont pas le temps de tenir un tableur.</div>
       </footer>
