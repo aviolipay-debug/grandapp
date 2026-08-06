@@ -106,7 +106,7 @@ export default function LandingPage() {
         </Link>
       </header>
 
-      <section className="grid grid-cols-1 items-center gap-10 bg-white px-[6vw] pb-16 pt-6 dark:bg-[#2F2F2F] md:grid-cols-[1.1fr_0.9fr] md:pb-24 md:pt-8">
+      <section className="grid grid-cols-1 items-center gap-10 bg-[#F0F0F3] px-[6vw] pb-16 pt-6 dark:bg-[#2F2F2F] md:grid-cols-[1.1fr_0.9fr] md:pb-24 md:pt-8">
         <div>
           <div className="mb-5 flex items-center gap-2.5 font-sans text-[13px] font-semibold uppercase tracking-widest text-ledger">
             <span className="inline-block h-0.5 w-5 rounded bg-stamp" />
