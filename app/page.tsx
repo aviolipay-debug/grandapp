@@ -64,7 +64,7 @@ export default function LandingPage() {
   return (
     <main id="top">
       {/* Header mobile : fond blanc, logo centré, toggle jour/nuit fonctionnel */}
-      <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center border-b border-paperline bg-white px-[6vw] py-4 dark:border-white/10 dark:bg-[#0a0d12] md:hidden">
+      <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center border-b border-paperline bg-white px-[6vw] py-4 dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
         <div className="flex items-center">
           <ThemeToggle />
         </div>
@@ -77,7 +77,7 @@ export default function LandingPage() {
       </header>
 
       {/* Header desktop : version précédente restaurée (fond clair, logo à gauche, nav au centre, CTA à droite) */}
-      <header className="sticky top-0 z-50 hidden items-center justify-between border-b border-paperline bg-paper px-[6vw] py-7 dark:border-white/10 dark:bg-[#0a0d12] md:flex">
+      <header className="sticky top-0 z-50 hidden items-center justify-between border-b border-paperline bg-paper px-[6vw] py-7 dark:border-white/10 dark:bg-[#2F2F2F] md:flex">
         <div className="font-display text-2xl font-semibold text-ink dark:text-white">
           OliPay<span className="text-stamp">.</span>
         </div>
@@ -106,7 +106,7 @@ export default function LandingPage() {
         </Link>
       </header>
 
-      <section className="grid grid-cols-1 items-center gap-10 bg-white px-[6vw] pb-16 pt-6 dark:bg-[#0a0d12] md:grid-cols-[1.1fr_0.9fr] md:pb-24 md:pt-8">
+      <section className="grid grid-cols-1 items-center gap-10 bg-white px-[6vw] pb-16 pt-6 dark:bg-[#2F2F2F] md:grid-cols-[1.1fr_0.9fr] md:pb-24 md:pt-8">
         <div>
           <div className="mb-5 flex items-center gap-2.5 font-sans text-[13px] font-semibold uppercase tracking-widest text-ledger">
             <span className="inline-block h-0.5 w-5 rounded bg-stamp" />
@@ -211,7 +211,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="cibles" className="border-t-4 border-stamp bg-white px-[6vw] py-16 dark:bg-[#0a0d12]">
+      <section id="cibles" className="border-t-4 border-stamp bg-white px-[6vw] py-16 dark:bg-[#2F2F2F]">
         <div className="mb-14 max-w-xl">
           <div className="mb-3 text-[13px] font-bold uppercase tracking-widest text-stamp">
             Pour qui
@@ -281,7 +281,7 @@ export default function LandingPage() {
         </Link>
       </section>
 
-      <footer className="flex flex-col items-center justify-between gap-2.5 border-t border-paperline bg-white px-[6vw] py-10 text-sm text-[#6B7280] dark:border-white/10 dark:bg-[#0a0d12] dark:text-white/60 md:flex-row">
+      <footer className="flex flex-col items-center justify-between gap-2.5 border-t border-paperline bg-white px-[6vw] py-10 text-sm text-[#6B7280] dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white/60 md:flex-row">
         <div>© 2026 OliPay.</div>
         <div>Fait pour les entrepreneurs qui n&apos;ont pas le temps de tenir un tableur.</div>
       </footer>
