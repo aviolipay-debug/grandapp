@@ -165,7 +165,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="fonctionnalites" className="bg-paper px-[6vw] py-16">
+      <section id="fonctionnalites" className="border-t-4 border-ledger-deep bg-[#F3EEFC] px-[6vw] py-16">
         <div className="mb-14 max-w-xl">
           <div className="mb-3 text-[13px] font-bold uppercase tracking-widest text-stamp">
             Fonctionnalités
@@ -194,7 +194,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="cibles" className="bg-white px-[6vw] py-16">
+      <section id="cibles" className="border-t-4 border-stamp bg-white px-[6vw] py-16">
         <div className="mb-14 max-w-xl">
           <div className="mb-3 text-[13px] font-bold uppercase tracking-widest text-stamp">
             Pour qui
@@ -205,7 +205,10 @@ export default function LandingPage() {
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {audiences.map((c) => (
-            <div key={c.tag} className="rounded-2xl border border-paperline bg-white p-8">
+            <div
+              key={c.tag}
+              className="rounded-2xl border border-paperline bg-white p-8 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)]"
+            >
               <div className="text-xs font-bold uppercase tracking-wide text-ledger-deep">
                 {c.tag}
               </div>
@@ -216,7 +219,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="faq" className="bg-paper px-[6vw] py-16">
+      <section id="faq" className="border-t-4 border-ledger bg-[#E6FBFC] px-[6vw] py-16">
         <div className="mb-14 max-w-xl">
           <div className="mb-3 text-[13px] font-bold uppercase tracking-widest text-stamp">
             Questions fréquentes
