@@ -77,24 +77,24 @@ export default function LandingPage() {
       </header>
 
       {/* Header desktop : version précédente restaurée (fond clair, logo à gauche, nav au centre, CTA à droite) */}
-      <header className="sticky top-0 z-50 hidden items-center justify-between border-b border-paperline bg-paper px-[6vw] py-7 md:flex">
-        <div className="font-display text-2xl font-semibold text-ink">
+      <header className="sticky top-0 z-50 hidden items-center justify-between border-b border-paperline bg-paper px-[6vw] py-7 dark:border-white/10 dark:bg-[#0a0d12] md:flex">
+        <div className="font-display text-2xl font-semibold text-ink dark:text-white">
           OliPay<span className="text-stamp">.</span>
         </div>
         <nav className="hidden gap-8 md:flex">
-          <a href="#top" className="text-sm font-bold text-ink hover:text-ledger-deep">
+          <a href="#top" className="text-sm font-bold text-ink dark:text-white hover:text-ledger-deep dark:hover:text-ledger">
             Accueil
           </a>
-          <a href="#fonctionnalites" className="text-sm font-bold text-ink hover:text-ledger-deep">
+          <a href="#fonctionnalites" className="text-sm font-bold text-ink dark:text-white hover:text-ledger-deep dark:hover:text-ledger">
             Fonctionnalités
           </a>
-          <a href="#cibles" className="text-sm font-bold text-ink hover:text-ledger-deep">
+          <a href="#cibles" className="text-sm font-bold text-ink dark:text-white hover:text-ledger-deep dark:hover:text-ledger">
             Pour qui
           </a>
-          <a href="#faq" className="text-sm font-bold text-ink hover:text-ledger-deep">
+          <a href="#faq" className="text-sm font-bold text-ink dark:text-white hover:text-ledger-deep dark:hover:text-ledger">
             FAQ
           </a>
-          <a href="mailto:" className="text-sm font-bold text-ink hover:text-ledger-deep">
+          <a href="mailto:" className="text-sm font-bold text-ink dark:text-white hover:text-ledger-deep dark:hover:text-ledger">
             Contactez-nous
           </a>
         </nav>
@@ -106,17 +106,17 @@ export default function LandingPage() {
         </Link>
       </header>
 
-      <section className="grid grid-cols-1 items-center gap-10 bg-white px-[6vw] pb-16 pt-6 md:grid-cols-[1.1fr_0.9fr] md:pb-24 md:pt-8">
+      <section className="grid grid-cols-1 items-center gap-10 bg-white px-[6vw] pb-16 pt-6 dark:bg-[#0a0d12] md:grid-cols-[1.1fr_0.9fr] md:pb-24 md:pt-8">
         <div>
           <div className="mb-5 flex items-center gap-2.5 font-sans text-[13px] font-semibold uppercase tracking-widest text-ledger">
             <span className="inline-block h-0.5 w-5 rounded bg-stamp" />
             Facturation &amp; devis
           </div>
-          <h1 className="font-title text-center text-4xl font-bold leading-[1.08] tracking-tight text-ink md:text-left md:text-6xl">
+          <h1 className="font-title text-center text-4xl font-bold leading-[1.08] tracking-tight text-ink dark:text-white md:text-left md:text-6xl">
             Simplifiez la gestion de vos <span className="text-ledger-deep">devis</span>,{" "}
             <span className="text-ledger-deep">factures</span> et finances
           </h1>
-          <p className="mx-auto mt-6 max-w-[46ch] text-center text-lg text-[#4B5563] md:mx-0 md:text-left">
+          <p className="mx-auto mt-6 max-w-[46ch] text-center text-lg text-[#4B5563] dark:text-white/70 md:mx-0 md:text-left">
             Créez des devis professionnels depuis votre smartphone et
             envoyez-les à vos clients en moins de 2 minutes.
           </p>
@@ -129,7 +129,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/login"
-              className="rounded-lg border-[1.5px] border-ledger-deep px-6 py-3 text-sm font-semibold text-ledger-deep"
+              className="rounded-lg border-[1.5px] border-ledger-deep px-6 py-3 text-sm font-semibold text-ledger-deep dark:border-white dark:text-white"
             >
               Se connecter
             </Link>
@@ -143,7 +143,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/login"
-              className="w-[280px] whitespace-nowrap rounded-lg border-[1.5px] border-ledger-deep px-6 py-3 text-center text-sm font-semibold text-ledger-deep"
+              className="w-[280px] whitespace-nowrap rounded-lg border-[1.5px] border-ledger-deep px-6 py-3 text-center text-sm font-semibold text-ledger-deep dark:border-white dark:text-white"
             >
               Se connecter
             </Link>
@@ -179,15 +179,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="fonctionnalites" className="border-t-4 border-ledger-deep bg-[#F3EEFC] px-[6vw] py-16">
+      <section id="fonctionnalites" className="border-t-4 border-ledger-deep bg-[#F3EEFC] px-[6vw] py-16 dark:bg-[#161129]">
         <div className="mb-14 max-w-xl">
           <div className="mb-3 text-[13px] font-bold uppercase tracking-widest text-stamp">
             Fonctionnalités
           </div>
-          <h2 className="font-display text-3xl font-bold leading-tight text-ink md:text-4xl">
+          <h2 className="font-display text-3xl font-bold leading-tight text-ink dark:text-white md:text-4xl">
             Une gestion financière repensée
           </h2>
-          <p className="mt-4 text-base text-[#4B5563]">
+          <p className="mt-4 text-base text-[#4B5563] dark:text-white/70">
             Un système automatisé qui vous fait gagner du temps sur les tâches
             administratives du quotidien.
           </p>
@@ -195,25 +195,28 @@ export default function LandingPage() {
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {features.map((f) => (
-            <div key={f.title} className="rounded-2xl border border-paperline bg-white p-8">
+            <div
+              key={f.title}
+              className="rounded-2xl border border-paperline bg-white p-8 dark:border-white/10 dark:bg-[#0f0d1a]"
+            >
               <div
                 className={`mb-4 flex h-9 w-9 items-center justify-center rounded-[10px] text-base text-white ${f.badge}`}
               >
                 {f.icon}
               </div>
-              <h3 className="mb-2.5 font-display text-lg font-semibold text-ink">{f.title}</h3>
-              <p className="text-sm text-[#4B5563]">{f.body}</p>
+              <h3 className="mb-2.5 font-display text-lg font-semibold text-ink dark:text-white">{f.title}</h3>
+              <p className="text-sm text-[#4B5563] dark:text-white/70">{f.body}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section id="cibles" className="border-t-4 border-stamp bg-white px-[6vw] py-16">
+      <section id="cibles" className="border-t-4 border-stamp bg-white px-[6vw] py-16 dark:bg-[#0a0d12]">
         <div className="mb-14 max-w-xl">
           <div className="mb-3 text-[13px] font-bold uppercase tracking-widest text-stamp">
             Pour qui
           </div>
-          <h2 className="font-display text-3xl font-bold leading-tight text-ink md:text-4xl">
+          <h2 className="font-display text-3xl font-bold leading-tight text-ink dark:text-white md:text-4xl">
             Conçu pour ceux qui facturent sans service compta dédié.
           </h2>
         </div>
@@ -221,34 +224,34 @@ export default function LandingPage() {
           {audiences.map((c) => (
             <div
               key={c.tag}
-              className="rounded-2xl border border-paperline bg-white p-8 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)]"
+              className="rounded-2xl border border-paperline bg-white p-8 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#12161c] dark:shadow-none"
             >
               <div className="text-xs font-bold uppercase tracking-wide text-ledger-deep">
                 {c.tag}
               </div>
-              <h3 className="my-2.5 font-display text-lg font-semibold text-ink">{c.title}</h3>
-              <p className="text-sm text-[#4B5563]">{c.body}</p>
+              <h3 className="my-2.5 font-display text-lg font-semibold text-ink dark:text-white">{c.title}</h3>
+              <p className="text-sm text-[#4B5563] dark:text-white/70">{c.body}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section id="faq" className="border-t-4 border-ledger bg-[#E6FBFC] px-[6vw] py-16">
+      <section id="faq" className="border-t-4 border-ledger bg-[#E6FBFC] px-[6vw] py-16 dark:bg-[#0a1a1c]">
         <div className="mb-14 max-w-xl">
           <div className="mb-3 text-[13px] font-bold uppercase tracking-widest text-stamp">
             Questions fréquentes
           </div>
-          <h2 className="font-display text-3xl font-bold leading-tight text-ink md:text-4xl">
+          <h2 className="font-display text-3xl font-bold leading-tight text-ink dark:text-white md:text-4xl">
             Ce qu&apos;on nous demande le plus souvent
           </h2>
         </div>
-        <div className="mx-auto max-w-3xl overflow-hidden rounded-2xl border border-paperline bg-white">
+        <div className="mx-auto max-w-3xl overflow-hidden rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#0f171a]">
           {faqs.map((item, i) => (
             <details
               key={item.q}
-              className={`group px-7 py-5 ${i !== faqs.length - 1 ? "border-b border-paperline" : ""}`}
+              className={`group px-7 py-5 ${i !== faqs.length - 1 ? "border-b border-paperline dark:border-white/10" : ""}`}
             >
-              <summary className="cursor-pointer list-none font-display text-base font-semibold text-ink marker:content-none">
+              <summary className="cursor-pointer list-none font-display text-base font-semibold text-ink dark:text-white marker:content-none">
                 <span className="flex items-center justify-between gap-4">
                   {item.q}
                   <span className="shrink-0 text-lg text-stamp transition-transform group-open:rotate-45">
@@ -256,7 +259,7 @@ export default function LandingPage() {
                   </span>
                 </span>
               </summary>
-              <p className="mt-3 text-sm text-[#4B5563]">{item.a}</p>
+              <p className="mt-3 text-sm text-[#4B5563] dark:text-white/70">{item.a}</p>
             </details>
           ))}
         </div>
@@ -278,7 +281,7 @@ export default function LandingPage() {
         </Link>
       </section>
 
-      <footer className="flex flex-col items-center justify-between gap-2.5 border-t border-paperline bg-white px-[6vw] py-10 text-sm text-[#6B7280] md:flex-row">
+      <footer className="flex flex-col items-center justify-between gap-2.5 border-t border-paperline bg-white px-[6vw] py-10 text-sm text-[#6B7280] dark:border-white/10 dark:bg-[#0a0d12] dark:text-white/60 md:flex-row">
         <div>© 2026 OliPay.</div>
         <div>Fait pour les entrepreneurs qui n&apos;ont pas le temps de tenir un tableur.</div>
       </footer>

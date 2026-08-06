@@ -3,14 +3,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-body {
-  background-color: #f7f7fb;
-  color: #0e1318;
-}
-
-/* Fond neutre pour les sections precedemment "lignees" -- plus de texture
-   pour rester dans un rendu propre et moderne */
-.ruled {
-  background-color: #f7f7fb;
-}
