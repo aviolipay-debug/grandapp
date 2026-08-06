@@ -1,5 +1,6 @@
 import Link from "next/link";
 import MobileMenu from "./mobile-menu";
+import ThemeToggle from "./theme-toggle";
 
 const features = [
   {
@@ -62,37 +63,42 @@ const faqs = [
 export default function LandingPage() {
   return (
     <main id="top">
-      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-paperline bg-paper px-[6vw] py-7">
-        <div className="font-display text-2xl font-semibold text-ink">
+      <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center bg-[#0a0d12] px-[6vw] py-4">
+        <div className="flex items-center">
+          <ThemeToggle />
+        </div>
+        <div className="font-display justify-self-center text-2xl font-semibold text-white">
           OliPay<span className="text-stamp">.</span>
         </div>
-        <nav className="hidden gap-8 md:flex">
-          <a href="#top" className="text-sm font-bold text-ink hover:text-ledger-deep">
-            Accueil
-          </a>
-          <a href="#fonctionnalites" className="text-sm font-bold text-ink hover:text-ledger-deep">
-            Fonctionnalités
-          </a>
-          <a href="#cibles" className="text-sm font-bold text-ink hover:text-ledger-deep">
-            Pour qui
-          </a>
-          <a href="#faq" className="text-sm font-bold text-ink hover:text-ledger-deep">
-            FAQ
-          </a>
-          <a href="mailto:" className="text-sm font-bold text-ink hover:text-ledger-deep">
-            Contactez-nous
-          </a>
-        </nav>
-        <Link
-          href="/signup"
-          className="hidden rounded-lg border-[1.5px] border-ledger-deep bg-ledger-deep px-6 py-3 text-sm font-semibold text-white hover:bg-stamp hover:border-stamp md:inline-block"
-        >
-          Commencer gratuitement
-        </Link>
-        <MobileMenu />
+        <div className="flex items-center justify-end gap-8">
+          <nav className="hidden gap-8 md:flex">
+            <a href="#top" className="text-sm font-bold text-white/90 hover:text-ledger">
+              Accueil
+            </a>
+            <a href="#fonctionnalites" className="text-sm font-bold text-white/90 hover:text-ledger">
+              Fonctionnalités
+            </a>
+            <a href="#cibles" className="text-sm font-bold text-white/90 hover:text-ledger">
+              Pour qui
+            </a>
+            <a href="#faq" className="text-sm font-bold text-white/90 hover:text-ledger">
+              FAQ
+            </a>
+            <a href="mailto:" className="text-sm font-bold text-white/90 hover:text-ledger">
+              Contactez-nous
+            </a>
+          </nav>
+          <Link
+            href="/signup"
+            className="hidden rounded-lg border-[1.5px] border-ledger-deep bg-ledger-deep px-6 py-3 text-sm font-semibold text-white hover:bg-stamp hover:border-stamp md:inline-block"
+          >
+            Commencer gratuitement
+          </Link>
+          <MobileMenu />
+        </div>
       </header>
 
-      <section className="grid grid-cols-1 items-center gap-10 bg-white px-[6vw] py-16 md:grid-cols-[1.1fr_0.9fr] md:py-24">
+      <section className="grid grid-cols-1 items-center gap-10 bg-white px-[6vw] pb-16 pt-6 md:grid-cols-[1.1fr_0.9fr] md:pb-24 md:pt-8">
         <div>
           <div className="mb-5 flex items-center gap-2.5 font-sans text-[13px] font-semibold uppercase tracking-widest text-ledger">
             <span className="inline-block h-0.5 w-5 rounded bg-stamp" />
