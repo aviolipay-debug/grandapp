@@ -159,8 +159,7 @@ export default function LandingPage() {
               <span>330 000</span>
             </div>
             <div className="absolute -right-3.5 -top-3.5 flex h-[62px] w-[62px] rotate-[10deg] items-center justify-center rounded-full bg-stamp text-center text-[11px] font-bold tracking-wide text-white shadow-[0_8px_20px_-6px_rgba(254,111,97,0.6)]">
-PAYÉ ✓
-</div>
+            PAYÉ ✓ </div>
             </div>
           </div>
         </div>
