@@ -63,12 +63,12 @@ const faqs = [
 export default function LandingPage() {
   return (
     <main id="top">
-      {/* Header mobile : nouvelle version (fond sombre, logo centré, toggle jour/nuit) */}
-      <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center bg-[#0a0d12] px-[6vw] py-4 md:hidden">
+      {/* Header mobile : fond blanc, logo centré, toggle jour/nuit fonctionnel */}
+      <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center border-b border-paperline bg-white px-[6vw] py-4 dark:border-white/10 dark:bg-[#0a0d12] md:hidden">
         <div className="flex items-center">
           <ThemeToggle />
         </div>
-        <div className="font-display justify-self-center text-2xl font-semibold text-white">
+        <div className="font-display justify-self-center text-2xl font-semibold text-ink dark:text-white">
           OliPay<span className="text-stamp">.</span>
         </div>
         <div className="flex items-center justify-end">
