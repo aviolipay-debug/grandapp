@@ -11,6 +11,7 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,27 +55,98 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#F0F0F3] px-6 py-12 dark:bg-[#2F2F2F]">
-      <div className="w-full max-w-md rounded-2xl border border-paperline bg-white p-8 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#0f0d1a]">
-        <Link
-          href="/"
-          className="font-display mb-8 block text-center text-2xl font-semibold text-ink dark:text-white"
-        >
+    <main className="flex min-h-screen items-center justify-center bg-[#2F2F2F] px-6 py-16">
+      <div className="w-full max-w-sm">
+        <Link href="/" className="font-display mb-16 block text-center text-3xl font-semibold text-white">
           OliPay<span className="text-stamp">.</span>
         </Link>
 
-        <h1 className="font-display mb-1 text-center text-xl font-semibold text-ink dark:text-white">
-          Bon retour
+        <h1 className="font-display mb-2 text-center text-3xl font-bold text-white">
+          Identifiez-vous
         </h1>
-        <p className="mb-6 text-center text-sm text-[#4B5563] dark:text-white/70">
-          Connectez-vous à votre espace.
+        <p className="mb-10 text-center text-sm text-white/50">
+          Bon retour sur votre application préférée
         </p>
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            className="w-full rounded-xl border border-white/10 bg-[#3a3a3a] px-5 py-3.5 text-sm text-white placeholder-white/40 outline-none transition-colors focus:border-ledger"
+          />
+
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Mot de passe"
+              className="w-full rounded-xl border border-white/10 bg-[#3a3a3a] px-5 py-3.5 pr-12 text-sm text-white placeholder-white/40 outline-none transition-colors focus:border-ledger"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                {showPassword ? (
+                  <path
+                    d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.4 4.6A9.7 9.7 0 0 1 12 4.3c5 0 8.7 3.6 10 7.7a11.8 11.8 0 0 1-3.1 4.4M6.2 6.2A11.8 11.8 0 0 0 2 12c1.3 4.1 5 7.7 10 7.7 1 0 2-.1 2.9-.4"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                ) : (
+                  <>
+                    <path
+                      d="M2 12c1.3-4.1 5-7.7 10-7.7S20.7 7.9 22 12c-1.3 4.1-5 7.7-10 7.7S3.3 16.1 2 12Z"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                    />
+                    <circle cx="12" cy="12" r="2.7" stroke="currentColor" strokeWidth="1.6" />
+                  </>
+                )}
+              </svg>
+            </button>
+          </div>
+
+          {error && (
+            <p className="rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">{error}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="mt-2 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
+          >
+            {loading ? "Connexion…" : "Se connecter"}
+          </button>
+        </form>
+
+        <Link
+          href="/reset-password"
+          className="mt-5 block text-center text-sm font-medium text-ledger underline underline-offset-2"
+        >
+          Mot de passe oublié ?
+        </Link>
+
+        <div className="my-7 flex items-center gap-3">
+          <div className="h-px flex-1 bg-white/10" />
+          <span className="text-sm text-white/40">ou</span>
+          <div className="h-px flex-1 bg-white/10" />
+        </div>
 
         <button
           type="button"
           onClick={handleGoogleSignIn}
           disabled={googleLoading}
-          className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-paperline bg-white px-6 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-[#F0F0F3] disabled:opacity-60 dark:border-white/15 dark:bg-[#161129] dark:text-white dark:hover:bg-[#1c1730]"
+          className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-[#3a3a3a] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#454545] disabled:opacity-60"
         >
           <svg width="18" height="18" viewBox="0 0 18 18">
             <path
@@ -97,73 +169,10 @@ export default function LoginPage() {
           {googleLoading ? "Connexion…" : "Continuer avec Google"}
         </button>
 
-        <div className="my-5 flex items-center gap-3">
-          <div className="h-px flex-1 bg-paperline dark:bg-white/15" />
-          <span className="text-xs font-semibold uppercase tracking-wide text-[#6B7280] dark:text-white/50">
-            ou
-          </span>
-          <div className="h-px flex-1 bg-paperline dark:bg-white/15" />
-        </div>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#6B7280] dark:text-white/50"
-            >
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-paperline bg-white px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ledger-deep dark:border-white/15 dark:bg-[#161129] dark:text-white"
-              placeholder="vous@entreprise.com"
-            />
-          </div>
-
-          <div>
-            <div className="mb-1.5 flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="block text-xs font-semibold uppercase tracking-wide text-[#6B7280] dark:text-white/50"
-              >
-                Mot de passe
-              </label>
-              <Link href="/reset-password" className="text-xs font-semibold text-ledger-deep dark:text-ledger">
-                Oublié ?
-              </Link>
-            </div>
-            <input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-paperline bg-white px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-ledger-deep dark:border-white/15 dark:bg-[#161129] dark:text-white"
-              placeholder="••••••••"
-            />
-          </div>
-
-          {error && (
-            <p className="rounded-lg bg-stamp/10 px-3 py-2 text-sm text-stamp">{error}</p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-2 rounded-lg border-[1.5px] border-ledger-deep bg-ledger-deep px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-stamp hover:border-stamp disabled:opacity-60"
-          >
-            {loading ? "Connexion…" : "Se connecter"}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-[#4B5563] dark:text-white/70">
-          Pas encore de compte ?{" "}
-          <Link href="/signup" className="font-semibold text-ledger-deep dark:text-ledger">
-            Créer un compte gratuit
+        <p className="mt-8 text-center text-sm text-white/50">
+          Nouveau ici ?{" "}
+          <Link href="/signup" className="font-semibold text-ledger">
+            Créez un compte
           </Link>
         </p>
       </div>
