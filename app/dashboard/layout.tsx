@@ -22,6 +22,14 @@ export default async function DashboardLayout({
 
   if (!user) redirect("/login");
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("company_name")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.company_name) redirect("/onboarding");
+
   return (
     <div className="flex min-h-screen bg-paper">
       <aside className="flex w-60 flex-col border-r border-paperline px-6 py-8">
