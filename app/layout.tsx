@@ -14,6 +14,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var theme = localStorage.getItem('olipay-theme');
+                if (theme === 'dark') document.documentElement.classList.add('dark');
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
       <body className="font-body bg-paper text-ink transition-colors dark:bg-[#2F2F2F] dark:text-white">{children}</body>
     </html>
   );
