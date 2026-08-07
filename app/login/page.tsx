@@ -55,16 +55,19 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#2F2F2F] px-6 py-16">
+    <main className="flex min-h-screen items-center justify-center bg-[#F0F0F3] px-6 py-16 dark:bg-[#2F2F2F]">
       <div className="w-full max-w-sm">
-        <Link href="/" className="font-display mb-16 block text-center text-3xl font-semibold text-white">
+        <Link
+          href="/"
+          className="font-display mb-16 block text-center text-3xl font-semibold text-ink dark:text-white"
+        >
           OliPay<span className="text-stamp">.</span>
         </Link>
 
-        <h1 className="font-display mb-2 text-center text-3xl font-bold text-white">
+        <h1 className="font-display mb-2 text-center text-3xl font-bold text-ink dark:text-white">
           Identifiez-vous
         </h1>
-        <p className="mb-10 text-center text-sm text-white/50">
+        <p className="mb-10 text-center text-sm text-[#6B7280] dark:text-white/50">
           Bon retour sur votre application préférée
         </p>
 
@@ -75,7 +78,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
-            className="w-full rounded-xl border border-white/10 bg-[#3a3a3a] px-5 py-3.5 text-sm text-white placeholder-white/40 outline-none transition-colors focus:border-ledger"
+            className="w-full rounded-xl border border-paperline bg-white px-5 py-3.5 text-sm text-ink placeholder-[#9CA3AF] outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#3a3a3a] dark:text-white dark:placeholder-white/40"
           />
 
           <div className="relative">
@@ -85,13 +88,13 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Mot de passe"
-              className="w-full rounded-xl border border-white/10 bg-[#3a3a3a] px-5 py-3.5 pr-12 text-sm text-white placeholder-white/40 outline-none transition-colors focus:border-ledger"
+              className="w-full rounded-xl border border-paperline bg-white px-5 py-3.5 pr-12 text-sm text-ink placeholder-[#9CA3AF] outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#3a3a3a] dark:text-white dark:placeholder-white/40"
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-ink dark:text-white/40 dark:hover:text-white/70"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 {showPassword ? (
@@ -131,22 +134,22 @@ export default function LoginPage() {
 
         <Link
           href="/reset-password"
-          className="mt-5 block text-center text-sm font-medium text-ledger underline underline-offset-2"
+          className="mt-5 block text-center text-sm font-medium text-ledger-deep underline underline-offset-2 dark:text-ledger"
         >
           Mot de passe oublié ?
         </Link>
 
         <div className="my-7 flex items-center gap-3">
-          <div className="h-px flex-1 bg-white/10" />
-          <span className="text-sm text-white/40">ou</span>
-          <div className="h-px flex-1 bg-white/10" />
+          <div className="h-px flex-1 bg-paperline dark:bg-white/10" />
+          <span className="text-sm text-[#6B7280] dark:text-white/40">ou</span>
+          <div className="h-px flex-1 bg-paperline dark:bg-white/10" />
         </div>
 
         <button
           type="button"
           onClick={handleGoogleSignIn}
           disabled={googleLoading}
-          className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-[#3a3a3a] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#454545] disabled:opacity-60"
+          className="flex w-full items-center justify-center gap-3 rounded-xl border border-paperline bg-white py-3.5 text-sm font-semibold text-ink transition-colors hover:bg-[#F0F0F3] disabled:opacity-60 dark:border-white/10 dark:bg-[#3a3a3a] dark:text-white dark:hover:bg-[#454545]"
         >
           <svg width="18" height="18" viewBox="0 0 18 18">
             <path
@@ -169,9 +172,9 @@ export default function LoginPage() {
           {googleLoading ? "Connexion…" : "Continuer avec Google"}
         </button>
 
-        <p className="mt-8 text-center text-sm text-white/50">
+        <p className="mt-8 text-center text-sm text-[#6B7280] dark:text-white/50">
           Nouveau ici ?{" "}
-          <Link href="/signup" className="font-semibold text-ledger">
+          <Link href="/signup" className="font-semibold text-ledger-deep dark:text-ledger">
             Créez un compte
           </Link>
         </p>
