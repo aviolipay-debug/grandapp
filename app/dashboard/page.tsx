@@ -55,7 +55,7 @@ export default async function DashboardPage() {
           </p>
         </div>
         <Link
-          href="/dashboard/compte"
+          href="/onboarding"
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/10 transition-colors w-fit"
         >
           Configurer mon compte
@@ -116,13 +116,13 @@ export default async function DashboardPage() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <QuickAction
-            href="/dashboard/devis/nouveau"
+            href="/dashboard/quotes"
             label="Nouveau devis"
             icon={<FileText size={18} />}
             color="#7D2AE7"
           />
           <QuickAction
-            href="/dashboard/factures/nouvelle"
+            href="/dashboard/invoices"
             label="Nouvelle facture"
             icon={<Receipt size={18} />}
             color="#00C4CC"
@@ -143,7 +143,7 @@ export default async function DashboardPage() {
             Activité récente
           </h2>
           <Link
-            href="/dashboard/factures"
+            href="/dashboard/invoices"
             className="text-xs font-semibold text-[#7D2AE7] flex items-center gap-1 hover:underline"
           >
             Tout voir <ArrowUpRight size={14} />
