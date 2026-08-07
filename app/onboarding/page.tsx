@@ -171,14 +171,14 @@ export default function OnboardingPage() {
   }
 
   const inputClass =
-    "w-full rounded-xl border border-paperline bg-white px-5 py-3.5 text-sm text-ink placeholder-[#9CA3AF] outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#3a3a3a] dark:text-white dark:placeholder-white/40";
+    "w-full rounded-xl border border-paperline bg-white px-5 py-3.5 text-sm text-ink placeholder-[#9CA3AF] outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white dark:placeholder-white/40";
   const labelClass = "mb-2 block text-sm font-medium text-ink dark:text-white/80";
   const addBtnClass =
     "flex items-center gap-2 text-sm font-semibold text-ledger-deep dark:text-ledger";
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F0F0F3] px-6 py-12 dark:bg-[#2F2F2F]">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8">
         <div className="mb-8 flex gap-2">
           {steps.map((s, i) => (
             <div
@@ -351,7 +351,7 @@ export default function OnboardingPage() {
               Assurez-vous que les fichiers sont dans un format compatible et de bonne qualité.
             </p>
             <div className="flex flex-col gap-4">
-              <label className="flex cursor-pointer items-center gap-4 rounded-xl border border-paperline bg-white p-4 dark:border-white/10 dark:bg-[#3a3a3a]">
+              <label className="flex cursor-pointer items-center gap-4 rounded-xl border border-paperline bg-white p-4 dark:border-white/10 dark:bg-[#2F2F2F]">
                 {logoPreview ? (
                   <img src={logoPreview} alt="Logo" className="h-10 w-10 rounded-lg object-cover" />
                 ) : (
@@ -375,7 +375,7 @@ export default function OnboardingPage() {
                 />
               </label>
 
-              <label className="flex cursor-pointer items-center gap-4 rounded-xl border border-paperline bg-white p-4 dark:border-white/10 dark:bg-[#3a3a3a]">
+              <label className="flex cursor-pointer items-center gap-4 rounded-xl border border-paperline bg-white p-4 dark:border-white/10 dark:bg-[#2F2F2F]">
                 {signaturePreview ? (
                   <img
                     src={signaturePreview}
@@ -424,7 +424,7 @@ export default function OnboardingPage() {
                   className={`rounded-xl border p-4 text-left transition-colors ${
                     template === t.id
                       ? "border-ledger-deep bg-ledger-deep/5 dark:bg-ledger-deep/20"
-                      : "border-paperline bg-white dark:border-white/10 dark:bg-[#3a3a3a]"
+                      : "border-paperline bg-white dark:border-white/10 dark:bg-[#2F2F2F]"
                   }`}
                 >
                   <div className="font-display font-semibold text-ink dark:text-white">
@@ -446,7 +446,7 @@ export default function OnboardingPage() {
             type="button"
             onClick={goBack}
             disabled={step === 0}
-            className="flex-1 rounded-xl border border-paperline bg-white py-3.5 text-sm font-semibold text-ink transition-colors hover:bg-[#F0F0F3] disabled:opacity-40 dark:border-white/10 dark:bg-[#3a3a3a] dark:text-white dark:hover:bg-[#454545]"
+            className="flex-1 rounded-xl border border-paperline bg-white py-3.5 text-sm font-semibold text-ink transition-colors hover:bg-[#F0F0F3] disabled:opacity-40 dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white dark:hover:bg-[#454545]"
           >
             Retour
           </button>
