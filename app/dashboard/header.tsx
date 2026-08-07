@@ -1,11 +1,12 @@
 // app/dashboard/header.tsx
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
 import ThemeToggle from "../theme-toggle";
 import SignOutButton from "./sign-out-button";
+import { createClient } from "@/lib/supabase/client"; // adapte le chemin si besoin
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard" },
@@ -16,14 +17,21 @@ const NAV_ITEMS = [
 
 export default function DashboardHeader() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const supabase = createClient();
 
   const isActive = (href: string) =>
     href === "/dashboard" ? pathname === href : pathname?.startsWith(href);
 
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
+
   return (
     <>
-      {/* Header mobile : même structure que la landing (toggle / logo centré / menu) */}
+      {/* Header mobile : toggle / logo centré / icône déconnexion (la nav vit dans la bottom-nav) */}
       <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center border-b border-paperline bg-white px-[6vw] py-4 dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
         <div className="flex items-center">
           <ThemeToggle />
@@ -36,62 +44,16 @@ export default function DashboardHeader() {
         </Link>
         <div className="flex items-center justify-end">
           <button
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Ouvrir le menu"
-            className="flex h-9 w-9 flex-col items-center justify-center gap-1.5"
+            onClick={handleSignOut}
+            aria-label="Se déconnecter"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-ink hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
           >
-            <span
-              className={`block h-0.5 w-6 bg-ink transition-transform dark:bg-white ${
-                open ? "translate-y-2 rotate-45" : ""
-              }`}
-            />
-            <span
-              className={`block h-0.5 w-6 bg-ink transition-opacity dark:bg-white ${
-                open ? "opacity-0" : ""
-              }`}
-            />
-            <span
-              className={`block h-0.5 w-6 bg-ink transition-transform dark:bg-white ${
-                open ? "-translate-y-2 -rotate-45" : ""
-              }`}
-            />
+            <LogOut size={18} />
           </button>
         </div>
       </header>
 
-      {/* Panneau mobile déroulant */}
-      {open && (
-        <div className="border-b border-paperline bg-white px-[6vw] py-4 dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
-          <nav className="flex flex-col gap-1">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={`rounded-lg px-3 py-2.5 text-sm font-bold ${
-                  isActive(item.href)
-                    ? "bg-[#F3EEFC] text-ledger-deep dark:bg-white/10 dark:text-white"
-                    : "text-ink dark:text-white"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-            <Link
-              href="/onboarding"
-              onClick={() => setOpen(false)}
-              className="rounded-lg px-3 py-2.5 text-sm font-bold text-ink dark:text-white"
-            >
-              Compte
-            </Link>
-          </nav>
-          <div className="mt-3">
-            <SignOutButton />
-          </div>
-        </div>
-      )}
-
-      {/* Header desktop : structure identique à la landing (logo gauche, nav centre, CTA droite) */}
+      {/* Header desktop : logo gauche, nav centre, Compte + déconnexion à droite (inchangé) */}
       <header className="sticky top-0 z-50 hidden items-center justify-between border-b border-paperline bg-paper px-[6vw] py-7 dark:border-white/10 dark:bg-[#2F2F2F] md:flex">
         <Link
           href="/dashboard"

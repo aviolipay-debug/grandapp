@@ -1,5 +1,6 @@
 // app/dashboard/layout.tsx
 import DashboardHeader from "./header";
+import BottomNav from "./bottom-nav";
 
 export default function DashboardLayout({
   children,
@@ -9,7 +10,8 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-[#F7F8FB] font-sans text-ink dark:bg-[#2F2F2F] dark:text-white">
       <DashboardHeader />
-      <main className="px-[6vw] py-8 md:py-10">{children}</main>
+      <main className="px-[6vw] py-8 pb-24 md:py-10 md:pb-10">{children}</main>
+      <BottomNav />
     </div>
   );
 }
