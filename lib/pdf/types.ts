@@ -13,6 +13,7 @@ export type DocumentData = {
   dueOrExpiryDate: string | null;
   companyName: string;
   companyAddress: string | null;
+  companyLogoUrl: string | null;
   clientName: string;
   clientEmail: string | null;
   clientAddress: string | null;
