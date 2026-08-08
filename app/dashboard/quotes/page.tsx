@@ -1,4 +1,6 @@
+// app/dashboard/quotes/page.tsx
 import Link from "next/link";
+import { FileText, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 const statusLabels: Record<string, string> = {
@@ -7,6 +9,14 @@ const statusLabels: Record<string, string> = {
   accepted: "Accepté",
   declined: "Refusé",
   expired: "Expiré",
+};
+
+const statusStyles: Record<string, string> = {
+  draft: "bg-[#F3F4F6] text-[#6B7280]",
+  sent: "bg-[#EAF3FC] text-[#2A89DA]",
+  accepted: "bg-[#E7FAF9] text-[#00A6AC]",
+  declined: "bg-[#FDEBEA] text-[#E5533F]",
+  expired: "bg-[#F3F4F6] text-[#6B7280]",
 };
 
 export default async function QuotesPage() {
@@ -19,51 +29,59 @@ export default async function QuotesPage() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-ink">Devis</h1>
+        <h1 className="font-display text-2xl font-bold text-ink dark:text-white">Devis</h1>
         <Link
           href="/dashboard/quotes/new"
-          className="rounded bg-ledger-deep px-4 py-2 text-sm font-semibold text-paper hover:bg-stamp"
+          className="rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
         >
           Nouveau devis
         </Link>
       </div>
 
-      <div className="mt-8 overflow-hidden rounded-md border border-paperline bg-white">
+      <div className="mt-8 overflow-hidden rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626]">
         {!quotes || quotes.length === 0 ? (
-          <p className="p-8 text-center text-sm text-[#6B7280]">
+          <p className="p-10 text-center text-sm text-[#6B7280] dark:text-white/50">
             Aucun devis pour l&apos;instant.
           </p>
         ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-paperline text-left font-mono text-xs uppercase tracking-wide text-[#6B7280]">
-                <th className="px-6 py-3 font-medium">N°</th>
-                <th className="px-6 py-3 font-medium">Client</th>
-                <th className="px-6 py-3 font-medium">Statut</th>
-                <th className="px-6 py-3 font-medium">Date</th>
-                <th className="px-6 py-3 font-medium text-right">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {quotes.map((q: any) => (
-                <tr key={q.id} className="border-b border-paperline last:border-0">
-                  <td className="px-6 py-4 font-medium text-ink">
-                    <Link href={`/dashboard/quotes/${q.id}`} className="hover:text-stamp">
+          <div className="divide-y divide-paperline dark:divide-white/10">
+            {quotes.map((q: any) => (
+              <Link
+                key={q.id}
+                href={`/dashboard/quotes/${q.id}`}
+                className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
+                  <FileText size={18} />
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="truncate font-medium text-ink dark:text-white">
                       {q.quote_number}
-                    </Link>
-                  </td>
-                  <td className="px-6 py-4 text-[#374151]">{q.clients?.name ?? "—"}</td>
-                  <td className="px-6 py-4 text-[#374151]">
-                    {statusLabels[q.status] ?? q.status}
-                  </td>
-                  <td className="px-6 py-4 text-[#374151]">{q.issue_date}</td>
-                  <td className="px-6 py-4 text-right font-mono text-ink">
-                    {Number(q.total).toLocaleString("fr-FR")} {q.currency}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </p>
+                    <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
+                      {Number(q.total).toLocaleString("fr-FR")} {q.currency}
+                    </p>
+                  </div>
+                  <div className="mt-1 flex items-center justify-between gap-2">
+                    <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
+                      {q.clients?.name ?? "—"} · {q.issue_date}
+                    </p>
+                    <span
+                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                        statusStyles[q.status] ?? "bg-[#F3F4F6] text-[#6B7280]"
+                      }`}
+                    >
+                      {statusLabels[q.status] ?? q.status}
+                    </span>
+                  </div>
+                </div>
+
+                <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
+              </Link>
+            ))}
+          </div>
         )}
       </div>
     </div>
