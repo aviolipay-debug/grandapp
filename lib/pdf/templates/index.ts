@@ -1,16 +1,18 @@
 // lib/pdf/templates/index.ts
-import TemplateA from "./template-a";
-import TemplateB from "./template-b";
-import TemplateC from "./template-c";
+import TemplateMono from "./template-mono";
+import TemplateGeo from "./template-geo";
+import TemplateBlue from "./template-blue";
+import TemplateGradient from "./template-gradient";
 
 export const TEMPLATES = {
-  "template-a": TemplateA,
-  "template-b": TemplateB,
-  "template-c": TemplateC,
+  "template-mono": TemplateMono,
+  "template-geo": TemplateGeo,
+  "template-blue": TemplateBlue,
+  "template-gradient": TemplateGradient,
 } as const;
 
 export type TemplateId = keyof typeof TEMPLATES;
 
 export function getTemplateComponent(id: string | null | undefined) {
-  return TEMPLATES[(id as TemplateId) ?? "template-a"] ?? TemplateA;
+  return TEMPLATES[(id as TemplateId) ?? "template-mono"] ?? TemplateMono;
 }
