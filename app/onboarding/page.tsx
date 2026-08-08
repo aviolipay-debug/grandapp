@@ -25,13 +25,59 @@ const sectors = [
   "Autre",
 ];
 
-const invoiceTemplates = [
-  { id: "classic", name: "Classique", desc: "Sobre, structuré, idéal pour tous les secteurs." },
-  { id: "modern", name: "Moderne", desc: "Plus coloré, avec les accents de votre marque." },
-  { id: "minimal", name: "Minimaliste", desc: "Épuré, l'essentiel sans fioritures." },
-];
+const invoiceTemplates = ["template-a", "template-b", "template-c"] as const;
 
 type Contact = { indicatif: string; numero: string };
+
+// Miniature visuelle de chaque modèle de facture (aperçu, pas le vrai PDF)
+function TemplatePreview({ id }: { id: string }) {
+  if (id === "template-b") {
+    return (
+      <div className="h-40 w-full bg-white p-0 text-[6px] leading-none dark:bg-[#1e1e1e]">
+        <div className="flex items-start justify-between bg-[#7D2AE7] px-3 py-3">
+          <div className="h-2 w-10 rounded-sm bg-white/90" />
+          <div className="rounded bg-white px-1.5 py-0.5 text-[5px] font-bold text-[#7D2AE7]">FACTURE</div>
+        </div>
+        <div className="p-3">
+          <div className="mb-2 h-1.5 w-16 rounded-sm bg-[#E5E7EB]" />
+          <div className="h-3 w-full rounded-sm bg-[#00C4CC]" />
+          <div className="mt-1 h-1.5 w-full rounded-sm bg-[#F3F4F6]" />
+          <div className="mt-1 h-1.5 w-full rounded-sm bg-[#F3F4F6]" />
+          <div className="mt-2 h-2 w-14 self-end rounded-sm bg-[#F3EEFC]" />
+        </div>
+      </div>
+    );
+  }
+  if (id === "template-c") {
+    return (
+      <div className="h-40 w-full bg-white p-4 text-[6px] leading-none dark:bg-[#1e1e1e]">
+        <div className="flex items-end justify-between">
+          <div className="h-1.5 w-12 rounded-sm bg-[#111111] dark:bg-white" />
+          <div className="h-1.5 w-8 rounded-sm bg-[#111111] dark:bg-white" />
+        </div>
+        <div className="mt-2 h-px w-full bg-[#111111] dark:bg-white/40" />
+        <div className="mt-4 h-1 w-full rounded-sm bg-[#9CA3AF]" />
+        <div className="mt-2 h-1.5 w-full rounded-sm bg-[#F3F4F6] dark:bg-white/10" />
+        <div className="mt-1 h-1.5 w-full rounded-sm bg-[#F3F4F6] dark:bg-white/10" />
+        <div className="mt-3 h-1.5 w-14 self-end rounded-sm border-t border-[#111111] dark:border-white/40" />
+      </div>
+    );
+  }
+  // template-a (par défaut)
+  return (
+    <div className="h-40 w-full bg-white p-4 text-[6px] leading-none dark:bg-[#1e1e1e]">
+      <div className="flex items-start justify-between">
+        <div className="h-2 w-14 rounded-sm bg-[#7D2AE7]" />
+        <div className="h-1.5 w-10 rounded-sm bg-[#FE6F61]" />
+      </div>
+      <div className="mt-4 h-1 w-16 rounded-sm bg-[#9CA3AF]" />
+      <div className="mt-2 h-3 w-full rounded-sm bg-[#F7F7FB]" />
+      <div className="mt-1 h-1.5 w-full rounded-sm bg-white border-b border-[#E5E7EB]" />
+      <div className="mt-1 h-1.5 w-full rounded-sm bg-white border-b border-[#E5E7EB]" />
+      <div className="mt-2 h-2 w-14 self-end rounded-sm border-t border-[#0E1318]" />
+    </div>
+  );
+}
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -61,7 +107,7 @@ export default function OnboardingPage() {
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
 
   // Étape 5 — Facture
-  const [template, setTemplate] = useState("classic");
+  const [template, setTemplate] = useState<string>("template-a");
 
   const isLastStep = step === steps.length - 1;
 
@@ -413,24 +459,21 @@ export default function OnboardingPage() {
               Personnalisez votre style de facturation
             </h2>
             <p className="mb-6 text-sm text-[#6B7280] dark:text-white/50">
-              Sélectionnez un modèle qui reflète votre identité professionnelle.
+              Choisissez simplement celui qui vous plaît.
             </p>
-            <div className="flex flex-col gap-3">
-              {invoiceTemplates.map((t) => (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {invoiceTemplates.map((id) => (
                 <button
-                  key={t.id}
+                  key={id}
                   type="button"
-                  onClick={() => setTemplate(t.id)}
-                  className={`rounded-xl border p-4 text-left transition-colors ${
-                    template === t.id
-                      ? "border-ledger-deep bg-ledger-deep/5 dark:bg-ledger-deep/20"
-                      : "border-paperline bg-white dark:border-white/10 dark:bg-[#2F2F2F]"
+                  onClick={() => setTemplate(id)}
+                  className={`overflow-hidden rounded-xl border-2 text-left transition-colors ${
+                    template === id
+                      ? "border-ledger-deep"
+                      : "border-paperline dark:border-white/10"
                   }`}
                 >
-                  <div className="font-display font-semibold text-ink dark:text-white">
-                    {t.name}
-                  </div>
-                  <div className="text-sm text-[#6B7280] dark:text-white/50">{t.desc}</div>
+                  <TemplatePreview id={id} />
                 </button>
               ))}
             </div>
