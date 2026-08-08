@@ -10,7 +10,7 @@ export async function GET(
   const { data: invoice } = await supabase
     .from("invoices")
     .select(
-      "*, clients(name, email, address), profiles:owner_id(company_name, company_address, invoice_template)"
+      "*, clients(name, email, address), profiles:owner_id(company_name, company_address, company_logo_url, invoice_template)"
     )
     .eq("id", params.id)
     .single();
@@ -32,6 +32,7 @@ export async function GET(
         dueOrExpiryDate: invoice.due_date,
         companyName: invoice.profiles?.company_name ?? "Votre entreprise",
         companyAddress: invoice.profiles?.company_address ?? null,
+        companyLogoUrl: invoice.profiles?.company_logo_url ?? null,
         clientName: invoice.clients?.name ?? "Client",
         clientEmail: invoice.clients?.email ?? null,
         clientAddress: invoice.clients?.address ?? null,
