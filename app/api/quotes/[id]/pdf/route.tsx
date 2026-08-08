@@ -10,7 +10,7 @@ export async function GET(
   const { data: quote } = await supabase
     .from("quotes")
     .select(
-      "*, clients(name, email, address), profiles:owner_id(company_name, company_address, invoice_template)"
+      "*, clients(name, email, address), profiles:owner_id(company_name, company_address, company_logo_url, invoice_template)"
     )
     .eq("id", params.id)
     .single();
@@ -32,6 +32,7 @@ export async function GET(
         dueOrExpiryDate: quote.expiry_date,
         companyName: quote.profiles?.company_name ?? "Votre entreprise",
         companyAddress: quote.profiles?.company_address ?? null,
+        companyLogoUrl: quote.profiles?.company_logo_url ?? null,
         clientName: quote.clients?.name ?? "Client",
         clientEmail: quote.clients?.email ?? null,
         clientAddress: quote.clients?.address ?? null,
