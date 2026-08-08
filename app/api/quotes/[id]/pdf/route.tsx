@@ -7,25 +7,24 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const supabase = createClient();
-
   const { data: quote } = await supabase
     .from("quotes")
-    .select("*, clients(name, email, address), profiles:owner_id(company_name, company_address)")
+    .select(
+      "*, clients(name, email, address), profiles:owner_id(company_name, company_address, invoice_template)"
+    )
     .eq("id", params.id)
     .single();
-
   if (!quote) {
     return new Response("Devis introuvable", { status: 404 });
   }
-
   const { data: items } = await supabase
     .from("quote_items")
     .select("*")
     .eq("quote_id", params.id)
     .order("sort_order");
-
   const stream = await renderToStream(
     <DocumentPDF
+      templateId={quote.profiles?.invoice_template}
       data={{
         kind: "Devis",
         number: quote.quote_number,
@@ -45,7 +44,6 @@ export async function GET(
       }}
     />
   );
-
   return new Response(stream as unknown as ReadableStream, {
     headers: {
       "Content-Type": "application/pdf",
