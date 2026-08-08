@@ -7,25 +7,24 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const supabase = createClient();
-
   const { data: invoice } = await supabase
     .from("invoices")
-    .select("*, clients(name, email, address), profiles:owner_id(company_name, company_address)")
+    .select(
+      "*, clients(name, email, address), profiles:owner_id(company_name, company_address, invoice_template)"
+    )
     .eq("id", params.id)
     .single();
-
   if (!invoice) {
     return new Response("Facture introuvable", { status: 404 });
   }
-
   const { data: items } = await supabase
     .from("invoice_items")
     .select("*")
     .eq("invoice_id", params.id)
     .order("sort_order");
-
   const stream = await renderToStream(
     <DocumentPDF
+      templateId={invoice.profiles?.invoice_template}
       data={{
         kind: "Facture",
         number: invoice.invoice_number,
@@ -45,7 +44,6 @@ export async function GET(
       }}
     />
   );
-
   return new Response(stream as unknown as ReadableStream, {
     headers: {
       "Content-Type": "application/pdf",
