@@ -1,6 +1,6 @@
 // app/dashboard/clients/page.tsx
 import Link from "next/link";
-import { Building2, User, ChevronRight } from "lucide-react";
+import { Building2, User, Plus, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import type { Client } from "@/lib/types";
 
@@ -31,32 +31,45 @@ export default async function ClientsPage() {
         ) : (
           <div className="divide-y divide-paperline dark:divide-white/10">
             {(clients as Client[]).map((c: any) => (
-              <Link
+              <div
                 key={c.id}
-                href={`/dashboard/clients/${c.id}`}
-                className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
+                className="flex items-center gap-2 px-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
-                  {c.type === "entreprise" ? <Building2 size={18} /> : <User size={18} />}
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="truncate font-medium text-ink dark:text-white">{c.name}</p>
-                    {c.type && (
-                      <span className="shrink-0 rounded-full bg-[#F3F4F6] px-2.5 py-0.5 text-[11px] font-semibold text-[#6B7280] dark:bg-white/10 dark:text-white/60">
-                        {c.type === "entreprise" ? "Entreprise" : "Particulier"}
-                      </span>
-                    )}
+                <Link
+                  href={`/dashboard/clients/${c.id}`}
+                  className="flex min-w-0 flex-1 items-center gap-3 py-4"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
+                    {c.type === "entreprise" ? <Building2 size={18} /> : <User size={18} />}
                   </div>
-                  <p className="mt-1 truncate text-sm text-[#6B7280] dark:text-white/50">
-                    {c.email ?? "—"}
-                    {c.phone ? ` · ${c.phone}` : ""}
-                  </p>
-                </div>
 
-                <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
-              </Link>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="truncate font-medium text-ink dark:text-white">{c.name}</p>
+                      {c.type && (
+                        <span className="shrink-0 rounded-full bg-[#F3F4F6] px-2.5 py-0.5 text-[11px] font-semibold text-[#6B7280] dark:bg-white/10 dark:text-white/60">
+                          {c.type === "entreprise" ? "Entreprise" : "Particulier"}
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-1 truncate text-sm text-[#6B7280] dark:text-white/50">
+                      {c.email ?? "—"}
+                      {c.phone ? ` · ${c.phone}` : ""}
+                    </p>
+                  </div>
+
+                  <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
+                </Link>
+
+                <Link
+                  href={`/dashboard/clients/${c.id}/projects/new`}
+                  title="Ajouter un projet"
+                  aria-label="Ajouter un projet"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-ledger-deep hover:bg-[#F3EEFC] dark:hover:bg-white/10"
+                >
+                  <Plus size={18} />
+                </Link>
+              </div>
             ))}
           </div>
         )}
@@ -64,3 +77,4 @@ export default async function ClientsPage() {
     </div>
   );
 }
+
