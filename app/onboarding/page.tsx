@@ -25,56 +25,103 @@ const sectors = [
   "Autre",
 ];
 
-const invoiceTemplates = ["template-a", "template-b", "template-c"] as const;
+const invoiceTemplates = ["template-mono", "template-geo", "template-blue", "template-gradient"] as const;
 
 type Contact = { indicatif: string; numero: string };
 
 // Miniature visuelle de chaque modèle de facture (aperçu, pas le vrai PDF)
-function TemplatePreview({ id }: { id: string }) {
-  if (id === "template-b") {
+function TemplatePreview({ id, logoPreview }: { id: string; logoPreview: string | null }) {
+  if (id === "template-geo") {
     return (
-      <div className="h-40 w-full bg-white p-0 text-[6px] leading-none dark:bg-[#1e1e1e]">
-        <div className="flex items-start justify-between bg-[#7D2AE7] px-3 py-3">
-          <div className="h-2 w-10 rounded-sm bg-white/90" />
-          <div className="rounded bg-white px-1.5 py-0.5 text-[5px] font-bold text-[#7D2AE7]">FACTURE</div>
+      <div className="relative h-40 w-full overflow-hidden bg-white text-[6px] leading-none dark:bg-[#1e1e1e]">
+        <div className="relative h-10 w-full overflow-hidden bg-[#26282B]">
+          <div className="absolute -right-4 top-0 h-16 w-16 rotate-45 bg-[#E5D9C3]" />
         </div>
         <div className="p-3">
-          <div className="mb-2 h-1.5 w-16 rounded-sm bg-[#E5E7EB]" />
-          <div className="h-3 w-full rounded-sm bg-[#00C4CC]" />
+          <div className="flex items-center justify-between">
+            {logoPreview ? (
+              <img src={logoPreview} alt="" className="h-4 max-w-[40px] object-contain" />
+            ) : (
+              <div className="h-1.5 w-10 rounded-sm bg-[#26282B]" />
+            )}
+            <div className="h-1 w-8 rounded-sm bg-[#9CA3AF]" />
+          </div>
+          <div className="mt-2 h-3 w-16 rounded-sm bg-[#111111]" />
+          <div className="mt-2 h-1 w-full rounded-sm bg-[#E5E5E5]" />
           <div className="mt-1 h-1.5 w-full rounded-sm bg-[#F3F4F6]" />
           <div className="mt-1 h-1.5 w-full rounded-sm bg-[#F3F4F6]" />
-          <div className="mt-2 h-2 w-14 self-end rounded-sm bg-[#F3EEFC]" />
+          <div className="mt-2 h-2 w-14 self-end rounded-sm bg-[#E5D9C3]" />
         </div>
       </div>
     );
   }
-  if (id === "template-c") {
+  if (id === "template-blue") {
     return (
-      <div className="h-40 w-full bg-white p-4 text-[6px] leading-none dark:bg-[#1e1e1e]">
-        <div className="flex items-end justify-between">
-          <div className="h-1.5 w-12 rounded-sm bg-[#111111] dark:bg-white" />
-          <div className="h-1.5 w-8 rounded-sm bg-[#111111] dark:bg-white" />
+      <div className="h-40 w-full overflow-hidden bg-white text-[6px] leading-none dark:bg-[#1e1e1e]">
+        <div className="flex items-center justify-between bg-[#1450C4] px-3 py-3">
+          {logoPreview ? (
+            <div className="rounded bg-white p-0.5">
+              <img src={logoPreview} alt="" className="h-4 max-w-[36px] object-contain" />
+            </div>
+          ) : (
+            <div className="h-2 w-10 rounded-sm bg-white/90" />
+          )}
+          <div className="h-2 w-10 rounded-sm bg-white/90" />
         </div>
-        <div className="mt-2 h-px w-full bg-[#111111] dark:bg-white/40" />
-        <div className="mt-4 h-1 w-full rounded-sm bg-[#9CA3AF]" />
-        <div className="mt-2 h-1.5 w-full rounded-sm bg-[#F3F4F6] dark:bg-white/10" />
-        <div className="mt-1 h-1.5 w-full rounded-sm bg-[#F3F4F6] dark:bg-white/10" />
-        <div className="mt-3 h-1.5 w-14 self-end rounded-sm border-t border-[#111111] dark:border-white/40" />
+        <div className="p-3">
+          <div className="h-1 w-10 rounded-sm bg-[#1450C4]" />
+          <div className="mt-2 h-1.5 w-full rounded-sm border-b border-[#1450C4]" />
+          <div className="mt-1 h-1.5 w-full rounded-sm bg-[#F3F4F6]" />
+          <div className="mt-1 h-1.5 w-full rounded-sm bg-[#F3F4F6]" />
+          <div className="mt-3 flex justify-center">
+            <div className="h-1.5 w-20 rounded-sm bg-[#1450C4]/30" />
+          </div>
+        </div>
       </div>
     );
   }
-  // template-a (par défaut)
-  return (
-    <div className="h-40 w-full bg-white p-4 text-[6px] leading-none dark:bg-[#1e1e1e]">
-      <div className="flex items-start justify-between">
-        <div className="h-2 w-14 rounded-sm bg-[#7D2AE7]" />
-        <div className="h-1.5 w-10 rounded-sm bg-[#FE6F61]" />
+  if (id === "template-gradient") {
+    return (
+      <div
+        className="h-40 w-full overflow-hidden text-[6px] leading-none"
+        style={{ background: "linear-gradient(135deg, #F6C89A55, #E8748B55, #F3A16A55)" }}
+      >
+        <div className="p-3">
+          {logoPreview ? (
+            <img src={logoPreview} alt="" className="mx-auto h-4 max-w-[40px] object-contain" />
+          ) : (
+            <div className="mx-auto h-2.5 w-16 rounded-sm bg-[#111111]" />
+          )}
+          <div className="mx-auto mt-1 h-1 w-10 rounded-sm bg-[#9CA3AF]" />
+          <div className="mt-3 h-2.5 w-full rounded-sm bg-[#161616]" />
+          <div className="mt-1 h-1.5 w-full rounded-sm bg-white/70" />
+          <div className="mt-1 h-1.5 w-full rounded-sm bg-white/70" />
+          <div className="mt-2 h-2 w-14 self-end rounded-sm bg-[#161616]" />
+        </div>
       </div>
-      <div className="mt-4 h-1 w-16 rounded-sm bg-[#9CA3AF]" />
-      <div className="mt-2 h-3 w-full rounded-sm bg-[#F7F7FB]" />
-      <div className="mt-1 h-1.5 w-full rounded-sm bg-white border-b border-[#E5E7EB]" />
-      <div className="mt-1 h-1.5 w-full rounded-sm bg-white border-b border-[#E5E7EB]" />
-      <div className="mt-2 h-2 w-14 self-end rounded-sm border-t border-[#0E1318]" />
+    );
+  }
+  // template-mono (par défaut)
+  return (
+    <div className="h-40 w-full overflow-hidden bg-white text-[6px] leading-none dark:bg-[#1e1e1e]">
+      <div className="h-1.5 w-full bg-[#0E0E0E]" />
+      <div className="p-3">
+        <div className="flex items-start justify-between">
+          {logoPreview ? (
+            <div className="flex h-6 max-w-[60px] items-center rounded-sm bg-[#E9F23A] px-1">
+              <img src={logoPreview} alt="" className="h-4 object-contain" />
+            </div>
+          ) : (
+            <div className="h-3 w-10 rounded-sm bg-[#E9F23A]" />
+          )}
+          <div className="h-3 w-12 rounded-sm bg-[#111111]" />
+        </div>
+        <div className="mt-2 h-px w-full bg-[#111111]" />
+        <div className="mt-2 h-1.5 w-full rounded-sm border-b border-[#D4D4D4]" />
+        <div className="mt-1 h-1.5 w-full rounded-sm border-b border-[#D4D4D4]" />
+        <div className="mt-2 h-2 w-14 self-end rounded-sm bg-[#111111]" />
+      </div>
+      <div className="mt-1 h-2 w-full bg-[#0E0E0E]" />
     </div>
   );
 }
@@ -107,7 +154,7 @@ export default function OnboardingPage() {
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
 
   // Étape 5 — Facture
-  const [template, setTemplate] = useState<string>("template-a");
+  const [template, setTemplate] = useState<string>("template-mono");
 
   const isLastStep = step === steps.length - 1;
 
@@ -461,7 +508,7 @@ export default function OnboardingPage() {
             <p className="mb-6 text-sm text-[#6B7280] dark:text-white/50">
               Choisissez simplement celui qui vous plaît.
             </p>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-2 gap-4">
               {invoiceTemplates.map((id) => (
                 <button
                   key={id}
@@ -473,7 +520,7 @@ export default function OnboardingPage() {
                       : "border-paperline dark:border-white/10"
                   }`}
                 >
-                  <TemplatePreview id={id} />
+                  <TemplatePreview id={id} logoPreview={logoPreview} />
                 </button>
               ))}
             </div>
