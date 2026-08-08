@@ -52,7 +52,7 @@ export default function NewClientPage() {
   // Étape 1 : choix du type de client
   if (!clientType) {
     return (
-      <div className="max-w-lg">
+      <div className="mx-auto max-w-lg px-4 sm:px-0">
         <h1 className="font-display text-2xl font-bold text-ink dark:text-white">
           Nouveau client
         </h1>
@@ -103,7 +103,7 @@ export default function NewClientPage() {
 
   // Étape 2 : formulaire
   return (
-    <div className="max-w-lg">
+    <div className="mx-auto max-w-lg px-4 sm:px-0">
       <button
         type="button"
         onClick={() => setClientType(null)}
