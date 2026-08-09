@@ -1,496 +1,290 @@
-// app/dashboard/page.tsx
 import Link from "next/link";
-import {
-  Plus,
-  FileText,
-  Receipt,
-  UserPlus,
-  ArrowUpRight,
-  Clock,
-  CheckCircle2,
-  Folder,
-  FolderPlus,
-  Search,
-  SlidersHorizontal,
-} from "lucide-react";
-import { createClient } from "@/lib/supabase/server"; // adapte le chemin si besoin
+import MobileMenu from "./mobile-menu";
+import ThemeToggle from "./theme-toggle";
 
-// Formatte un montant en Francs CFA
-function formatCFA(n: number) {
-  return new Intl.NumberFormat("fr-FR").format(n) + " CFA";
-}
+const features = [
+  {
+    icon: "⏱",
+    badge: "bg-ledger",
+    title: "Suivi des devis en temps réel",
+    body: "Créez un devis, envoyez-le, et regardez son statut évoluer en direct. Un devis accepté devient une facture d'un geste.",
+  },
+  {
+    icon: "🔒",
+    badge: "bg-gold",
+    title: "Stockage sécurisé",
+    body: "Vos données financières sont chiffrées et sauvegardées automatiquement, à l'abri des pertes. Accès web et mobile, synchronisé en permanence.",
+  },
+  {
+    icon: "⚙️",
+    badge: "bg-ledger-deep",
+    title: "Un outil tout-en-un",
+    body: "Devis, factures, suivi de trésorerie : centralisez toute votre gestion financière au même endroit.",
+  },
+];
 
-export default async function DashboardPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+const audiences = [
+  {
+    tag: "PME",
+    title: "Petites entreprises",
+    body: "Centralisez devis, factures et relances clients sans jongler entre plusieurs outils.",
+  },
+  {
+    tag: "Startups",
+    title: "En pleine croissance",
+    body: "Gardez la maîtrise de votre comptabilité pendant que vous accélérez la croissance de votre équipe.",
+  },
+  {
+    tag: "Freelances",
+    title: "Indépendants",
+    body: "Envoyez un devis pro en sortant d'un rendez-vous, en quelques minutes.",
+  },
+];
 
-  // TODO: remplace ces requêtes par tes vraies tables (factures, devis, clients, projects)
-  // Exemple attendu :
-  // const { data: factures } = await supabase.from("invoices").select("*").order("created_at", { ascending: false }).limit(5);
-  // const { data: clients } = await supabase.from("clients").select("*").order("created_at", { ascending: false }).limit(4);
-  // const { data: projets } = await supabase.from("projects").select("*, clients(name)").order("created_at", { ascending: false }).limit(8);
-  const firstName = user?.user_metadata?.first_name ?? "";
+const faqs = [
+  {
+    q: "Ai-je besoin de compétences en comptabilité pour utiliser OliPay ?",
+    a: "Non. OliPay est pensé pour les indépendants et petites équipes sans service compta dédié : les calculs, les statuts et les relances sont automatisés.",
+  },
+  {
+    q: "Puis-je personnaliser mes devis et factures avec mon logo ?",
+    a: "Oui, chaque document généré reprend le nom et les informations de votre entreprise, avec votre logo une fois ajouté dans vos paramètres.",
+  },
+  {
+    q: "Mes données financières sont-elles en sécurité ?",
+    a: "Oui, toutes vos données sont chiffrées et sauvegardées automatiquement, avec un accès strictement limité à votre compte.",
+  },
+  {
+    q: "Puis-je essayer OliPay gratuitement ?",
+    a: "Oui, la création de compte est gratuite et vous pouvez commencer à créer des devis et factures immédiatement.",
+  },
+];
 
-  // Données d'exemple — à remplacer par les vraies requêtes Supabase
-  const stats = {
-    soldeDisponible: 1_284_500,
-    facturesImpayees: 3,
-    devisEnAttente: 5,
-    clientsActifs: 18,
-  };
-
-  const activiteRecente = [
-    { type: "facture", ref: "FAC-0142", client: "Studio Alma", montant: 320000, statut: "payee" },
-    { type: "devis", ref: "DEV-0089", client: "Kora Distribution", montant: 145000, statut: "attente" },
-    { type: "facture", ref: "FAC-0141", client: "Nova Print", montant: 88000, statut: "impayee" },
-    { type: "devis", ref: "DEV-0088", client: "Atelier Sika", montant: 210000, statut: "attente" },
-  ];
-
-  // Données d'exemple pour la section desktop réorganisée
-  const clientsRecents = [
-    { id: "1", nom: "Studio Alma" },
-    { id: "2", nom: "Kora Distribution" },
-    { id: "3", nom: "Nova Print" },
-  ];
-
-  const projetsRecents = [
-    { date: "21/04/2024", projet: "Refonte identité visuelle", statut: "termine", client: "Studio Alma" },
-    { date: "18/04/2024", projet: "Catalogue produits", statut: "en_cours", client: "Kora Distribution" },
-    { date: "12/04/2024", projet: "Impression flyers", statut: "attente", client: "Nova Print" },
-    { date: "05/04/2024", projet: "Packaging saison", statut: "en_cours", client: "Atelier Sika" },
-  ];
-
+export default function LandingPage() {
   return (
-    <>
-      {/* ---------- MOBILE (inchangé) ---------- */}
-      <div className="lg:hidden flex flex-col gap-8 max-w-6xl">
-        {/* En-tête */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold">
-              Bonjour{firstName ? `, ${firstName}` : ""} 👋
-            </h1>
-            <p className="text-sm text-[#1C1C1C]/60 dark:text-white/60 mt-1">
-              Voici un aperçu de votre activité aujourd&apos;hui.
-            </p>
-          </div>
-          <Link
-            href="/onboarding"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/10 transition-colors w-fit"
-          >
-            Configurer mon compte
-          </Link>
+    <main id="top">
+      {/* Header mobile : fond blanc, logo centré, toggle jour/nuit fonctionnel */}
+      <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center border-b border-paperline bg-white px-[6vw] py-4 dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
+        <div className="flex items-center">
+          <ThemeToggle />
         </div>
-
-        {/* Carte solde façon carte bancaire (élément signature) + stats */}
-        <div className="grid grid-cols-1 gap-4">
-          <div className="relative overflow-hidden rounded-3xl p-6 text-white bg-gradient-to-br from-[#7D2AE7] via-[#7D2AE7] to-[#00C4CC] shadow-lg shadow-[#7D2AE7]/20">
-            <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-white/10" />
-            <div className="absolute -right-2 bottom-4 w-24 h-24 rounded-full bg-white/10" />
-            <p className="text-xs uppercase tracking-wide text-white/70 relative">
-              Solde disponible
-            </p>
-            <p className="font-display text-3xl font-bold mt-2 relative">
-              {formatCFA(stats.soldeDisponible)}
-            </p>
-            <div className="flex items-center justify-between mt-8 relative">
-              <span className="font-display text-sm tracking-widest">
-                OliPay
-              </span>
-              <span className="text-xs text-white/70">Carte compte pro</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <StatCard
-              label="Factures impayées"
-              value={stats.facturesImpayees}
-              accent="#FE6F61"
-              icon={<Clock size={18} />}
-            />
-            <StatCard
-              label="Devis en attente"
-              value={stats.devisEnAttente}
-              accent="#2A89DA"
-              icon={<FileText size={18} />}
-            />
-            <StatCard
-              label="Clients actifs"
-              value={stats.clientsActifs}
-              accent="#00C4CC"
-              icon={<UserPlus size={18} />}
-            />
-            <StatCard
-              label="Taux de paiement"
-              value="87%"
-              accent="#7D2AE7"
-              icon={<CheckCircle2 size={18} />}
-            />
-          </div>
+        <div className="font-display justify-self-center text-2xl font-semibold text-ink dark:text-white">
+          OliPay<span className="text-stamp">.</span>
         </div>
+        <div className="flex items-center justify-end">
+          <MobileMenu />
+        </div>
+      </header>
 
-        {/* Actions rapides */}
+      {/* Header desktop : version précédente restaurée (fond clair, logo à gauche, nav au centre, CTA à droite) */}
+      <header className="sticky top-0 z-50 hidden items-center justify-between border-b border-paperline bg-paper px-[6vw] py-7 dark:border-white/10 dark:bg-[#2F2F2F] md:flex">
+        <div className="font-display text-2xl font-semibold text-ink dark:text-white">
+          OliPay<span className="text-stamp">.</span>
+        </div>
+        <nav className="hidden gap-8 md:flex">
+          <a href="#top" className="text-sm font-bold text-ink dark:text-white hover:text-ledger-deep dark:hover:text-ledger">
+            Accueil
+          </a>
+          <a href="#fonctionnalites" className="text-sm font-bold text-ink dark:text-white hover:text-ledger-deep dark:hover:text-ledger">
+            Fonctionnalités
+          </a>
+          <a href="#cibles" className="text-sm font-bold text-ink dark:text-white hover:text-ledger-deep dark:hover:text-ledger">
+            Pour qui
+          </a>
+          <a href="#faq" className="text-sm font-bold text-ink dark:text-white hover:text-ledger-deep dark:hover:text-ledger">
+            FAQ
+          </a>
+          <a href="mailto:" className="text-sm font-bold text-ink dark:text-white hover:text-ledger-deep dark:hover:text-ledger">
+            Contactez-nous
+          </a>
+        </nav>
+        <Link
+          href="/signup"
+          className="hidden rounded-lg border-[1.5px] border-ledger-deep bg-ledger-deep px-6 py-3 text-sm font-semibold text-white hover:bg-stamp hover:border-stamp md:inline-block"
+        >
+          Commencer gratuitement
+        </Link>
+      </header>
+
+      <section className="grid grid-cols-1 items-center gap-10 bg-[#F0F0F3] px-[6vw] pb-16 pt-6 dark:bg-[#2F2F2F] md:grid-cols-[1.1fr_0.9fr] md:pb-24 md:pt-8">
         <div>
-          <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50 mb-3">
-            Actions rapides
-          </h2>
-          <div className="grid grid-cols-1 gap-4">
-            <QuickAction
-              href="/dashboard/quotes"
-              label="Nouveau devis"
-              icon={<FileText size={18} />}
-              color="#7D2AE7"
-            />
-            <QuickAction
-              href="/dashboard/invoices"
-              label="Nouvelle facture"
-              icon={<Receipt size={18} />}
-              color="#00C4CC"
-            />
-            <QuickAction
-              href="/dashboard/clients/nouveau"
-              label="Ajouter un client"
-              icon={<Plus size={18} />}
-              color="#2A89DA"
-            />
+          <div className="mb-5 flex items-center gap-2.5 font-sans text-[13px] font-semibold uppercase tracking-widest text-ledger">
+            <span className="inline-block h-0.5 w-5 rounded bg-stamp" />
+            Facturation &amp; devis
           </div>
-        </div>
-
-        {/* Activité récente */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50">
-              Activité récente
-            </h2>
+          <h1 className="font-title text-center text-4xl font-bold leading-[1.08] tracking-tight text-ink dark:text-white md:text-left md:text-6xl">
+            Simplifiez la gestion de vos <span className="text-ledger-deep">devis</span>,{" "}
+            <span className="text-ledger-deep">factures</span> et finances
+          </h1>
+          <p className="mx-auto mt-6 max-w-[46ch] text-center text-lg text-[#4B5563] dark:text-white/70 md:mx-0 md:text-left">
+            Créez des devis professionnels depuis votre smartphone et
+            envoyez-les à vos clients en moins de 2 minutes.
+          </p>
+          <div className="mt-9 hidden items-center gap-4 md:flex">
             <Link
-              href="/dashboard/invoices"
-              className="text-xs font-semibold text-[#7D2AE7] flex items-center gap-1 hover:underline"
+              href="/signup"
+              className="rounded-lg border-[1.5px] border-ledger-deep bg-ledger-deep px-6 py-3 text-sm font-semibold text-white hover:bg-stamp hover:border-stamp"
             >
-              Tout voir <ArrowUpRight size={14} />
+              Ouvrir mon compte
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-lg border-[1.5px] border-ledger-deep px-6 py-3 text-sm font-semibold text-ledger-deep dark:border-white dark:text-white"
+            >
+              Se connecter
             </Link>
           </div>
+          <div className="mt-9 flex flex-col items-center gap-3 md:hidden">
+            <Link
+              href="/signup"
+              className="w-[280px] whitespace-nowrap rounded-lg border-[1.5px] border-ledger-deep bg-ledger-deep px-6 py-3 text-center text-sm font-semibold text-white hover:bg-stamp hover:border-stamp"
+            >
+              Commencer gratuitement
+            </Link>
+            <Link
+              href="/login"
+              className="w-[280px] whitespace-nowrap rounded-lg border-[1.5px] border-ledger-deep px-6 py-3 text-center text-sm font-semibold text-ledger-deep dark:border-white dark:text-white"
+            >
+              Se connecter
+            </Link>
+          </div>
+        </div>
 
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-[#262626] overflow-hidden">
-            {activiteRecente.map((item, i) => (
+        <div className="relative order-last flex justify-center md:order-none">
+          <div className="absolute h-[260px] w-[260px] rounded-full bg-gradient-to-br from-ledger-deep to-ledger opacity-40 blur-3xl" />
+          <div className="relative w-[300px] -rotate-6 rounded-[20px] bg-white px-6 py-[30px] text-sm text-ink shadow-[0_24px_60px_-20px_rgba(125,42,231,0.35)]">
+            <div className="mb-[18px] inline-block rounded-full bg-gradient-to-r from-ledger to-ledger-deep px-3 py-1 text-[11px] font-bold tracking-wide text-white">
+              FACTURE N˚ 0142
+            </div>
+            <div className="flex justify-between border-b border-paperline py-[7px] text-[0.88rem]">
+              <span>Remplacement vitre</span>
+              <span>85 000</span>
+            </div>
+            <div className="flex justify-between border-b border-paperline py-[7px] text-[0.88rem]">
+              <span>Pose double vitrage</span>
+              <span>220 000</span>
+            </div>
+            <div className="flex justify-between border-b border-paperline py-[7px] text-[0.88rem]">
+              <span>Main d&apos;œuvre</span>
+              <span>25 000</span>
+            </div>
+            <div className="mt-3.5 flex justify-between text-base font-bold">
+              <span>TOTAL CFA</span>
+              <span>330 000</span>
+            </div>
+            <div className="absolute -right-3.5 -top-3.5 flex h-[62px] w-[62px] rotate-[10deg] items-center justify-center rounded-full bg-stamp text-center text-[11px] font-bold tracking-wide text-white shadow-[0_8px_20px_-6px_rgba(254,111,97,0.6)]">
+              PAYÉ ✓
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="fonctionnalites" className="border-t-4 border-ledger-deep bg-[#F3EEFC] px-[6vw] py-16 dark:bg-[#161129]">
+        <div className="mb-14 max-w-xl">
+          <div className="mb-3 text-[13px] font-bold uppercase tracking-widest text-stamp">
+            Fonctionnalités
+          </div>
+          <h2 className="font-display text-3xl font-bold leading-tight text-ink dark:text-white md:text-4xl">
+            Une gestion financière repensée
+          </h2>
+          <p className="mt-4 text-base text-[#4B5563] dark:text-white/70">
+            Un système automatisé qui vous fait gagner du temps sur les tâches
+            administratives du quotidien.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {features.map((f) => (
+            <div
+              key={f.title}
+              className="rounded-2xl border border-paperline bg-white p-8 dark:border-white/10 dark:bg-[#0f0d1a]"
+            >
               <div
-                key={item.ref}
-                className={`flex items-center justify-between px-5 py-4 ${
-                  i !== activiteRecente.length - 1
-                    ? "border-b border-black/5 dark:border-white/10"
-                    : ""
-                }`}
+                className={`mb-4 flex h-9 w-9 items-center justify-center rounded-[10px] text-base text-white ${f.badge}`}
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-white"
-                    style={{
-                      backgroundColor:
-                        item.type === "facture" ? "#00C4CC" : "#7D2AE7",
-                    }}
-                  >
-                    {item.type === "facture" ? (
-                      <Receipt size={16} />
-                    ) : (
-                      <FileText size={16} />
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium truncate">
-                      {item.ref} — {item.client}
-                    </p>
-                    <p className="text-xs text-[#1C1C1C]/50 dark:text-white/50 capitalize">
-                      {item.type}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4 shrink-0">
-                  <span className="text-sm font-semibold">
-                    {formatCFA(item.montant)}
-                  </span>
-                  <StatusBadge statut={item.statut} />
-                </div>
+                {f.icon}
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ---------- DESKTOP (réorganisé) ---------- */}
-      <div className="hidden lg:flex lg:flex-col gap-8 max-w-6xl">
-        {/* En-tête */}
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h1 className="font-display text-3xl font-bold">
-              Bonjour{firstName ? `, ${firstName}` : ""} 👋
-            </h1>
-            <p className="text-sm text-[#1C1C1C]/60 dark:text-white/60 mt-1">
-              Voici un aperçu de votre activité aujourd&apos;hui.
-            </p>
-          </div>
-          <Link
-            href="/onboarding"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/10 transition-colors w-fit"
-          >
-            Configurer mon compte
-          </Link>
-        </div>
-
-        {/* Carte solde façon carte bancaire (élément signature) + stats */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-1 relative overflow-hidden rounded-3xl p-6 text-white bg-gradient-to-br from-[#7D2AE7] via-[#7D2AE7] to-[#00C4CC] shadow-lg shadow-[#7D2AE7]/20">
-            <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-white/10" />
-            <div className="absolute -right-2 bottom-4 w-24 h-24 rounded-full bg-white/10" />
-            <p className="text-xs uppercase tracking-wide text-white/70 relative">
-              Solde disponible
-            </p>
-            <p className="font-display text-3xl font-bold mt-2 relative">
-              {formatCFA(stats.soldeDisponible)}
-            </p>
-            <div className="flex items-center justify-between mt-8 relative">
-              <span className="font-display text-sm tracking-widest">
-                OliPay
-              </span>
-              <span className="text-xs text-white/70">Carte compte pro</span>
+              <h3 className="mb-2.5 font-display text-lg font-semibold text-ink dark:text-white">{f.title}</h3>
+              <p className="text-sm text-[#4B5563] dark:text-white/70">{f.body}</p>
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 col-span-2 gap-4">
-            <StatCard
-              label="Factures impayées"
-              value={stats.facturesImpayees}
-              accent="#FE6F61"
-              icon={<Clock size={18} />}
-            />
-            <StatCard
-              label="Devis en attente"
-              value={stats.devisEnAttente}
-              accent="#2A89DA"
-              icon={<FileText size={18} />}
-            />
-            <StatCard
-              label="Clients actifs"
-              value={stats.clientsActifs}
-              accent="#00C4CC"
-              icon={<UserPlus size={18} />}
-            />
-            <StatCard
-              label="Taux de paiement"
-              value="87%"
-              accent="#7D2AE7"
-              icon={<CheckCircle2 size={18} />}
-            />
-          </div>
+          ))}
         </div>
+      </section>
 
-        {/* Actions rapides */}
-        <div>
-          <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50 mb-3">
-            Actions rapides
-          </h2>
-          <div className="grid grid-cols-3 gap-4">
-            <QuickAction
-              href="/dashboard/quotes"
-              label="Nouveau devis"
-              icon={<FileText size={18} />}
-              color="#7D2AE7"
-            />
-            <QuickAction
-              href="/dashboard/invoices"
-              label="Nouvelle facture"
-              icon={<Receipt size={18} />}
-              color="#00C4CC"
-            />
-            <QuickAction
-              href="/dashboard/clients/nouveau"
-              label="Ajouter un client"
-              icon={<Plus size={18} />}
-              color="#2A89DA"
-            />
+      <section id="cibles" className="border-t-4 border-stamp bg-white px-[6vw] py-16 dark:bg-[#2F2F2F]">
+        <div className="mb-14 max-w-xl">
+          <div className="mb-3 text-[13px] font-bold uppercase tracking-widest text-stamp">
+            Pour qui
           </div>
-        </div>
-
-        {/* Clients récents — cartes façon dossier, inspirées de la référence */}
-        <div>
-          <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50 mb-3">
-            Clients récents
+          <h2 className="font-display text-3xl font-bold leading-tight text-ink dark:text-white md:text-4xl">
+            Conçu pour ceux qui facturent sans service compta dédié.
           </h2>
-          <div className="flex flex-wrap gap-4">
-            {clientsRecents.map((client) => (
-              <Link
-                key={client.id}
-                href={`/dashboard/clients/${client.id}`}
-                className="group flex flex-col items-center gap-2 w-28"
-              >
-                <div className="w-20 h-16 rounded-xl bg-white dark:bg-[#262626] border border-black/5 dark:border-white/10 flex items-center justify-center text-[#7D2AE7] group-hover:shadow-md group-hover:border-transparent transition-all">
-                  <Folder size={26} strokeWidth={1.75} />
-                </div>
-                <span className="text-xs font-semibold text-center truncate w-full">
-                  {client.nom}
-                </span>
-              </Link>
-            ))}
-            <Link
-              href="/dashboard/clients/nouveau"
-              className="group flex flex-col items-center gap-2 w-28"
+        </div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {audiences.map((c) => (
+            <div
+              key={c.tag}
+              className="rounded-2xl border border-paperline bg-white p-8 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#12161c] dark:shadow-none"
             >
-              <div className="w-20 h-16 rounded-xl border-2 border-dashed border-black/10 dark:border-white/15 flex items-center justify-center text-[#1C1C1C]/40 dark:text-white/40 group-hover:text-[#7D2AE7] group-hover:border-[#7D2AE7] transition-colors">
-                <FolderPlus size={24} strokeWidth={1.75} />
+              <div className="text-xs font-bold uppercase tracking-wide text-ledger-deep">
+                {c.tag}
               </div>
-              <span className="text-xs font-semibold text-center text-[#1C1C1C]/50 dark:text-white/50">
-                Nouveau
-              </span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Projets récents — tableau, inspiré de la référence */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50">
-              Projets récents
-            </h2>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-black/10 dark:border-white/15 text-xs text-[#1C1C1C]/50 dark:text-white/50">
-                <Search size={14} />
-                <span>Rechercher</span>
-              </div>
-              <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-black/10 dark:border-white/15 text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-                <SlidersHorizontal size={14} />
-                Filtres
-              </button>
+              <h3 className="my-2.5 font-display text-lg font-semibold text-ink dark:text-white">{c.title}</h3>
+              <p className="text-sm text-[#4B5563] dark:text-white/70">{c.body}</p>
             </div>
-          </div>
-
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-[#262626] overflow-hidden">
-            <div className="grid grid-cols-[120px_1fr_140px_1fr_40px] gap-4 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-[#1C1C1C]/40 dark:text-white/40 border-b border-black/5 dark:border-white/10">
-              <span>Date</span>
-              <span>Projet</span>
-              <span>Statut</span>
-              <span>Client</span>
-              <span />
-            </div>
-            {projetsRecents.map((p, i) => (
-              <Link
-                key={`${p.projet}-${i}`}
-                href="/dashboard/clients"
-                className={`grid grid-cols-[120px_1fr_140px_1fr_40px] gap-4 items-center px-5 py-4 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors ${
-                  i !== projetsRecents.length - 1
-                    ? "border-b border-black/5 dark:border-white/10"
-                    : ""
-                }`}
-              >
-                <span className="text-sm text-[#1C1C1C]/60 dark:text-white/60">
-                  {p.date}
-                </span>
-                <span className="text-sm font-medium truncate">
-                  {p.projet}
-                </span>
-                <span>
-                  <ProjectStatusBadge statut={p.statut} />
-                </span>
-                <span className="text-sm text-[#1C1C1C]/70 dark:text-white/70 truncate">
-                  {p.client}
-                </span>
-                <ArrowUpRight
-                  size={16}
-                  className="text-[#1C1C1C]/30 dark:text-white/30"
-                />
-              </Link>
-            ))}
-          </div>
+          ))}
         </div>
-      </div>
-    </>
-  );
-}
+      </section>
 
-function StatCard({
-  label,
-  value,
-  accent,
-  icon,
-}: {
-  label: string;
-  value: string | number;
-  accent: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-2xl p-4 bg-white dark:bg-[#262626] border border-black/5 dark:border-white/10">
-      <div
-        className="w-9 h-9 rounded-xl flex items-center justify-center text-white mb-3"
-        style={{ backgroundColor: accent }}
-      >
-        {icon}
-      </div>
-      <p className="font-display text-xl font-bold">{value}</p>
-      <p className="text-xs text-[#1C1C1C]/50 dark:text-white/50 mt-0.5">
-        {label}
-      </p>
-    </div>
-  );
-}
+      <section id="faq" className="border-t-4 border-ledger bg-[#E6FBFC] px-[6vw] py-16 dark:bg-[#0a1a1c]">
+        <div className="mb-14 max-w-xl">
+          <div className="mb-3 text-[13px] font-bold uppercase tracking-widest text-stamp">
+            Questions fréquentes
+          </div>
+          <h2 className="font-display text-3xl font-bold leading-tight text-ink dark:text-white md:text-4xl">
+            Ce qu&apos;on nous demande le plus souvent
+          </h2>
+        </div>
+        <div className="mx-auto max-w-3xl overflow-hidden rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#0f171a]">
+          {faqs.map((item, i) => (
+            <details
+              key={item.q}
+              className={`group px-7 py-5 ${i !== faqs.length - 1 ? "border-b border-paperline dark:border-white/10" : ""}`}
+            >
+              <summary className="cursor-pointer list-none font-display text-base font-semibold text-ink dark:text-white marker:content-none">
+                <span className="flex items-center justify-between gap-4">
+                  {item.q}
+                  <span className="shrink-0 text-lg text-stamp transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </span>
+              </summary>
+              <p className="mt-3 text-sm text-[#4B5563] dark:text-white/70">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
 
-function QuickAction({
-  href,
-  label,
-  icon,
-  color,
-}: {
-  href: string;
-  label: string;
-  icon: React.ReactNode;
-  color: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group flex items-center gap-3 rounded-2xl p-4 bg-white dark:bg-[#262626] border border-black/5 dark:border-white/10 hover:border-transparent hover:shadow-md transition-all"
-    >
-      <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 transition-transform group-hover:scale-105"
-        style={{ backgroundColor: color }}
-      >
-        {icon}
-      </div>
-      <span className="text-sm font-semibold">{label}</span>
-    </Link>
-  );
-}
+      <section className="mx-[6vw] my-16 rounded-3xl bg-gradient-to-br from-ledger-deep to-ledger px-[6vw] py-20 text-center text-white">
+        <h2 className="font-display text-3xl font-bold md:text-4xl">
+          Prêt à simplifier votre gestion ?
+        </h2>
+        <p className="mx-auto my-5 max-w-[50ch] text-white/85">
+          Utilisez OliPay dès maintenant et reprenez le contrôle de votre
+          comptabilité en quelques minutes.
+        </p>
+        <Link
+          href="/signup"
+          className="inline-block rounded-lg border-[1.5px] border-white bg-white px-6 py-3 text-sm font-semibold text-ledger-deep hover:border-stamp hover:bg-stamp hover:text-white"
+        >
+          Créer mon compte
+        </Link>
+      </section>
 
-function StatusBadge({ statut }: { statut: string }) {
-  const config: Record<string, { label: string; bg: string; text: string }> = {
-    payee: { label: "Payée", bg: "#00C4CC1A", text: "#00A6AC" },
-    attente: { label: "En attente", bg: "#2A89DA1A", text: "#2A89DA" },
-    impayee: { label: "Impayée", bg: "#FE6F611A", text: "#E5533F" },
-  };
-  const c = config[statut] ?? config.attente;
-  return (
-    <span
-      className="text-xs font-semibold px-2.5 py-1 rounded-full"
-      style={{ backgroundColor: c.bg, color: c.text }}
-    >
-      {c.label}
-    </span>
-  );
-}
-
-function ProjectStatusBadge({ statut }: { statut: string }) {
-  const config: Record<string, { label: string; bg: string; text: string }> = {
-    termine: { label: "Terminé", bg: "#00C4CC1A", text: "#00A6AC" },
-    en_cours: { label: "En cours", bg: "#7D2AE71A", text: "#7D2AE7" },
-    attente: { label: "En attente", bg: "#2A89DA1A", text: "#2A89DA" },
-  };
-  const c = config[statut] ?? config.attente;
-  return (
-    <span
-      className="text-xs font-semibold px-2.5 py-1 rounded-full w-fit inline-block"
-      style={{ backgroundColor: c.bg, color: c.text }}
-    >
-      {c.label}
-    </span>
+      <footer className="flex flex-col items-center justify-between gap-2.5 border-t border-paperline bg-white px-[6vw] py-10 text-sm text-[#6B7280] dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white/60 md:flex-row">
+        <div>© 2026 OliPay.</div>
+        <div>Fait pour les entrepreneurs qui n&apos;ont pas le temps de tenir un tableur.</div>
+      </footer>
+    </main>
   );
 }
