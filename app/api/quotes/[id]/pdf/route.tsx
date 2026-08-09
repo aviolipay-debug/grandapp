@@ -28,6 +28,7 @@ export async function GET(
       data={{
         kind: "Devis",
         number: quote.quote_number,
+        objet: quote.objet ?? null,
         issueDate: quote.issue_date,
         dueOrExpiryDate: quote.expiry_date,
         companyName: quote.profiles?.company_name ?? "Votre entreprise",
