@@ -31,7 +31,7 @@ export default async function QuotesPage() {
       <div className="flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold text-ink dark:text-white">Devis</h1>
         <Link
-          href="/dashboard/quotes/new"
+          href="/dashboard/clients"
           className="rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
         >
           Nouveau devis
