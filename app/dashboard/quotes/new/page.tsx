@@ -1,7 +1,7 @@
 // app/dashboard/quotes/new/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -10,6 +10,14 @@ import type { Client } from "@/lib/types";
 type LineItem = { description: string; quantity: number; unit_price: number };
 
 export default function NewQuotePage() {
+  return (
+    <Suspense fallback={null}>
+      <NewQuoteForm />
+    </Suspense>
+  );
+}
+
+function NewQuoteForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
