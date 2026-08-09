@@ -3,6 +3,8 @@ import Link from "next/link";
 import {
   FileText,
   UserPlus,
+  Users,
+  FolderKanban,
   ArrowUpRight,
   Clock,
   CheckCircle2,
@@ -55,11 +57,22 @@ export default async function DashboardPage() {
     .from("clients")
     .select("*", { count: "exact", head: true });
 
+  const { count: devisGeneresCount } = await supabase
+    .from("quotes")
+    .select("*", { count: "exact", head: true });
+
+  const { count: projetsEnCoursCount } = await supabase
+    .from("projects")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "en_cours");
+
   const stats = {
     soldeDisponible,
     facturesImpayees: facturesImpayeesCount ?? 0,
     devisEnAttente: devisEnAttenteCount ?? 0,
     clientsActifs: clientsActifsCount ?? 0,
+    devisGeneres: devisGeneresCount ?? 0,
+    projetsEnCours: projetsEnCoursCount ?? 0,
     // TODO: le taux de paiement reste un mock — pas encore de logique définie
     tauxPaiement: "87%",
   };
@@ -228,41 +241,31 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
-        {/* Carte solde (compacte) + stats — tout sur la même ligne */}
-        <div className="grid grid-cols-5 gap-4">
-          <div className="relative overflow-hidden rounded-2xl p-4 text-white bg-gradient-to-br from-[#7D2AE7] via-[#7D2AE7] to-[#00C4CC] shadow-lg shadow-[#7D2AE7]/20">
-            <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/10" />
-            <p className="text-xs uppercase tracking-wide text-white/70 relative">
-              Solde disponible
-            </p>
-            <p className="font-display text-xl font-bold mt-1 relative truncate">
-              {formatCFA(stats.soldeDisponible)}
-            </p>
-          </div>
-
+        {/* Stats — 4 cartes sur la même ligne */}
+        <div className="grid grid-cols-4 gap-4">
           <StatCard
-            label="Factures impayées"
-            value={stats.facturesImpayees}
-            accent="#FE6F61"
-            icon={<Clock size={18} />}
+            label="Devis générés"
+            value={stats.devisGeneres}
+            accent="#7D2AE7"
+            icon={<FileText size={18} />}
           />
           <StatCard
             label="Devis en attente"
             value={stats.devisEnAttente}
             accent="#2A89DA"
-            icon={<FileText size={18} />}
+            icon={<Clock size={18} />}
           />
           <StatCard
-            label="Clients actifs"
+            label="Clients"
             value={stats.clientsActifs}
             accent="#00C4CC"
-            icon={<UserPlus size={18} />}
+            icon={<Users size={18} />}
           />
           <StatCard
-            label="Taux de paiement"
-            value={stats.tauxPaiement}
-            accent="#7D2AE7"
-            icon={<CheckCircle2 size={18} />}
+            label="Projets en cours"
+            value={stats.projetsEnCours}
+            accent="#FE6F61"
+            icon={<FolderKanban size={18} />}
           />
         </div>
 
