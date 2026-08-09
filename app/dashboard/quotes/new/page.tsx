@@ -26,6 +26,7 @@ function NewQuoteForm() {
   const [clientId, setClientId] = useState(searchParams.get("client_id") ?? "");
   const projectId = searchParams.get("project_id");
   const [quoteNumber, setQuoteNumber] = useState("");
+  const [objet, setObjet] = useState("");
   const [taxRate, setTaxRate] = useState(0);
   const [items, setItems] = useState<LineItem[]>([
     { description: "", quantity: 1, unit_price: 0 },
@@ -79,6 +80,7 @@ function NewQuoteForm() {
         client_id: clientId,
         project_id: projectId || null,
         quote_number: quoteNumber,
+        objet,
         subtotal,
         tax_rate: taxRate,
         total,
@@ -152,6 +154,19 @@ function NewQuoteForm() {
                 className="w-full rounded-lg border border-paperline bg-white px-4 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
               />
             </div>
+          </div>
+
+          <div className="mt-4">
+            <label className="mb-1.5 block text-sm font-medium text-ink dark:text-white/80">
+              Objet
+            </label>
+            <input
+              required
+              value={objet}
+              onChange={(e) => setObjet(e.target.value)}
+              placeholder="Ex : Prestation de conception graphique"
+              className="w-full rounded-lg border border-paperline bg-white px-4 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+            />
           </div>
         </div>
 
