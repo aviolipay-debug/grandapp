@@ -93,19 +93,21 @@ export default async function DashboardPage() {
   const clientsRecents =
     clientsRecentsData?.map((c) => ({ id: c.id, nom: c.name })) ?? [];
 
-  // Projets récents — jointure avec clients pour récupérer le nom du client.
+  // Projets récents — jointure avec clients pour récupérer le nom et l'id du client.
   const { data: projetsRecentsData } = await supabase
     .from("projects")
-    .select("id, name, status, created_at, clients(name)")
+    .select("id, name, status, created_at, clients(id, name)")
     .order("created_at", { ascending: false })
     .limit(6);
 
   const projetsRecents =
     projetsRecentsData?.map((p) => ({
+      id: p.id,
       date: new Date(p.created_at).toLocaleDateString("fr-FR"),
       projet: p.name,
       statut: p.status,
       client: (p as any).clients?.name ?? "—",
+      clientId: (p as any).clients?.id ?? null,
     })) ?? [];
 
   return (
@@ -213,7 +215,7 @@ export default async function DashboardPage() {
             {projetsRecents.map((p, i) => (
               <Link
                 key={`${p.projet}-${i}`}
-                href="/dashboard/clients"
+                href={p.clientId ? `/dashboard/clients/${p.clientId}/projects/${p.id}` : "/dashboard/clients"}
                 className={`flex items-center justify-between gap-3 px-4 py-4 ${
                   i !== projetsRecents.length - 1
                     ? "border-b border-black/5 dark:border-white/10"
@@ -338,7 +340,7 @@ export default async function DashboardPage() {
             {projetsRecents.map((p, i) => (
               <Link
                 key={`${p.projet}-${i}`}
-                href="/dashboard/clients"
+                href={p.clientId ? `/dashboard/clients/${p.clientId}/projects/${p.id}` : "/dashboard/clients"}
                 className={`grid grid-cols-[120px_1fr_140px_1fr_40px] gap-4 items-center px-5 py-4 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors ${
                   i !== projetsRecents.length - 1
                     ? "border-b border-black/5 dark:border-white/10"
