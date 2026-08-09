@@ -9,7 +9,7 @@ export type LineItem = {
 export type DocumentData = {
   kind: "Devis" | "Facture";
   number: string;
-  objet: string | null;
+  objet?: string | null;
   issueDate: string;
   dueOrExpiryDate: string | null;
   companyName: string;
