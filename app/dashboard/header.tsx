@@ -9,10 +9,10 @@ import SignOutButton from "./sign-out-button";
 import { createClient } from "@/lib/supabase/client"; // adapte le chemin si besoin
 
 const NAV_ITEMS = [
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Clients", href: "/dashboard/clients" },
-  { label: "Devis", href: "/dashboard/quotes" },
-  { label: "Factures", href: "/dashboard/invoices" },
+  { label: "Accueil", href: "/dashboard" },
+  { label: "Finance", href: "/dashboard/invoices" },
+  { label: "Gestion", href: "/dashboard/clients" },
+  { label: "Profil", href: "/onboarding" },
 ];
 
 export default function DashboardHeader() {
@@ -53,7 +53,7 @@ export default function DashboardHeader() {
         </div>
       </header>
 
-      {/* Header desktop : logo gauche, nav centre, Compte + déconnexion à droite (inchangé) */}
+      {/* Header desktop : logo gauche, nav centre (Accueil/Finance/Gestion/Profil), déconnexion à droite */}
       <header className="sticky top-0 z-50 hidden items-center justify-between border-b border-paperline bg-paper px-[6vw] py-7 dark:border-white/10 dark:bg-[#2F2F2F] md:flex">
         <Link
           href="/dashboard"
@@ -77,12 +77,6 @@ export default function DashboardHeader() {
           ))}
         </nav>
         <div className="hidden items-center gap-4 md:flex">
-          <Link
-            href="/onboarding"
-            className="rounded-lg border-[1.5px] border-ledger-deep px-6 py-3 text-sm font-semibold text-ledger-deep hover:bg-ledger-deep hover:text-white dark:border-white dark:text-white"
-          >
-            Compte
-          </Link>
           <div className="w-36">
             <SignOutButton />
           </div>
