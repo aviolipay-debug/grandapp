@@ -26,10 +26,6 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // TODO: remplace ces requêtes par tes vraies tables (devis, clients, projects)
-  // Exemple attendu :
-  // const { data: clients } = await supabase.from("clients").select("*").order("created_at", { ascending: false }).limit(4);
-  // const { data: projets } = await supabase.from("projects").select("*, clients(name)").order("created_at", { ascending: false }).limit(8);
   const firstName = user?.user_metadata?.first_name ?? "";
 
   // Solde disponible = somme des factures payées.
@@ -45,14 +41,33 @@ export default async function DashboardPage() {
   const soldeDisponible =
     paidInvoices?.reduce((sum, inv) => sum + (inv.amount ?? 0), 0) ?? 0;
 
-  // Données d'exemple — à remplacer par les vraies requêtes Supabase
+  // Factures impayées / Devis en attente / Clients actifs — ajuste les noms de
+  // table/colonne/statut si besoin (mêmes hypothèses que pour le solde).
+  const { count: facturesImpayeesCount } = await supabase
+    .from("invoices")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "impayee");
+
+  const { count: devisEnAttenteCount } = await supabase
+    .from("quotes")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "attente");
+
+  const { count: clientsActifsCount } = await supabase
+    .from("clients")
+    .select("*", { count: "exact", head: true });
+
   const stats = {
     soldeDisponible,
-    facturesImpayees: 3,
-    devisEnAttente: 5,
-    clientsActifs: 18,
+    facturesImpayees: facturesImpayeesCount ?? 0,
+    devisEnAttente: devisEnAttenteCount ?? 0,
+    clientsActifs: clientsActifsCount ?? 0,
+    // TODO: le taux de paiement reste un mock — pas encore de logique définie
+    tauxPaiement: "87%",
   };
 
+  // TODO: "Activité récente" (mobile) reste sur des données d'exemple — dis-moi
+  // si tu veux aussi la brancher sur invoices/quotes réels.
   const activiteRecente = [
     { type: "facture", ref: "FAC-0142", client: "Studio Alma", montant: 320000, statut: "payee" },
     { type: "devis", ref: "DEV-0089", client: "Kora Distribution", montant: 145000, statut: "attente" },
@@ -60,19 +75,31 @@ export default async function DashboardPage() {
     { type: "devis", ref: "DEV-0088", client: "Atelier Sika", montant: 210000, statut: "attente" },
   ];
 
-  // Données d'exemple pour la section desktop réorganisée
-  const clientsRecents = [
-    { id: "1", nom: "Studio Alma" },
-    { id: "2", nom: "Kora Distribution" },
-    { id: "3", nom: "Nova Print" },
-  ];
+  // Clients récents — ajuste "name" si ta colonne s'appelle autrement (ex: "nom")
+  const { data: clientsRecentsData } = await supabase
+    .from("clients")
+    .select("id, name")
+    .order("created_at", { ascending: false })
+    .limit(3);
 
-  const projetsRecents = [
-    { date: "21/04/2024", projet: "Refonte identité visuelle", statut: "termine", client: "Studio Alma" },
-    { date: "18/04/2024", projet: "Catalogue produits", statut: "en_cours", client: "Kora Distribution" },
-    { date: "12/04/2024", projet: "Impression flyers", statut: "attente", client: "Nova Print" },
-    { date: "05/04/2024", projet: "Packaging saison", statut: "en_cours", client: "Atelier Sika" },
-  ];
+  const clientsRecents =
+    clientsRecentsData?.map((c) => ({ id: c.id, nom: c.name })) ?? [];
+
+  // Projets récents — jointure avec clients pour récupérer le nom du client.
+  // Ajuste "name"/"status" si tes colonnes s'appellent autrement.
+  const { data: projetsRecentsData } = await supabase
+    .from("projects")
+    .select("id, name, status, created_at, clients(name)")
+    .order("created_at", { ascending: false })
+    .limit(6);
+
+  const projetsRecents =
+    projetsRecentsData?.map((p) => ({
+      date: new Date(p.created_at).toLocaleDateString("fr-FR"),
+      projet: p.name,
+      statut: p.status,
+      client: (p as any).clients?.name ?? "—",
+    })) ?? [];
 
   return (
     <>
@@ -136,7 +163,7 @@ export default async function DashboardPage() {
             />
             <StatCard
               label="Taux de paiement"
-              value="87%"
+              value={stats.tauxPaiement}
               accent="#7D2AE7"
               icon={<CheckCircle2 size={18} />}
             />
@@ -282,7 +309,7 @@ export default async function DashboardPage() {
           />
           <StatCard
             label="Taux de paiement"
-            value="87%"
+            value={stats.tauxPaiement}
             accent="#7D2AE7"
             icon={<CheckCircle2 size={18} />}
           />
