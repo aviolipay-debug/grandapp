@@ -26,16 +26,28 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // TODO: remplace ces requêtes par tes vraies tables (factures, devis, clients, projects)
+  // TODO: remplace ces requêtes par tes vraies tables (devis, clients, projects)
   // Exemple attendu :
-  // const { data: factures } = await supabase.from("invoices").select("*").order("created_at", { ascending: false }).limit(5);
   // const { data: clients } = await supabase.from("clients").select("*").order("created_at", { ascending: false }).limit(4);
   // const { data: projets } = await supabase.from("projects").select("*, clients(name)").order("created_at", { ascending: false }).limit(8);
   const firstName = user?.user_metadata?.first_name ?? "";
 
+  // Solde disponible = somme des factures payées.
+  // Ajuste ci-dessous si besoin :
+  // - nom de la table ("invoices")
+  // - nom de la colonne montant ("amount")
+  // - valeur exacte du statut payé ("payee" — peut-être "paid" chez toi)
+  const { data: paidInvoices } = await supabase
+    .from("invoices")
+    .select("amount")
+    .eq("status", "payee");
+
+  const soldeDisponible =
+    paidInvoices?.reduce((sum, inv) => sum + (inv.amount ?? 0), 0) ?? 0;
+
   // Données d'exemple — à remplacer par les vraies requêtes Supabase
   const stats = {
-    soldeDisponible: 1_284_500,
+    soldeDisponible,
     facturesImpayees: 3,
     devisEnAttente: 5,
     clientsActifs: 18,
