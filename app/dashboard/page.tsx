@@ -1,9 +1,7 @@
 // app/dashboard/page.tsx
 import Link from "next/link";
 import {
-  Plus,
   FileText,
-  Receipt,
   UserPlus,
   ArrowUpRight,
   Clock,
@@ -65,15 +63,6 @@ export default async function DashboardPage() {
     // TODO: le taux de paiement reste un mock — pas encore de logique définie
     tauxPaiement: "87%",
   };
-
-  // TODO: "Activité récente" (mobile) reste sur des données d'exemple — dis-moi
-  // si tu veux aussi la brancher sur invoices/quotes réels.
-  const activiteRecente = [
-    { type: "facture", ref: "FAC-0142", client: "Studio Alma", montant: 320000, statut: "payee" },
-    { type: "devis", ref: "DEV-0089", client: "Kora Distribution", montant: 145000, statut: "attente" },
-    { type: "facture", ref: "FAC-0141", client: "Nova Print", montant: 88000, statut: "impayee" },
-    { type: "devis", ref: "DEV-0088", client: "Atelier Sika", montant: 210000, statut: "attente" },
-  ];
 
   // Clients récents — ajuste "name" si ta colonne s'appelle autrement (ex: "nom")
   const { data: clientsRecentsData } = await supabase
@@ -162,88 +151,67 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Actions rapides */}
+        {/* Clients récents */}
         <div>
           <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50 mb-3">
-            Actions rapides
+            Clients récents
           </h2>
-          <div className="grid grid-cols-1 gap-4">
-            <QuickAction
-              href="/dashboard/quotes"
-              label="Nouveau devis"
-              icon={<FileText size={18} />}
-              color="#7D2AE7"
-            />
-            <QuickAction
-              href="/dashboard/invoices"
-              label="Nouvelle facture"
-              icon={<Receipt size={18} />}
-              color="#00C4CC"
-            />
-            <QuickAction
+          <div className="flex flex-wrap gap-4">
+            {clientsRecents.map((client) => (
+              <Link
+                key={client.id}
+                href={`/dashboard/clients/${client.id}`}
+                className="group flex flex-col items-center gap-2 w-24"
+              >
+                <div className="w-20 h-16 rounded-xl bg-white dark:bg-[#262626] border border-black/5 dark:border-white/10 flex items-center justify-center text-[#7D2AE7]">
+                  <Folder size={26} strokeWidth={1.75} />
+                </div>
+                <span className="text-xs font-semibold text-center truncate w-full">
+                  {client.nom}
+                </span>
+              </Link>
+            ))}
+            <Link
               href="/dashboard/clients/nouveau"
-              label="Ajouter un client"
-              icon={<Plus size={18} />}
-              color="#2A89DA"
-            />
+              className="group flex flex-col items-center gap-2 w-24"
+            >
+              <div className="w-20 h-16 rounded-xl border-2 border-dashed border-black/10 dark:border-white/15 flex items-center justify-center text-[#1C1C1C]/40 dark:text-white/40">
+                <FolderPlus size={24} strokeWidth={1.75} />
+              </div>
+              <span className="text-xs font-semibold text-center text-[#1C1C1C]/50 dark:text-white/50">
+                Nouveau
+              </span>
+            </Link>
           </div>
         </div>
 
-        {/* Activité récente */}
+        {/* Projets récents */}
         <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50">
-              Activité récente
-            </h2>
-            <Link
-              href="/dashboard/invoices"
-              className="text-xs font-semibold text-[#7D2AE7] flex items-center gap-1 hover:underline"
-            >
-              Tout voir <ArrowUpRight size={14} />
-            </Link>
-          </div>
+          <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50 mb-3">
+            Projets récents
+          </h2>
 
           <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-[#262626] overflow-hidden">
-            {activiteRecente.map((item, i) => (
-              <div
-                key={item.ref}
-                className={`flex items-center justify-between px-5 py-4 ${
-                  i !== activiteRecente.length - 1
+            {projetsRecents.map((p, i) => (
+              <Link
+                key={`${p.projet}-${i}`}
+                href="/dashboard/clients"
+                className={`flex items-center justify-between gap-3 px-4 py-4 ${
+                  i !== projetsRecents.length - 1
                     ? "border-b border-black/5 dark:border-white/10"
                     : ""
                 }`}
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-white"
-                    style={{
-                      backgroundColor:
-                        item.type === "facture" ? "#00C4CC" : "#7D2AE7",
-                    }}
-                  >
-                    {item.type === "facture" ? (
-                      <Receipt size={16} />
-                    ) : (
-                      <FileText size={16} />
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium truncate">
-                      {item.ref} — {item.client}
-                    </p>
-                    <p className="text-xs text-[#1C1C1C]/50 dark:text-white/50 capitalize">
-                      {item.type}
-                    </p>
-                  </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium truncate">{p.projet}</p>
+                  <p className="text-xs text-[#1C1C1C]/50 dark:text-white/50 truncate">
+                    {p.client} · {p.date}
+                  </p>
                 </div>
-
-                <div className="flex items-center gap-4 shrink-0">
-                  <span className="text-sm font-semibold">
-                    {formatCFA(item.montant)}
-                  </span>
-                  <StatusBadge statut={item.statut} />
+                <div className="shrink-0">
+                  <ProjectStatusBadge statut={p.statut} />
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -418,50 +386,6 @@ function StatCard({
         {label}
       </p>
     </div>
-  );
-}
-
-function QuickAction({
-  href,
-  label,
-  icon,
-  color,
-}: {
-  href: string;
-  label: string;
-  icon: React.ReactNode;
-  color: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group flex items-center gap-3 rounded-2xl p-4 bg-white dark:bg-[#262626] border border-black/5 dark:border-white/10 hover:border-transparent hover:shadow-md transition-all"
-    >
-      <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 transition-transform group-hover:scale-105"
-        style={{ backgroundColor: color }}
-      >
-        {icon}
-      </div>
-      <span className="text-sm font-semibold">{label}</span>
-    </Link>
-  );
-}
-
-function StatusBadge({ statut }: { statut: string }) {
-  const config: Record<string, { label: string; bg: string; text: string }> = {
-    payee: { label: "Payée", bg: "#00C4CC1A", text: "#00A6AC" },
-    attente: { label: "En attente", bg: "#2A89DA1A", text: "#2A89DA" },
-    impayee: { label: "Impayée", bg: "#FE6F611A", text: "#E5533F" },
-  };
-  const c = config[statut] ?? config.attente;
-  return (
-    <span
-      className="text-xs font-semibold px-2.5 py-1 rounded-full"
-      style={{ backgroundColor: c.bg, color: c.text }}
-    >
-      {c.label}
-    </span>
   );
 }
 
