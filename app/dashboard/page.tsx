@@ -75,10 +75,10 @@ export default async function DashboardPage() {
     clientsRecentsData?.map((c) => ({ id: c.id, nom: c.name })) ?? [];
 
   // Projets récents — jointure avec clients pour récupérer le nom du client.
-  // Ajuste "name"/"status" si tes colonnes s'appellent autrement.
+  // Ta table "projects" n'a pas de colonne "status" pour l'instant, donc pas de filtre dessus.
   const { data: projetsRecentsData } = await supabase
     .from("projects")
-    .select("id, name, status, created_at, clients(name)")
+    .select("id, name, created_at, clients(name)")
     .order("created_at", { ascending: false })
     .limit(6);
 
@@ -86,7 +86,8 @@ export default async function DashboardPage() {
     projetsRecentsData?.map((p) => ({
       date: new Date(p.created_at).toLocaleDateString("fr-FR"),
       projet: p.name,
-      statut: p.status,
+      // Pas de statut réel en base pour l'instant — badge fixe en attendant.
+      statut: "en_cours",
       client: (p as any).clients?.name ?? "—",
     })) ?? [];
 
