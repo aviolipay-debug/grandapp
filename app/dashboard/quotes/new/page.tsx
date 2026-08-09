@@ -8,7 +8,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Client } from "@/lib/types";
 
-type LineItem = { description: string; quantity: number; unit_price: number };
+type LineItem = { description: string; quantity: string; unit_price: string };
 
 export default function NewQuotePage() {
   return (
@@ -28,10 +28,10 @@ function NewQuoteForm() {
   const projectId = searchParams.get("project_id");
   const [quoteNumber, setQuoteNumber] = useState("");
   const [projectName, setProjectName] = useState<string | null>(null);
-  const [taxRate, setTaxRate] = useState(0);
-  const [discountRate, setDiscountRate] = useState(0);
+  const [taxRate, setTaxRate] = useState("0");
+  const [discountRate, setDiscountRate] = useState("0");
   const [items, setItems] = useState<LineItem[]>([
-    { description: "", quantity: 1, unit_price: 0 },
+    { description: "", quantity: "1", unit_price: "0" },
   ]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -63,7 +63,7 @@ function NewQuoteForm() {
   }
 
   function addItem() {
-    setItems((prev) => [...prev, { description: "", quantity: 1, unit_price: 0 }]);
+    setItems((prev) => [...prev, { description: "", quantity: "1", unit_price: "0" }]);
   }
 
   function removeItem(index: number) {
@@ -92,10 +92,13 @@ function NewQuoteForm() {
     );
   }
 
-  const subtotal = items.reduce((sum, it) => sum + it.quantity * it.unit_price, 0);
-  const discountAmount = subtotal * (discountRate / 100);
+  const subtotal = items.reduce(
+    (sum, it) => sum + (Number(it.quantity) || 0) * (Number(it.unit_price) || 0),
+    0
+  );
+  const discountAmount = subtotal * ((Number(discountRate) || 0) / 100);
   const subtotalAfterDiscount = subtotal - discountAmount;
-  const total = subtotalAfterDiscount * (1 + taxRate / 100);
+  const total = subtotalAfterDiscount * (1 + (Number(taxRate) || 0) / 100);
   const currency = "CFA";
 
   async function handleSubmit(e: React.FormEvent) {
@@ -122,8 +125,8 @@ function NewQuoteForm() {
         quote_number: quoteNumber,
         objet: projectName,
         subtotal,
-        discount_rate: discountRate,
-        tax_rate: taxRate,
+        discount_rate: Number(discountRate) || 0,
+        tax_rate: Number(taxRate) || 0,
         total,
       })
       .select()
@@ -136,14 +139,18 @@ function NewQuoteForm() {
     }
 
     const { error: itemsError } = await supabase.from("quote_items").insert(
-      items.map((it, i) => ({
-        quote_id: quote.id,
-        description: it.description,
-        quantity: it.quantity,
-        unit_price: it.unit_price,
-        line_total: it.quantity * it.unit_price,
-        sort_order: i,
-      }))
+      items.map((it, i) => {
+        const quantity = Number(it.quantity) || 0;
+        const unit_price = Number(it.unit_price) || 0;
+        return {
+          quote_id: quote.id,
+          description: it.description,
+          quantity,
+          unit_price,
+          line_total: quantity * unit_price,
+          sort_order: i,
+        };
+      })
     );
 
     if (itemsError) {
@@ -256,7 +263,7 @@ function NewQuoteForm() {
                           min={0}
                           step="0.01"
                           value={item.quantity}
-                          onChange={(e) => updateItem(i, { quantity: Number(e.target.value) })}
+                          onChange={(e) => updateItem(i, { quantity: e.target.value })}
                           className="w-full rounded-lg border border-paperline bg-white px-3 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
                         />
                       </div>
@@ -269,14 +276,14 @@ function NewQuoteForm() {
                           min={0}
                           step="0.01"
                           value={item.unit_price}
-                          onChange={(e) => updateItem(i, { unit_price: Number(e.target.value) })}
+                          onChange={(e) => updateItem(i, { unit_price: e.target.value })}
                           className="w-full rounded-lg border border-paperline bg-white px-3 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
                         />
                       </div>
                     </div>
                     <div className="flex items-center justify-between pt-1">
                       <span className="text-sm font-semibold text-ink dark:text-white">
-                        Montant : {(item.quantity * item.unit_price).toLocaleString("fr-FR")} {currency}
+                        Montant : {((Number(item.quantity) || 0) * (Number(item.unit_price) || 0)).toLocaleString("fr-FR")} {currency}
                       </span>
                       <button
                         type="button"
@@ -304,7 +311,7 @@ function NewQuoteForm() {
                       min={0}
                       step="0.01"
                       value={item.quantity}
-                      onChange={(e) => updateItem(i, { quantity: Number(e.target.value) })}
+                      onChange={(e) => updateItem(i, { quantity: e.target.value })}
                       className="rounded-lg border border-paperline bg-white px-3 py-2 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
                     />
                     <input
@@ -312,11 +319,11 @@ function NewQuoteForm() {
                       min={0}
                       step="0.01"
                       value={item.unit_price}
-                      onChange={(e) => updateItem(i, { unit_price: Number(e.target.value) })}
+                      onChange={(e) => updateItem(i, { unit_price: e.target.value })}
                       className="rounded-lg border border-paperline bg-white px-3 py-2 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
                     />
                     <span className="text-right text-sm font-semibold text-ink dark:text-white">
-                      {(item.quantity * item.unit_price).toLocaleString("fr-FR")}
+                      {((Number(item.quantity) || 0) * (Number(item.unit_price) || 0)).toLocaleString("fr-FR")}
                     </span>
                     <button
                       type="button"
@@ -343,7 +350,7 @@ function NewQuoteForm() {
           </button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-6">
+        <div className="flex flex-wrap items-center justify-center gap-6">
           <div className="flex items-center gap-3">
             <label className="text-sm font-medium text-ink dark:text-white/80">TVA (%)</label>
             <input
@@ -351,7 +358,7 @@ function NewQuoteForm() {
               min={0}
               step="0.01"
               value={taxRate}
-              onChange={(e) => setTaxRate(Number(e.target.value))}
+              onChange={(e) => setTaxRate(e.target.value)}
               className="w-24 rounded-lg border border-paperline bg-white px-3 py-2 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
             />
           </div>
@@ -363,7 +370,7 @@ function NewQuoteForm() {
               max={100}
               step="0.01"
               value={discountRate}
-              onChange={(e) => setDiscountRate(Number(e.target.value))}
+              onChange={(e) => setDiscountRate(e.target.value)}
               className="w-24 rounded-lg border border-paperline bg-white px-3 py-2 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
             />
           </div>
@@ -374,7 +381,7 @@ function NewQuoteForm() {
             <span>Sous-total</span>
             <span>{subtotal.toLocaleString("fr-FR")} {currency}</span>
           </div>
-          {discountRate > 0 && (
+          {(Number(discountRate) || 0) > 0 && (
             <div className="mt-2 flex justify-between text-[#6B7280] dark:text-white/60">
               <span>Remise ({discountRate}%)</span>
               <span>- {discountAmount.toLocaleString("fr-FR")} {currency}</span>
