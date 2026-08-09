@@ -44,6 +44,17 @@ function NewQuoteForm() {
       .then(({ data }) => setClients((data as Client[]) ?? []));
   }, [supabase]);
 
+  // Numéro de devis généré automatiquement (DEV-0001, DEV-0002, ...)
+  useEffect(() => {
+    supabase
+      .from("quotes")
+      .select("*", { count: "exact", head: true })
+      .then(({ count }) => {
+        const next = (count ?? 0) + 1;
+        setQuoteNumber(`DEV-${String(next).padStart(4, "0")}`);
+      });
+  }, [supabase]);
+
   // Le nom du projet sert directement d'"objet" du devis — plus besoin de le saisir.
   useEffect(() => {
     if (!projectId) {
@@ -194,13 +205,9 @@ function NewQuoteForm() {
               <label className="mb-1.5 block text-sm font-medium text-ink dark:text-white/80">
                 Numéro de devis
               </label>
-              <input
-                required
-                value={quoteNumber}
-                onChange={(e) => setQuoteNumber(e.target.value)}
-                placeholder="DEV-0001"
-                className="w-full rounded-lg border border-paperline bg-white px-4 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-              />
+              <p className="w-full rounded-lg border border-paperline bg-black/[0.02] px-4 py-2.5 text-sm text-ink dark:border-white/10 dark:bg-white/5 dark:text-white">
+                {quoteNumber || "Génération..."}
+              </p>
             </div>
           </div>
 
