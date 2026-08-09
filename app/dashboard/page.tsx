@@ -66,6 +66,11 @@ export default async function DashboardPage() {
     .select("*", { count: "exact", head: true })
     .eq("status", "en_cours");
 
+  const { count: projetsEnAttenteCount } = await supabase
+    .from("projects")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "attente");
+
   const stats = {
     soldeDisponible,
     facturesImpayees: facturesImpayeesCount ?? 0,
@@ -73,6 +78,7 @@ export default async function DashboardPage() {
     clientsActifs: clientsActifsCount ?? 0,
     devisGeneres: devisGeneresCount ?? 0,
     projetsEnCours: projetsEnCoursCount ?? 0,
+    projetsEnAttente: projetsEnAttenteCount ?? 0,
     // TODO: le taux de paiement reste un mock — pas encore de logique définie
     tauxPaiement: "87%",
   };
@@ -250,8 +256,8 @@ export default async function DashboardPage() {
             icon={<FileText size={18} />}
           />
           <StatCard
-            label="Devis en attente"
-            value={stats.devisEnAttente}
+            label="Projets en attente"
+            value={stats.projetsEnAttente}
             accent="#2A89DA"
             icon={<Clock size={18} />}
           />
