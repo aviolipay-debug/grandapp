@@ -27,8 +27,13 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
 
   // TODO: remplace ces requêtes par tes vraies tables (factures, devis, clients, projects)
+  // Exemple attendu :
+  // const { data: factures } = await supabase.from("invoices").select("*").order("created_at", { ascending: false }).limit(5);
+  // const { data: clients } = await supabase.from("clients").select("*").order("created_at", { ascending: false }).limit(4);
+  // const { data: projets } = await supabase.from("projects").select("*, clients(name)").order("created_at", { ascending: false }).limit(8);
   const firstName = user?.user_metadata?.first_name ?? "";
 
+  // Données d'exemple — à remplacer par les vraies requêtes Supabase
   const stats = {
     soldeDisponible: 1_284_500,
     facturesImpayees: 3,
@@ -43,6 +48,7 @@ export default async function DashboardPage() {
     { type: "devis", ref: "DEV-0088", client: "Atelier Sika", montant: 210000, statut: "attente" },
   ];
 
+  // Données d'exemple pour la section desktop réorganisée
   const clientsRecents = [
     { id: "1", nom: "Studio Alma" },
     { id: "2", nom: "Kora Distribution" },
@@ -60,6 +66,7 @@ export default async function DashboardPage() {
     <>
       {/* ---------- MOBILE (inchangé) ---------- */}
       <div className="lg:hidden flex flex-col gap-8 max-w-6xl">
+        {/* En-tête */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="font-display text-2xl sm:text-3xl font-bold">
@@ -77,6 +84,7 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
+        {/* Carte solde façon carte bancaire (élément signature) + stats */}
         <div className="grid grid-cols-1 gap-4">
           <div className="relative overflow-hidden rounded-3xl p-6 text-white bg-gradient-to-br from-[#7D2AE7] via-[#7D2AE7] to-[#00C4CC] shadow-lg shadow-[#7D2AE7]/20">
             <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-white/10" />
@@ -123,6 +131,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
+        {/* Actions rapides */}
         <div>
           <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50 mb-3">
             Actions rapides
@@ -149,6 +158,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
+        {/* Activité récente */}
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50">
@@ -210,6 +220,7 @@ export default async function DashboardPage() {
 
       {/* ---------- DESKTOP (réorganisé) ---------- */}
       <div className="hidden lg:flex lg:flex-col gap-8 max-w-6xl">
+        {/* En-tête */}
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="font-display text-3xl font-bold">
@@ -227,78 +238,45 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-1 relative overflow-hidden rounded-3xl p-6 text-white bg-gradient-to-br from-[#7D2AE7] via-[#7D2AE7] to-[#00C4CC] shadow-lg shadow-[#7D2AE7]/20">
-            <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-white/10" />
-            <div className="absolute -right-2 bottom-4 w-24 h-24 rounded-full bg-white/10" />
+        {/* Carte solde (compacte) + stats — tout sur la même ligne */}
+        <div className="grid grid-cols-5 gap-4">
+          <div className="relative overflow-hidden rounded-2xl p-4 text-white bg-gradient-to-br from-[#7D2AE7] via-[#7D2AE7] to-[#00C4CC] shadow-lg shadow-[#7D2AE7]/20">
+            <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/10" />
             <p className="text-xs uppercase tracking-wide text-white/70 relative">
               Solde disponible
             </p>
-            <p className="font-display text-3xl font-bold mt-2 relative">
+            <p className="font-display text-xl font-bold mt-1 relative truncate">
               {formatCFA(stats.soldeDisponible)}
             </p>
-            <div className="flex items-center justify-between mt-8 relative">
-              <span className="font-display text-sm tracking-widest">
-                OliPay
-              </span>
-              <span className="text-xs text-white/70">Carte compte pro</span>
-            </div>
           </div>
 
-          <div className="grid grid-cols-2 col-span-2 gap-4">
-            <StatCard
-              label="Factures impayées"
-              value={stats.facturesImpayees}
-              accent="#FE6F61"
-              icon={<Clock size={18} />}
-            />
-            <StatCard
-              label="Devis en attente"
-              value={stats.devisEnAttente}
-              accent="#2A89DA"
-              icon={<FileText size={18} />}
-            />
-            <StatCard
-              label="Clients actifs"
-              value={stats.clientsActifs}
-              accent="#00C4CC"
-              icon={<UserPlus size={18} />}
-            />
-            <StatCard
-              label="Taux de paiement"
-              value="87%"
-              accent="#7D2AE7"
-              icon={<CheckCircle2 size={18} />}
-            />
-          </div>
+          <StatCard
+            label="Factures impayées"
+            value={stats.facturesImpayees}
+            accent="#FE6F61"
+            icon={<Clock size={18} />}
+          />
+          <StatCard
+            label="Devis en attente"
+            value={stats.devisEnAttente}
+            accent="#2A89DA"
+            icon={<FileText size={18} />}
+          />
+          <StatCard
+            label="Clients actifs"
+            value={stats.clientsActifs}
+            accent="#00C4CC"
+            icon={<UserPlus size={18} />}
+          />
+          <StatCard
+            label="Taux de paiement"
+            value="87%"
+            accent="#7D2AE7"
+            icon={<CheckCircle2 size={18} />}
+          />
         </div>
 
-        <div>
-          <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50 mb-3">
-            Actions rapides
-          </h2>
-          <div className="grid grid-cols-3 gap-4">
-            <QuickAction
-              href="/dashboard/quotes"
-              label="Nouveau devis"
-              icon={<FileText size={18} />}
-              color="#7D2AE7"
-            />
-            <QuickAction
-              href="/dashboard/invoices"
-              label="Nouvelle facture"
-              icon={<Receipt size={18} />}
-              color="#00C4CC"
-            />
-            <QuickAction
-              href="/dashboard/clients/nouveau"
-              label="Ajouter un client"
-              icon={<Plus size={18} />}
-              color="#2A89DA"
-            />
-          </div>
-        </div>
-
+        {/* Clients récents — cartes façon dossier, inspirées de la référence */}
         <div>
           <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50 mb-3">
             Clients récents
@@ -332,6 +310,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
+        {/* Projets récents — tableau, inspiré de la référence */}
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50">
