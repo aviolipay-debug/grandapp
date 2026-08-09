@@ -21,8 +21,8 @@ const statusStyles: Record<string, string> = {
 };
 
 const projectStatusOptions: { value: "en_cours" | "attente" | "termine"; label: string }[] = [
-  { value: "en_cours", label: "En cours" },
   { value: "attente", label: "En attente" },
+  { value: "en_cours", label: "En cours" },
   { value: "termine", label: "Terminé" },
 ];
 
@@ -74,7 +74,10 @@ export default async function ProjectDetailPage({
       </div>
 
       {/* Statut du projet */}
-      <div className="mt-4 flex flex-wrap items-center gap-2">
+      <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-[#6B7280] dark:text-white/40">
+        Statut du projet
+      </p>
+      <div className="mt-2 flex flex-wrap items-center gap-2">
         {projectStatusOptions.map((opt) => (
           <form
             key={opt.value}
@@ -84,8 +87,8 @@ export default async function ProjectDetailPage({
               type="submit"
               className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${
                 project.status === opt.value
-                  ? "border-ledger-deep bg-ledger-deep text-paper"
-                  : "border-paperline bg-white text-[#4B5563] hover:border-ledger-deep dark:border-white/15 dark:bg-transparent dark:text-white/60"
+                  ? "border-[#00A6AC] bg-[#00A6AC] text-white"
+                  : "border-paperline bg-white text-[#4B5563] hover:border-[#00A6AC] dark:border-white/15 dark:bg-transparent dark:text-white/60"
               }`}
             >
               {opt.label}
