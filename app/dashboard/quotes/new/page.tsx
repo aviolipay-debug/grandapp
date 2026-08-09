@@ -29,6 +29,7 @@ function NewQuoteForm() {
   const [quoteNumber, setQuoteNumber] = useState("");
   const [projectName, setProjectName] = useState<string | null>(null);
   const [taxRate, setTaxRate] = useState(0);
+  const [discountRate, setDiscountRate] = useState(0);
   const [items, setItems] = useState<LineItem[]>([
     { description: "", quantity: 1, unit_price: 0 },
   ]);
@@ -92,7 +93,9 @@ function NewQuoteForm() {
   }
 
   const subtotal = items.reduce((sum, it) => sum + it.quantity * it.unit_price, 0);
-  const total = subtotal * (1 + taxRate / 100);
+  const discountAmount = subtotal * (discountRate / 100);
+  const subtotalAfterDiscount = subtotal - discountAmount;
+  const total = subtotalAfterDiscount * (1 + taxRate / 100);
   const currency = "CFA";
 
   async function handleSubmit(e: React.FormEvent) {
@@ -119,6 +122,7 @@ function NewQuoteForm() {
         quote_number: quoteNumber,
         objet: projectName,
         subtotal,
+        discount_rate: discountRate,
         tax_rate: taxRate,
         total,
       })
@@ -332,23 +336,37 @@ function NewQuoteForm() {
           <button
             type="button"
             onClick={addItem}
-            className="mt-3 flex items-center gap-1.5 text-sm font-semibold text-stamp"
+            className="mt-3 flex w-full items-center justify-center gap-1.5 text-sm font-semibold text-stamp"
           >
             <Plus size={16} />
             Ajouter une ligne
           </button>
         </div>
 
-        <div className="flex items-center gap-3">
-          <label className="text-sm font-medium text-ink dark:text-white/80">TVA (%)</label>
-          <input
-            type="number"
-            min={0}
-            step="0.01"
-            value={taxRate}
-            onChange={(e) => setTaxRate(Number(e.target.value))}
-            className="w-24 rounded-lg border border-paperline bg-white px-3 py-2 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-          />
+        <div className="flex flex-wrap items-center gap-6">
+          <div className="flex items-center gap-3">
+            <label className="text-sm font-medium text-ink dark:text-white/80">TVA (%)</label>
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              value={taxRate}
+              onChange={(e) => setTaxRate(Number(e.target.value))}
+              className="w-24 rounded-lg border border-paperline bg-white px-3 py-2 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <label className="text-sm font-medium text-ink dark:text-white/80">Remise (%)</label>
+            <input
+              type="number"
+              min={0}
+              max={100}
+              step="0.01"
+              value={discountRate}
+              onChange={(e) => setDiscountRate(Number(e.target.value))}
+              className="w-24 rounded-lg border border-paperline bg-white px-3 py-2 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+            />
+          </div>
         </div>
 
         <div className="rounded-2xl border border-paperline bg-white p-5 font-mono text-sm dark:border-white/10 dark:bg-[#262626]">
@@ -356,6 +374,12 @@ function NewQuoteForm() {
             <span>Sous-total</span>
             <span>{subtotal.toLocaleString("fr-FR")} {currency}</span>
           </div>
+          {discountRate > 0 && (
+            <div className="mt-2 flex justify-between text-[#6B7280] dark:text-white/60">
+              <span>Remise ({discountRate}%)</span>
+              <span>- {discountAmount.toLocaleString("fr-FR")} {currency}</span>
+            </div>
+          )}
           <div className="mt-2 flex justify-between border-t border-paperline pt-2 text-base font-bold text-ink dark:border-white/10 dark:text-white">
             <span>Total</span>
             <span>{total.toLocaleString("fr-FR")} {currency}</span>
@@ -364,13 +388,15 @@ function NewQuoteForm() {
 
         {error && <p className="text-sm text-stamp">{error}</p>}
 
-        <button
-          type="submit"
-          disabled={loading || !clientId}
-          className="w-full rounded-lg bg-ledger-deep px-5 py-3 text-sm font-semibold text-paper hover:bg-stamp disabled:opacity-60 sm:w-auto"
-        >
-          {loading ? "Enregistrement..." : "Créer le devis"}
-        </button>
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            disabled={loading || !clientId}
+            className="w-full rounded-lg bg-ledger-deep px-5 py-3 text-sm font-semibold text-paper hover:bg-stamp disabled:opacity-60 sm:w-auto"
+          >
+            {loading ? "Enregistrement..." : "Créer le devis"}
+          </button>
+        </div>
       </form>
     </div>
   );
