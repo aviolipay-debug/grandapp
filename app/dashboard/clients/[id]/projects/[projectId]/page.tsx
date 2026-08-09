@@ -26,11 +26,13 @@ export default async function ProjectDetailPage({
 }) {
   const supabase = createClient();
 
-  const { data: project } = await supabase
+  const { data: projectData } = await supabase
     .from("projects")
     .select("id, name, clients(name)")
     .eq("id", params.projectId)
     .single();
+
+  const project = projectData as any;
 
   const { data: quotes } = await supabase
     .from("quotes")
@@ -48,7 +50,7 @@ export default async function ProjectDetailPage({
         href={`/dashboard/clients/${params.id}`}
         className="text-sm font-semibold text-ledger-deep"
       >
-        ← {project.clients?.name ?? "Client"}
+        ← {(project.clients as any)?.name ?? "Client"}
       </Link>
 
       <div className="mt-2 flex items-center justify-between">
