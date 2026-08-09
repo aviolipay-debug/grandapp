@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { FileText, ChevronRight, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { updateProjectStatus } from "./actions";
 
 const statusLabels: Record<string, string> = {
   draft: "Brouillon",
@@ -19,6 +20,12 @@ const statusStyles: Record<string, string> = {
   expired: "bg-[#F3F4F6] text-[#6B7280]",
 };
 
+const projectStatusOptions: { value: "en_cours" | "attente" | "termine"; label: string }[] = [
+  { value: "en_cours", label: "En cours" },
+  { value: "attente", label: "En attente" },
+  { value: "termine", label: "Terminé" },
+];
+
 export default async function ProjectDetailPage({
   params,
 }: {
@@ -28,7 +35,7 @@ export default async function ProjectDetailPage({
 
   const { data: projectData } = await supabase
     .from("projects")
-    .select("id, name, clients(name)")
+    .select("id, name, status, clients(name)")
     .eq("id", params.projectId)
     .single();
 
@@ -53,17 +60,38 @@ export default async function ProjectDetailPage({
         ← {(project.clients as any)?.name ?? "Client"}
       </Link>
 
-      <div className="mt-2 flex items-center justify-between">
+      <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-display text-2xl font-bold text-ink dark:text-white">
           {project.name}
         </h1>
         <Link
           href={`/dashboard/quotes/new?project_id=${project.id}&client_id=${params.id}`}
-          className="flex items-center gap-1.5 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-paper hover:bg-stamp"
+          className="flex w-fit items-center gap-1.5 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-paper hover:bg-stamp"
         >
           <Plus size={16} />
           Nouveau devis
         </Link>
+      </div>
+
+      {/* Statut du projet */}
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        {projectStatusOptions.map((opt) => (
+          <form
+            key={opt.value}
+            action={updateProjectStatus.bind(null, project.id, params.id, opt.value)}
+          >
+            <button
+              type="submit"
+              className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${
+                project.status === opt.value
+                  ? "border-ledger-deep bg-ledger-deep text-paper"
+                  : "border-paperline bg-white text-[#4B5563] hover:border-ledger-deep dark:border-white/15 dark:bg-transparent dark:text-white/60"
+              }`}
+            >
+              {opt.label}
+            </button>
+          </form>
+        ))}
       </div>
 
       <div className="mt-6 overflow-hidden rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626]">
