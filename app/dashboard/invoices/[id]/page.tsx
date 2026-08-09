@@ -16,7 +16,7 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
 
   const { data: invoice } = await supabase
     .from("invoices")
-    .select("*, clients(name, email)")
+    .select("*, clients(name, email), quotes(projects(name))")
     .eq("id", params.id)
     .single();
 
@@ -37,51 +37,57 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
   const remaining = Number(invoice.total) - Number(invoice.amount_paid);
   const boundRecordPayment = recordPayment.bind(null, invoice.id);
 
+  // Le nom du projet (récupéré via le devis d'origine) sert de titre ; à défaut, le numéro de facture.
+  const title = invoice.quotes?.projects?.name ?? `Facture ${invoice.invoice_number}`;
+
   return (
-    <div className="max-w-2xl">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-bold text-ink">
-            Facture {invoice.invoice_number}
+    <div className="max-w-2xl px-4 sm:px-0">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="font-display text-2xl font-bold text-ink break-words">
+            {title}
           </h1>
           <p className="mt-1 text-sm text-[#6B7280]">
-            {invoice.clients?.name} · {statusLabels[invoice.status] ?? invoice.status}
+            Facture {invoice.invoice_number} · {invoice.clients?.name} ·{" "}
+            {statusLabels[invoice.status] ?? invoice.status}
           </p>
         </div>
         <a
           href={`/api/invoices/${invoice.id}/pdf`}
           target="_blank"
-          className="rounded border border-ledger-deep px-4 py-2 text-sm font-semibold text-ledger-deep hover:bg-white"
+          className="inline-flex items-center justify-center rounded border border-ledger-deep px-4 py-2 text-sm font-semibold text-ledger-deep hover:bg-white w-full sm:w-auto shrink-0"
         >
           Télécharger le PDF
         </a>
       </div>
 
       <div className="mt-8 overflow-hidden rounded-md border border-paperline bg-white">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-paperline text-left font-mono text-xs uppercase tracking-wide text-[#6B7280]">
-              <th className="px-6 py-3 font-medium">Description</th>
-              <th className="px-6 py-3 text-right font-medium">Qté</th>
-              <th className="px-6 py-3 text-right font-medium">Prix</th>
-              <th className="px-6 py-3 text-right font-medium">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items?.map((item) => (
-              <tr key={item.id} className="border-b border-paperline last:border-0">
-                <td className="px-6 py-4">{item.description}</td>
-                <td className="px-6 py-4 text-right">{item.quantity}</td>
-                <td className="px-6 py-4 text-right font-mono">
-                  {Number(item.unit_price).toLocaleString("fr-FR")}
-                </td>
-                <td className="px-6 py-4 text-right font-mono">
-                  {Number(item.line_total).toLocaleString("fr-FR")}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[480px] text-sm">
+            <thead>
+              <tr className="border-b border-paperline text-left font-mono text-xs uppercase tracking-wide text-[#6B7280]">
+                <th className="px-6 py-3 font-medium">Description</th>
+                <th className="px-6 py-3 text-right font-medium">Qté</th>
+                <th className="px-6 py-3 text-right font-medium">Prix</th>
+                <th className="px-6 py-3 text-right font-medium">Total</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {items?.map((item) => (
+                <tr key={item.id} className="border-b border-paperline last:border-0">
+                  <td className="px-6 py-4">{item.description}</td>
+                  <td className="px-6 py-4 text-right">{item.quantity}</td>
+                  <td className="px-6 py-4 text-right font-mono">
+                    {Number(item.unit_price).toLocaleString("fr-FR")}
+                  </td>
+                  <td className="px-6 py-4 text-right font-mono">
+                    {Number(item.line_total).toLocaleString("fr-FR")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <div className="space-y-1 border-t border-paperline px-6 py-4 text-right font-mono text-sm">
           <div>Total : {Number(invoice.total).toLocaleString("fr-FR")} {invoice.currency}</div>
           <div className="text-[#6B7280]">
@@ -98,8 +104,11 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
           <h2 className="font-display text-lg font-semibold text-ink">
             Enregistrer un paiement
           </h2>
-          <form action={boundRecordPayment} className="mt-4 flex items-end gap-3">
-            <div>
+          <form
+            action={boundRecordPayment}
+            className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end"
+          >
+            <div className="w-full sm:w-40">
               <label className="mb-1.5 block text-sm font-medium text-ink">
                 Montant
               </label>
@@ -110,16 +119,16 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
                 max={remaining}
                 step="0.01"
                 required
-                className="w-40 rounded border border-paperline bg-white px-3 py-2 text-sm focus:border-ledger-deep focus:outline-none"
+                className="w-full rounded border border-paperline bg-white px-3 py-2 text-sm focus:border-ledger-deep focus:outline-none"
               />
             </div>
-            <div>
+            <div className="w-full sm:w-auto">
               <label className="mb-1.5 block text-sm font-medium text-ink">
                 Méthode
               </label>
               <select
                 name="method"
-                className="rounded border border-paperline bg-white px-3 py-2 text-sm focus:border-ledger-deep focus:outline-none"
+                className="w-full rounded border border-paperline bg-white px-3 py-2 text-sm focus:border-ledger-deep focus:outline-none sm:w-auto"
               >
                 <option value="mobile_money">Mobile Money</option>
                 <option value="bank_transfer">Virement</option>
@@ -130,7 +139,7 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
             </div>
             <button
               type="submit"
-              className="rounded bg-ledger-deep px-5 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
+              className="w-full rounded bg-ledger-deep px-5 py-2.5 text-sm font-semibold text-paper hover:bg-stamp sm:w-auto"
             >
               Enregistrer
             </button>
@@ -145,7 +154,10 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
           </h2>
           <div className="mt-3 divide-y divide-paperline rounded-md border border-paperline bg-white">
             {payments.map((p) => (
-              <div key={p.id} className="flex justify-between px-6 py-3 text-sm">
+              <div
+                key={p.id}
+                className="flex flex-col gap-1 px-6 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-2"
+              >
                 <span className="text-[#374151]">
                   {new Date(p.paid_at).toLocaleDateString("fr-FR")} — {p.method}
                 </span>
