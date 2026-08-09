@@ -29,7 +29,7 @@ export default async function QuotesPage() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-ink dark:text-white">Devis</h1>
+        <h1 className="font-display text-2xl font-bold text-ink dark:text-white">Vos Devis</h1>
         <Link
           href="/dashboard/clients"
           className="rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
@@ -48,7 +48,7 @@ export default async function QuotesPage() {
             {quotes.map((q: any) => (
               <Link
                 key={q.id}
-                href={`/dashboard/quotes/${q.id}`}
+                href={`/dashboard/quotes/${q.id}/edit`}
                 className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
               >
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
