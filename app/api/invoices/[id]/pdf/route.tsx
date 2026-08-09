@@ -28,6 +28,7 @@ export async function GET(
       data={{
         kind: "Facture",
         number: invoice.invoice_number,
+        objet: invoice.objet ?? null,
         issueDate: invoice.issue_date,
         dueOrExpiryDate: invoice.due_date,
         companyName: invoice.profiles?.company_name ?? "Votre entreprise",
