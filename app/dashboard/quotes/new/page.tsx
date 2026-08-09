@@ -2,6 +2,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -26,7 +27,7 @@ function NewQuoteForm() {
   const [clientId, setClientId] = useState(searchParams.get("client_id") ?? "");
   const projectId = searchParams.get("project_id");
   const [quoteNumber, setQuoteNumber] = useState("");
-  const [objet, setObjet] = useState("");
+  const [projectName, setProjectName] = useState<string | null>(null);
   const [taxRate, setTaxRate] = useState(0);
   const [items, setItems] = useState<LineItem[]>([
     { description: "", quantity: 1, unit_price: 0 },
@@ -42,6 +43,20 @@ function NewQuoteForm() {
       .then(({ data }) => setClients((data as Client[]) ?? []));
   }, [supabase]);
 
+  // Le nom du projet sert directement d'"objet" du devis — plus besoin de le saisir.
+  useEffect(() => {
+    if (!projectId) {
+      setProjectName(null);
+      return;
+    }
+    supabase
+      .from("projects")
+      .select("name")
+      .eq("id", projectId)
+      .single()
+      .then(({ data }) => setProjectName(data?.name ?? null));
+  }, [supabase, projectId]);
+
   function updateItem(index: number, patch: Partial<LineItem>) {
     setItems((prev) => prev.map((it, i) => (i === index ? { ...it, ...patch } : it)));
   }
@@ -52,6 +67,28 @@ function NewQuoteForm() {
 
   function removeItem(index: number) {
     setItems((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  // Un devis doit toujours être créé depuis un projet — pas d'accès direct.
+  if (!projectId) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-16 text-center sm:px-0">
+        <h1 className="font-display text-xl font-bold text-ink dark:text-white">
+          Sélectionnez d&apos;abord un projet
+        </h1>
+        <p className="mt-2 text-sm text-[#6B7280] dark:text-white/60">
+          Pour créer un devis, ouvrez la fiche du client concerné, choisissez
+          (ou créez) le projet, puis lancez le devis depuis là — l&apos;objet
+          du devis reprend automatiquement le nom du projet.
+        </p>
+        <Link
+          href="/dashboard/clients"
+          className="mt-6 inline-flex items-center justify-center rounded-lg bg-ledger-deep px-5 py-3 text-sm font-semibold text-paper hover:bg-stamp"
+        >
+          Voir mes clients
+        </Link>
+      </div>
+    );
   }
 
   const subtotal = items.reduce((sum, it) => sum + it.quantity * it.unit_price, 0);
@@ -80,7 +117,7 @@ function NewQuoteForm() {
         client_id: clientId,
         project_id: projectId || null,
         quote_number: quoteNumber,
-        objet,
+        objet: projectName,
         subtotal,
         tax_rate: taxRate,
         total,
@@ -160,13 +197,15 @@ function NewQuoteForm() {
             <label className="mb-1.5 block text-sm font-medium text-ink dark:text-white/80">
               Objet
             </label>
-            <input
-              required
-              value={objet}
-              onChange={(e) => setObjet(e.target.value)}
-              placeholder="Ex : Prestation de conception graphique"
-              className="w-full rounded-lg border border-paperline bg-white px-4 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-            />
+            {projectName ? (
+              <p className="w-full rounded-lg border border-paperline bg-black/[0.02] px-4 py-2.5 text-sm text-ink dark:border-white/10 dark:bg-white/5 dark:text-white">
+                {projectName}
+              </p>
+            ) : (
+              <p className="text-xs text-[#6B7280] dark:text-white/50">
+                Ce devis n&apos;est rattaché à aucun projet — l&apos;objet sera vide.
+              </p>
+            )}
           </div>
         </div>
 
