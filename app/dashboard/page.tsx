@@ -172,7 +172,7 @@ export default async function DashboardPage() {
               </Link>
             ))}
             <Link
-              href="/dashboard/clients/nouveau"
+              href="/dashboard/clients/new"
               className="group flex flex-col items-center gap-2 w-24"
             >
               <div className="w-20 h-16 rounded-xl border-2 border-dashed border-black/10 dark:border-white/15 flex items-center justify-center text-[#1C1C1C]/40 dark:text-white/40">
@@ -288,7 +288,7 @@ export default async function DashboardPage() {
               </Link>
             ))}
             <Link
-              href="/dashboard/clients/nouveau"
+              href="/dashboard/clients/new"
               className="group flex flex-col items-center gap-2 w-28"
             >
               <div className="w-20 h-16 rounded-xl border-2 border-dashed border-black/10 dark:border-white/15 flex items-center justify-center text-[#1C1C1C]/40 dark:text-white/40 group-hover:text-[#7D2AE7] group-hover:border-[#7D2AE7] transition-colors">
