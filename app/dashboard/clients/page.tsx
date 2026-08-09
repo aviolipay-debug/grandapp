@@ -1,75 +1,85 @@
-// app/dashboard/clients/page.tsx
+// app/dashboard/quotes/page.tsx
 import Link from "next/link";
-import { Building2, User, Plus, ChevronRight } from "lucide-react";
+import { FileText, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import type { Client } from "@/lib/types";
 
-export default async function ClientsPage() {
+const statusLabels: Record<string, string> = {
+  draft: "Brouillon",
+  sent: "Envoyé",
+  accepted: "Accepté",
+  declined: "Refusé",
+  expired: "Expiré",
+};
+
+const statusStyles: Record<string, string> = {
+  draft: "bg-[#F3F4F6] text-[#6B7280]",
+  sent: "bg-[#EAF3FC] text-[#2A89DA]",
+  accepted: "bg-[#E7FAF9] text-[#00A6AC]",
+  declined: "bg-[#FDEBEA] text-[#E5533F]",
+  expired: "bg-[#F3F4F6] text-[#6B7280]",
+};
+
+export default async function QuotesPage() {
   const supabase = createClient();
-  const { data: clients } = await supabase
-    .from("clients")
-    .select("*")
+  const { data: quotes } = await supabase
+    .from("quotes")
+    .select("id, quote_number, status, total, currency, issue_date, clients(name)")
     .order("created_at", { ascending: false });
 
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-ink dark:text-white">Clients</h1>
+        <h1 className="font-display text-2xl font-bold text-ink dark:text-white">Vos Devis</h1>
         <Link
-          href="/dashboard/clients/new"
+          href="/dashboard/clients"
           className="rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
         >
-          Nouveau client
+          Nouveau devis
         </Link>
       </div>
 
       <div className="mt-8 overflow-hidden rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626]">
-        {!clients || clients.length === 0 ? (
+        {!quotes || quotes.length === 0 ? (
           <p className="p-10 text-center text-sm text-[#6B7280] dark:text-white/50">
-            Aucun client pour l&apos;instant. Ajoutez-en un pour créer votre premier devis.
+            Aucun devis pour l&apos;instant.
           </p>
         ) : (
           <div className="divide-y divide-paperline dark:divide-white/10">
-            {(clients as Client[]).map((c: any) => (
-              <div
-                key={c.id}
-                className="flex items-center gap-2 px-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
+            {quotes.map((q: any) => (
+              <Link
+                key={q.id}
+                href={`/dashboard/quotes/${q.id}`}
+                className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
               >
-                <Link
-                  href={`/dashboard/clients/${c.id}`}
-                  className="flex min-w-0 flex-1 items-center gap-3 py-4"
-                >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
-                    {c.type === "entreprise" ? <Building2 size={18} /> : <User size={18} />}
-                  </div>
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
+                  <FileText size={18} />
+                </div>
 
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="truncate font-medium text-ink dark:text-white">{c.name}</p>
-                      {c.type && (
-                        <span className="shrink-0 rounded-full bg-[#F3F4F6] px-2.5 py-0.5 text-[11px] font-semibold text-[#6B7280] dark:bg-white/10 dark:text-white/60">
-                          {c.type === "entreprise" ? "Entreprise" : "Particulier"}
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-1 truncate text-sm text-[#6B7280] dark:text-white/50">
-                      {c.email ?? "—"}
-                      {c.phone ? ` · ${c.phone}` : ""}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="truncate font-medium text-ink dark:text-white">
+                      {q.quote_number}
+                    </p>
+                    <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
+                      {Number(q.total).toLocaleString("fr-FR")} {q.currency}
                     </p>
                   </div>
+                  <div className="mt-1 flex items-center justify-between gap-2">
+                    <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
+                      {q.clients?.name ?? "—"} · {q.issue_date}
+                    </p>
+                    <span
+                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                        statusStyles[q.status] ?? "bg-[#F3F4F6] text-[#6B7280]"
+                      }`}
+                    >
+                      {statusLabels[q.status] ?? q.status}
+                    </span>
+                  </div>
+                </div>
 
-                  <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
-                </Link>
-
-                <Link
-                  href={`/dashboard/clients/${c.id}/projects/new`}
-                  title="Ajouter un projet"
-                  aria-label="Ajouter un projet"
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-ledger-deep hover:bg-[#F3EEFC] dark:hover:bg-white/10"
-                >
-                  <Plus size={18} />
-                </Link>
-              </div>
+                <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
+              </Link>
             ))}
           </div>
         )}
@@ -77,4 +87,3 @@ export default async function ClientsPage() {
     </div>
   );
 }
-
