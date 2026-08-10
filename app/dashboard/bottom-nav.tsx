@@ -65,6 +65,7 @@ export default function BottomNav() {
       <nav className="fixed bottom-0 left-0 right-0 z-50 grid grid-cols-4 border-t border-paperline bg-white pb-[env(safe-area-inset-bottom)] dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
         <Link
           href="/dashboard"
+          onClick={() => setGestionOpen(false)}
           className={`flex flex-col items-center justify-center gap-1 py-2.5 text-[11px] font-bold ${
             isHome ? "text-ledger-deep dark:text-ledger" : "text-ink/60 dark:text-white/60"
           }`}
@@ -74,6 +75,7 @@ export default function BottomNav() {
         </Link>
         <Link
           href="/dashboard/invoices"
+          onClick={() => setGestionOpen(false)}
           className={`flex flex-col items-center justify-center gap-1 py-2.5 text-[11px] font-bold ${
             isFinance ? "text-ledger-deep dark:text-ledger" : "text-ink/60 dark:text-white/60"
           }`}
@@ -94,6 +96,7 @@ export default function BottomNav() {
         </button>
         <Link
           href="/onboarding"
+          onClick={() => setGestionOpen(false)}
           className={`flex flex-col items-center justify-center gap-1 py-2.5 text-[11px] font-bold ${
             isProfil ? "text-ledger-deep dark:text-ledger" : "text-ink/60 dark:text-white/60"
           }`}
