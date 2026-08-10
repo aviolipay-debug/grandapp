@@ -2,23 +2,16 @@
 import Link from "next/link";
 import {
   FileText,
-  UserPlus,
   Users,
   FolderKanban,
   ArrowUpRight,
   Clock,
-  CheckCircle2,
   Folder,
   FolderPlus,
   Search,
   SlidersHorizontal,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server"; // adapte le chemin si besoin
-
-// Formatte un montant en Francs CFA
-function formatCFA(n: number) {
-  return new Intl.NumberFormat("fr-FR").format(n) + " CFA";
-}
 
 export default async function DashboardPage() {
   const supabase = createClient();
@@ -28,31 +21,8 @@ export default async function DashboardPage() {
 
   const firstName = user?.user_metadata?.first_name ?? "";
 
-  // Solde disponible = somme des factures payées.
-  // Ajuste ci-dessous si besoin :
-  // - nom de la table ("invoices")
-  // - nom de la colonne montant ("amount")
-  // - valeur exacte du statut payé ("payee" — peut-être "paid" chez toi)
-  const { data: paidInvoices } = await supabase
-    .from("invoices")
-    .select("amount")
-    .eq("status", "payee");
-
-  const soldeDisponible =
-    paidInvoices?.reduce((sum, inv) => sum + (inv.amount ?? 0), 0) ?? 0;
-
-  // Factures impayées / Devis en attente / Clients actifs — ajuste les noms de
-  // table/colonne/statut si besoin (mêmes hypothèses que pour le solde).
-  const { count: facturesImpayeesCount } = await supabase
-    .from("invoices")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "impayee");
-
-  const { count: devisEnAttenteCount } = await supabase
-    .from("quotes")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "attente");
-
+  // Devis générés / Clients / Projets en cours / Projets en attente —
+  // ajuste les noms de table/colonne/statut si besoin.
   const { count: clientsActifsCount } = await supabase
     .from("clients")
     .select("*", { count: "exact", head: true });
@@ -72,15 +42,10 @@ export default async function DashboardPage() {
     .eq("status", "attente");
 
   const stats = {
-    soldeDisponible,
-    facturesImpayees: facturesImpayeesCount ?? 0,
-    devisEnAttente: devisEnAttenteCount ?? 0,
     clientsActifs: clientsActifsCount ?? 0,
     devisGeneres: devisGeneresCount ?? 0,
     projetsEnCours: projetsEnCoursCount ?? 0,
     projetsEnAttente: projetsEnAttenteCount ?? 0,
-    // TODO: le taux de paiement reste un mock — pas encore de logique définie
-    tauxPaiement: "87%",
   };
 
   // Clients récents — ajuste "name" si ta colonne s'appelle autrement (ex: "nom")
@@ -124,51 +89,32 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
-        {/* Carte solde façon carte bancaire (élément signature) + stats */}
-        <div className="grid grid-cols-1 gap-4">
-          <div className="relative overflow-hidden rounded-3xl p-6 text-white bg-gradient-to-br from-[#7D2AE7] via-[#7D2AE7] to-[#00C4CC] shadow-lg shadow-[#7D2AE7]/20">
-            <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-white/10" />
-            <div className="absolute -right-2 bottom-4 w-24 h-24 rounded-full bg-white/10" />
-            <p className="text-xs uppercase tracking-wide text-white/70 relative">
-              Solde disponible
-            </p>
-            <p className="font-display text-3xl font-bold mt-2 relative">
-              {formatCFA(stats.soldeDisponible)}
-            </p>
-            <div className="flex items-center justify-between mt-8 relative">
-              <span className="font-display text-sm tracking-widest">
-                OliPay
-              </span>
-              <span className="text-xs text-white/70">Carte compte pro</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <StatCard
-              label="Factures impayées"
-              value={stats.facturesImpayees}
-              accent="#FE6F61"
-              icon={<Clock size={18} />}
-            />
-            <StatCard
-              label="Devis en attente"
-              value={stats.devisEnAttente}
-              accent="#2A89DA"
-              icon={<FileText size={18} />}
-            />
-            <StatCard
-              label="Clients actifs"
-              value={stats.clientsActifs}
-              accent="#00C4CC"
-              icon={<UserPlus size={18} />}
-            />
-            <StatCard
-              label="Taux de paiement"
-              value={stats.tauxPaiement}
-              accent="#7D2AE7"
-              icon={<CheckCircle2 size={18} />}
-            />
-          </div>
+        {/* Stats — synchronisées avec la version desktop */}
+        <div className="grid grid-cols-2 gap-4">
+          <StatCard
+            label="Devis générés"
+            value={stats.devisGeneres}
+            accent="#7D2AE7"
+            icon={<FileText size={18} />}
+          />
+          <StatCard
+            label="Projets en attente"
+            value={stats.projetsEnAttente}
+            accent="#2A89DA"
+            icon={<Clock size={18} />}
+          />
+          <StatCard
+            label="Clients"
+            value={stats.clientsActifs}
+            accent="#00C4CC"
+            icon={<Users size={18} />}
+          />
+          <StatCard
+            label="Projets en cours"
+            value={stats.projetsEnCours}
+            accent="#FE6F61"
+            icon={<FolderKanban size={18} />}
+          />
         </div>
 
         {/* Clients récents */}
