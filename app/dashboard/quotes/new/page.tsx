@@ -69,6 +69,23 @@ function NewQuoteForm() {
       .then(({ data }) => setProjectName(data?.name ?? null));
   }, [supabase, projectId]);
 
+  // Un projet = un seul devis actif : si un devis existe déjà pour ce projet,
+  // on redirige directement vers son édition au lieu d'en créer un second.
+  useEffect(() => {
+    if (!projectId) return;
+    supabase
+      .from("quotes")
+      .select("id")
+      .eq("project_id", projectId)
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.id) {
+          router.replace(`/dashboard/quotes/${data.id}/edit`);
+        }
+      });
+  }, [supabase, projectId, router]);
+
   function updateItem(index: number, patch: Partial<LineItem>) {
     setItems((prev) => prev.map((it, i) => (i === index ? { ...it, ...patch } : it)));
   }
