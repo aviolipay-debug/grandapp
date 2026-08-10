@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { updateQuoteStatus, convertQuoteToInvoice } from "./actions";
+import { convertQuoteToInvoice } from "./actions";
 
 const statusLabels: Record<string, string> = {
   draft: "Brouillon",
@@ -54,18 +54,6 @@ export default async function QuoteDetailPage({ params }: { params: { id: string
         >
           Télécharger le PDF
         </a>
-      </div>
-
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <form action={updateQuoteStatus.bind(null, quote.id, "sent")}>
-          <StatusPill active={quote.status === "sent"} label="Envoyé" />
-        </form>
-        <form action={updateQuoteStatus.bind(null, quote.id, "accepted")}>
-          <StatusPill active={quote.status === "accepted"} label="Accepté" />
-        </form>
-        <form action={updateQuoteStatus.bind(null, quote.id, "declined")}>
-          <StatusPill active={quote.status === "declined"} label="Refusé" />
-        </form>
       </div>
 
       <div className="mt-8 overflow-hidden rounded-md border border-paperline bg-white">
@@ -122,20 +110,5 @@ export default async function QuoteDetailPage({ params }: { params: { id: string
         )}
       </div>
     </div>
-  );
-}
-
-function StatusPill({ active, label }: { active: boolean; label: string }) {
-  return (
-    <button
-      type="submit"
-      className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${
-        active
-          ? "border-ledger-deep bg-ledger-deep text-paper"
-          : "border-paperline bg-white text-[#4B5563] hover:border-ledger-deep"
-      }`}
-    >
-      {label}
-    </button>
   );
 }
