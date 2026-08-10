@@ -79,7 +79,7 @@ export default function DashboardHeader() {
                 : "text-ink dark:text-white"
             }`}
           >
-            Finance
+            Finances
           </Link>
 
           {/* Gestion — menu déroulant Clients / Devis */}
