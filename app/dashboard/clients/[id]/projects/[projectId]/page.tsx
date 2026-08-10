@@ -47,6 +47,19 @@ export default async function ProjectDetailPage({
     .eq("project_id", params.projectId)
     .order("created_at", { ascending: false });
 
+  const quoteId = quotes && quotes.length > 0 ? quotes[0].id : null;
+
+  const { data: relatedInvoices } = quoteId
+    ? await supabase
+        .from("invoices")
+        .select("id, invoice_number, document_type, status, total, currency, issue_date")
+        .eq("quote_id", quoteId)
+        .order("document_type", { ascending: true })
+    : { data: null };
+
+  const facture = relatedInvoices?.find((i) => i.document_type === "facture");
+  const bordereau = relatedInvoices?.find((i) => i.document_type === "bordereau");
+
   if (!project) {
     return <p className="text-sm text-[#6B7280] dark:text-white/50">Projet introuvable.</p>;
   }
@@ -125,7 +138,7 @@ export default async function ProjectDetailPage({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
                     <p className="truncate font-medium text-ink dark:text-white">
-                      {q.quote_number}
+                      Devis · {q.quote_number}
                     </p>
                     <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
                       {Number(q.total).toLocaleString("fr-FR")} {q.currency}
@@ -147,6 +160,53 @@ export default async function ProjectDetailPage({
                 <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
               </Link>
             ))}
+
+            {facture && (
+              <Link
+                href={`/dashboard/invoices/${facture.id}`}
+                className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7FAF9] text-[#00A6AC] dark:bg-white/10">
+                  <FileText size={18} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="truncate font-medium text-ink dark:text-white">
+                      Facture · {facture.invoice_number}
+                    </p>
+                    <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
+                      {Number(facture.total).toLocaleString("fr-FR")} {facture.currency}
+                    </p>
+                  </div>
+                  <p className="mt-1 text-sm text-[#6B7280] dark:text-white/50">
+                    {facture.issue_date}
+                  </p>
+                </div>
+                <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
+              </Link>
+            )}
+
+            {bordereau && (
+              <Link
+                href={`/dashboard/invoices/${bordereau.id}`}
+                className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
+                  <FileText size={18} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="truncate font-medium text-ink dark:text-white">
+                      Bordereau de livraison · {bordereau.invoice_number}
+                    </p>
+                  </div>
+                  <p className="mt-1 text-sm text-[#6B7280] dark:text-white/50">
+                    {bordereau.issue_date}
+                  </p>
+                </div>
+                <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
+              </Link>
+            )}
           </div>
         )}
       </div>
