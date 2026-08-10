@@ -1,17 +1,8 @@
 // app/dashboard/page.tsx
 import Link from "next/link";
-import {
-  FileText,
-  Users,
-  FolderKanban,
-  ArrowUpRight,
-  Clock,
-  Folder,
-  FolderPlus,
-  Search,
-  SlidersHorizontal,
-} from "lucide-react";
+import { FileText, Users, FolderKanban, Clock, Folder, FolderPlus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server"; // adapte le chemin si besoin
+import ProjetsRecentsSection from "./projets-recents";
 
 export default async function DashboardPage() {
   const supabase = createClient();
@@ -150,37 +141,6 @@ export default async function DashboardPage() {
             </Link>
           </div>
         </div>
-
-        {/* Projets récents */}
-        <div>
-          <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50 mb-3">
-            Projets récents
-          </h2>
-
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-[#262626] overflow-hidden">
-            {projetsRecents.map((p, i) => (
-              <Link
-                key={`${p.projet}-${i}`}
-                href={p.clientId ? `/dashboard/clients/${p.clientId}/projects/${p.id}` : "/dashboard/clients"}
-                className={`flex items-center justify-between gap-3 px-4 py-4 ${
-                  i !== projetsRecents.length - 1
-                    ? "border-b border-black/5 dark:border-white/10"
-                    : ""
-                }`}
-              >
-                <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">{p.projet}</p>
-                  <p className="text-xs text-[#1C1C1C]/50 dark:text-white/50 truncate">
-                    {p.client} · {p.date}
-                  </p>
-                </div>
-                <div className="shrink-0">
-                  <ProjectStatusBadge statut={p.statut} />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* ---------- DESKTOP (réorganisé) ---------- */}
@@ -257,62 +217,11 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Projets récents — tableau, inspiré de la référence */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50">
-              Projets récents
-            </h2>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-black/10 dark:border-white/15 text-xs text-[#1C1C1C]/50 dark:text-white/50">
-                <Search size={14} />
-                <span>Rechercher</span>
-              </div>
-              <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-black/10 dark:border-white/15 text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-                <SlidersHorizontal size={14} />
-                Filtres
-              </button>
-            </div>
-          </div>
+        {/* Projets récents géré plus bas par le composant partagé */}
+      </div>
 
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-[#262626] overflow-hidden">
-            <div className="grid grid-cols-[120px_1fr_140px_1fr_40px] gap-4 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-[#1C1C1C]/40 dark:text-white/40 border-b border-black/5 dark:border-white/10">
-              <span>Date</span>
-              <span>Projet</span>
-              <span>Statut</span>
-              <span>Client</span>
-              <span />
-            </div>
-            {projetsRecents.map((p, i) => (
-              <Link
-                key={`${p.projet}-${i}`}
-                href={p.clientId ? `/dashboard/clients/${p.clientId}/projects/${p.id}` : "/dashboard/clients"}
-                className={`grid grid-cols-[120px_1fr_140px_1fr_40px] gap-4 items-center px-5 py-4 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors ${
-                  i !== projetsRecents.length - 1
-                    ? "border-b border-black/5 dark:border-white/10"
-                    : ""
-                }`}
-              >
-                <span className="text-sm text-[#1C1C1C]/60 dark:text-white/60">
-                  {p.date}
-                </span>
-                <span className="text-sm font-medium truncate">
-                  {p.projet}
-                </span>
-                <span>
-                  <ProjectStatusBadge statut={p.statut} />
-                </span>
-                <span className="text-sm text-[#1C1C1C]/70 dark:text-white/70 truncate">
-                  {p.client}
-                </span>
-                <ArrowUpRight
-                  size={16}
-                  className="text-[#1C1C1C]/30 dark:text-white/30"
-                />
-              </Link>
-            ))}
-          </div>
-        </div>
+      <div className="max-w-6xl mt-8">
+        <ProjetsRecentsSection projects={projetsRecents} />
       </div>
     </>
   );
@@ -342,22 +251,5 @@ function StatCard({
         {label}
       </p>
     </div>
-  );
-}
-
-function ProjectStatusBadge({ statut }: { statut: string }) {
-  const config: Record<string, { label: string; bg: string; text: string }> = {
-    termine: { label: "Terminé", bg: "#00C4CC1A", text: "#00A6AC" },
-    en_cours: { label: "En cours", bg: "#7D2AE71A", text: "#7D2AE7" },
-    attente: { label: "En attente", bg: "#2A89DA1A", text: "#2A89DA" },
-  };
-  const c = config[statut] ?? config.attente;
-  return (
-    <span
-      className="text-xs font-semibold px-2.5 py-1 rounded-full w-fit inline-block"
-      style={{ backgroundColor: c.bg, color: c.text }}
-    >
-      {c.label}
-    </span>
   );
 }
