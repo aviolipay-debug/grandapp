@@ -64,13 +64,22 @@ export default async function ProjectDetailPage({
         <h1 className="font-display text-2xl font-bold text-ink dark:text-white">
           {project.name}
         </h1>
-        <Link
-          href={`/dashboard/quotes/new?project_id=${project.id}&client_id=${params.id}`}
-          className="flex w-fit items-center gap-1.5 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-paper hover:bg-stamp"
-        >
-          <Plus size={16} />
-          Nouveau devis
-        </Link>
+        {quotes && quotes.length > 0 ? (
+          <Link
+            href={`/dashboard/quotes/${quotes[0].id}/edit`}
+            className="flex w-fit items-center gap-1.5 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-paper hover:bg-stamp"
+          >
+            Modifier le devis
+          </Link>
+        ) : (
+          <Link
+            href={`/dashboard/quotes/new?project_id=${project.id}&client_id=${params.id}`}
+            className="flex w-fit items-center gap-1.5 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-paper hover:bg-stamp"
+          >
+            <Plus size={16} />
+            Nouveau devis
+          </Link>
+        )}
       </div>
 
       {/* Statut du projet */}
