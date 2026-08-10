@@ -81,7 +81,7 @@ export default function BottomNav() {
           }`}
         >
           <Wallet size={20} />
-          Finance
+          Finances
         </Link>
         <button
           onClick={() => setGestionOpen((v) => !v)}
