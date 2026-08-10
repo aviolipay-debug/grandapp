@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { convertQuoteToInvoice } from "./actions";
 
 const statusLabels: Record<string, string> = {
   draft: "Brouillon",
@@ -27,11 +26,13 @@ export default async function QuoteDetailPage({ params }: { params: { id: string
     .eq("quote_id", params.id)
     .order("sort_order");
 
-  const { data: existingInvoice } = await supabase
+  const { data: generatedInvoices } = await supabase
     .from("invoices")
-    .select("id")
-    .eq("quote_id", params.id)
-    .maybeSingle();
+    .select("id, document_type")
+    .eq("quote_id", params.id);
+
+  const facture = generatedInvoices?.find((i) => i.document_type === "facture");
+  const bordereau = generatedInvoices?.find((i) => i.document_type === "bordereau");
 
   // Le nom du projet sert de titre ; à défaut (ancien devis sans projet), on retombe sur le numéro.
   const title = quote.projects?.name ?? `Devis ${quote.quote_number}`;
@@ -90,25 +91,26 @@ export default async function QuoteDetailPage({ params }: { params: { id: string
         </div>
       </div>
 
-      <div className="mt-8">
-        {existingInvoice ? (
-          <a
-            href={`/dashboard/invoices/${existingInvoice.id}`}
-            className="inline-flex w-full items-center justify-center rounded bg-ledger-deep px-5 py-2.5 text-sm font-semibold text-paper hover:bg-stamp sm:w-auto"
-          >
-            Voir la facture générée →
-          </a>
-        ) : (
-          <form action={convertQuoteToInvoice.bind(null, quote.id)}>
-            <button
-              type="submit"
-              className="w-full rounded bg-stamp px-5 py-2.5 text-sm font-semibold text-paper hover:opacity-90 sm:w-auto"
+      {(facture || bordereau) && (
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          {facture && (
+            <a
+              href={`/dashboard/invoices/${facture.id}`}
+              className="inline-flex w-full items-center justify-center rounded bg-ledger-deep px-5 py-2.5 text-sm font-semibold text-paper hover:bg-stamp sm:w-auto"
             >
-              Convertir en facture
-            </button>
-          </form>
-        )}
-      </div>
+              Voir la facture →
+            </a>
+          )}
+          {bordereau && (
+            <a
+              href={`/dashboard/invoices/${bordereau.id}`}
+              className="inline-flex w-full items-center justify-center rounded border border-ledger-deep px-5 py-2.5 text-sm font-semibold text-ledger-deep hover:bg-white sm:w-auto"
+            >
+              Voir le bordereau de livraison →
+            </a>
+          )}
+        </div>
+      )}
     </div>
   );
 }
