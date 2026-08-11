@@ -156,6 +156,7 @@ function NewQuoteForm() {
         discount_rate: Number(discountRate) || 0,
         tax_rate: Number(taxRate) || 0,
         total,
+        status: "sent",
       })
       .select()
       .single();
