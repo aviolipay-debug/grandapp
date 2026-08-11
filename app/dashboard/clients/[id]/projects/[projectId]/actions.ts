@@ -54,6 +54,63 @@ export async function updateProjectStatus(
   revalidatePath("/dashboard");
 }
 
+// Change le statut du projet (En cours ou Terminé) ET enregistre en même temps
+// un paiement (acompte ou solde) sur la Facture ET le Bordereau rattachés.
+export async function updateProjectStatusWithPayment(
+  projectId: string,
+  clientId: string,
+  status: "en_cours" | "termine",
+  formData: FormData
+) {
+  const supabase = createClient();
+  const amount = Number(formData.get("amount"));
+  const method = String(formData.get("method"));
+
+  // 1. Change le statut du projet (et génère Facture + Bordereau si "En cours").
+  await updateProjectStatus(projectId, clientId, status);
+
+  if (!amount || amount <= 0) {
+    return;
+  }
+
+  // 2. Retrouve le devis du projet, puis la Facture + le Bordereau rattachés.
+  const { data: quote } = await supabase
+    .from("quotes")
+    .select("id")
+    .eq("project_id", projectId)
+    .limit(1)
+    .maybeSingle();
+
+  if (!quote) return;
+
+  const { data: invoices } = await supabase
+    .from("invoices")
+    .select("id, total, amount_paid")
+    .eq("quote_id", quote.id);
+
+  if (!invoices || invoices.length === 0) return;
+
+  // 3. Enregistre le même paiement sur chacun des deux documents (Facture + Bordereau).
+  for (const inv of invoices) {
+    await supabase.from("payments").insert({
+      invoice_id: inv.id,
+      amount,
+      method,
+    });
+
+    const newAmountPaid = Number(inv.amount_paid) + amount;
+    const newStatus = newAmountPaid >= Number(inv.total) ? "paid" : "partially_paid";
+
+    await supabase
+      .from("invoices")
+      .update({ amount_paid: newAmountPaid, status: newStatus })
+      .eq("id", inv.id);
+  }
+
+  revalidatePath(`/dashboard/clients/${clientId}/projects/${projectId}`);
+  revalidatePath("/dashboard/invoices");
+}
+
 async function generateInvoicesForProject(projectId: string) {
   const supabase = createClient();
 
