@@ -10,18 +10,21 @@ export async function GET(
   const { data: invoice } = await supabase
     .from("invoices")
     .select(
-      "*, clients(name, email, address), profiles:owner_id(company_name, company_address, company_logo_url, invoice_template)"
+      "*, clients(name, email, address), profiles:owner_id(company_name, company_address, company_logo_url, company_phone, invoice_template)"
     )
     .eq("id", params.id)
     .single();
+
   if (!invoice) {
     return new Response("Facture introuvable", { status: 404 });
   }
+
   const { data: items } = await supabase
     .from("invoice_items")
     .select("*")
     .eq("invoice_id", params.id)
     .order("sort_order");
+
   const stream = await renderToStream(
     <DocumentPDF
       templateId={invoice.profiles?.invoice_template}
@@ -34,11 +37,13 @@ export async function GET(
         companyName: invoice.profiles?.company_name ?? "Votre entreprise",
         companyAddress: invoice.profiles?.company_address ?? null,
         companyLogoUrl: invoice.profiles?.company_logo_url ?? null,
+        companyPhone: invoice.profiles?.company_phone ?? null,
         clientName: invoice.clients?.name ?? "Client",
         clientEmail: invoice.clients?.email ?? null,
         clientAddress: invoice.clients?.address ?? null,
         items: items ?? [],
         subtotal: Number(invoice.subtotal),
+        discountRate: invoice.discount_rate != null ? Number(invoice.discount_rate) : null,
         taxRate: Number(invoice.tax_rate),
         total: Number(invoice.total),
         currency: invoice.currency,
@@ -46,6 +51,7 @@ export async function GET(
       }}
     />
   );
+
   return new Response(stream as unknown as ReadableStream, {
     headers: {
       "Content-Type": "application/pdf",
