@@ -1,8 +1,9 @@
 // app/dashboard/clients/[id]/projects/[projectId]/page.tsx
 import Link from "next/link";
-import { FileText, Download, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ProjectStatusButtons from "./ProjectStatusButtons";
+import DocumentPreviewRow from "./DocumentPreviewRow";
 
 const statusLabels: Record<string, string> = {
   draft: "Brouillon",
@@ -113,88 +114,39 @@ export default async function ProjectDetailPage({
         ) : (
           <div className="divide-y divide-paperline dark:divide-white/10">
             {quotes.map((q) => (
-              <a
+              <DocumentPreviewRow
                 key={q.id}
                 href={`/api/quotes/${q.id}/pdf`}
-                download
-                className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
-                  <FileText size={18} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="truncate font-medium text-ink dark:text-white">
-                      Devis · {q.quote_number}
-                    </p>
-                    <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
-                      {Number(q.total).toLocaleString("fr-FR")} {q.currency}
-                    </p>
-                  </div>
-                  <div className="mt-1 flex items-center justify-between gap-2">
-                    <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
-                      {q.issue_date}
-                    </p>
-                    <span
-                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                        statusStyles[q.status] ?? "bg-[#F3F4F6] text-[#6B7280]"
-                      }`}
-                    >
-                      {statusLabels[q.status] ?? q.status}
-                    </span>
-                  </div>
-                </div>
-                <Download size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
-              </a>
+                filename={`devis-${q.quote_number}.pdf`}
+                iconBg="#F3EEFC"
+                iconColor="#5B21B6"
+                title={`Devis · ${q.quote_number}`}
+                subtitle={`${q.issue_date} · ${statusLabels[q.status] ?? q.status}`}
+                amount={`${Number(q.total).toLocaleString("fr-FR")} ${q.currency}`}
+              />
             ))}
 
             {facture && (
-              <a
+              <DocumentPreviewRow
                 href={`/api/invoices/${facture.id}/pdf`}
-                download
-                className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7FAF9] text-[#00A6AC] dark:bg-white/10">
-                  <FileText size={18} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="truncate font-medium text-ink dark:text-white">
-                      Facture · {facture.invoice_number}
-                    </p>
-                    <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
-                      {Number(facture.total).toLocaleString("fr-FR")} {facture.currency}
-                    </p>
-                  </div>
-                  <p className="mt-1 text-sm text-[#6B7280] dark:text-white/50">
-                    {facture.issue_date}
-                  </p>
-                </div>
-                <Download size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
-              </a>
+                filename={`facture-${facture.invoice_number}.pdf`}
+                iconBg="#E7FAF9"
+                iconColor="#00A6AC"
+                title={`Facture · ${facture.invoice_number}`}
+                subtitle={facture.issue_date}
+                amount={`${Number(facture.total).toLocaleString("fr-FR")} ${facture.currency}`}
+              />
             )}
 
             {bordereau && (
-              <a
+              <DocumentPreviewRow
                 href={`/api/invoices/${bordereau.id}/pdf`}
-                download
-                className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
-                  <FileText size={18} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="truncate font-medium text-ink dark:text-white">
-                      Bordereau de livraison · {bordereau.invoice_number}
-                    </p>
-                  </div>
-                  <p className="mt-1 text-sm text-[#6B7280] dark:text-white/50">
-                    {bordereau.issue_date}
-                  </p>
-                </div>
-                <Download size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
-              </a>
+                filename={`bordereau-${bordereau.invoice_number}.pdf`}
+                iconBg="#EAF3FC"
+                iconColor="#2A89DA"
+                title={`Bordereau de livraison · ${bordereau.invoice_number}`}
+                subtitle={bordereau.issue_date}
+              />
             )}
           </div>
         )}
