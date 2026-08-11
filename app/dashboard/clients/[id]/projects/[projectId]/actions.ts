@@ -56,6 +56,9 @@ export async function updateProjectStatus(
 
 // Change le statut du projet (En cours ou Terminé) ET enregistre en même temps
 // un paiement (acompte ou solde) sur la Facture ET le Bordereau rattachés.
+// À chaque utilisation, la Facture et le Bordereau sont d'abord resynchronisés
+// avec le devis actuel (montants, lignes, remise, TVA) pour rester cohérents
+// même si le devis a été modifié après leur première génération.
 export async function updateProjectStatusWithPayment(
   projectId: string,
   clientId: string,
@@ -69,28 +72,66 @@ export async function updateProjectStatusWithPayment(
   // 1. Change le statut du projet (et génère Facture + Bordereau si "En cours").
   await updateProjectStatus(projectId, clientId, status);
 
-  if (!amount || amount <= 0) {
-    return;
-  }
-
-  // 2. Retrouve le devis du projet, puis la Facture + le Bordereau rattachés.
+  // 2. Retrouve le devis (source de vérité) et ses lignes actuelles.
   const { data: quote } = await supabase
     .from("quotes")
-    .select("id")
+    .select("*")
     .eq("project_id", projectId)
     .limit(1)
     .maybeSingle();
 
   if (!quote) return;
 
+  const { data: quoteItems } = await supabase
+    .from("quote_items")
+    .select("*")
+    .eq("quote_id", quote.id)
+    .order("sort_order");
+
   const { data: invoices } = await supabase
     .from("invoices")
-    .select("id, total, amount_paid")
+    .select("id, amount_paid")
     .eq("quote_id", quote.id);
 
   if (!invoices || invoices.length === 0) return;
 
-  // 3. Enregistre le même paiement sur chacun des deux documents (Facture + Bordereau).
+  // 3. Resynchronise chaque document (Facture + Bordereau) avec le devis actuel.
+  for (const inv of invoices) {
+    await supabase
+      .from("invoices")
+      .update({
+        objet: quote.objet ?? null,
+        subtotal: quote.subtotal,
+        discount_rate: quote.discount_rate ?? 0,
+        tax_rate: quote.tax_rate,
+        total: quote.total,
+        currency: quote.currency,
+        notes: quote.notes,
+      })
+      .eq("id", inv.id);
+
+    await supabase.from("invoice_items").delete().eq("invoice_id", inv.id);
+    if (quoteItems && quoteItems.length > 0) {
+      await supabase.from("invoice_items").insert(
+        quoteItems.map((item) => ({
+          invoice_id: inv.id,
+          description: item.description,
+          quantity: item.quantity,
+          unit_price: item.unit_price,
+          line_total: item.line_total,
+          sort_order: item.sort_order,
+        }))
+      );
+    }
+  }
+
+  if (!amount || amount <= 0) {
+    revalidatePath(`/dashboard/clients/${clientId}/projects/${projectId}`);
+    revalidatePath("/dashboard/invoices");
+    return;
+  }
+
+  // 4. Enregistre le même paiement sur chacun des deux documents (Facture + Bordereau).
   for (const inv of invoices) {
     await supabase.from("payments").insert({
       invoice_id: inv.id,
@@ -99,7 +140,7 @@ export async function updateProjectStatusWithPayment(
     });
 
     const newAmountPaid = Number(inv.amount_paid) + amount;
-    const newStatus = newAmountPaid >= Number(inv.total) ? "paid" : "partially_paid";
+    const newStatus = newAmountPaid >= Number(quote.total) ? "paid" : "partially_paid";
 
     await supabase
       .from("invoices")
