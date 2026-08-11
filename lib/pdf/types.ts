@@ -15,11 +15,13 @@ export type DocumentData = {
   companyName: string;
   companyAddress: string | null;
   companyLogoUrl: string | null;
+  companyPhone?: string | null; // NOUVEAU — affiché sous l'ÉMETTEUR sur le modèle AKO
   clientName: string;
   clientEmail: string | null;
   clientAddress: string | null;
   items: LineItem[];
   subtotal: number;
+  discountRate?: number | null; // NOUVEAU — remise en %, appliquée avant la TVA
   taxRate: number;
   total: number;
   currency: string;
