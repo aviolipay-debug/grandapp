@@ -7,7 +7,7 @@ export type LineItem = {
 };
 
 export type DocumentData = {
-  kind: "Devis" | "Facture";
+  kind: "Devis" | "Facture" | "Bordereau";
   number: string;
   objet?: string | null;
   issueDate: string;
