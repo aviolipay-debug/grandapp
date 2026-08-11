@@ -55,7 +55,7 @@ export async function GET(
   return new Response(stream as unknown as ReadableStream, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="devis-${quote.quote_number}.pdf"`,
+      "Content-Disposition": `inline; filename="devis-${quote.quote_number}.pdf"`,
     },
   });
 }
