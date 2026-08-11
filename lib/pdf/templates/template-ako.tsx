@@ -97,12 +97,28 @@ function nombreEnLettres(n: number): string {
   return mots.join(" ").replace(/\s+/g, " ").trim();
 }
 
+// Formate un montant avec espace normal comme séparateur de milliers.
+// (toLocaleString("fr-FR") insère une espace fine insécable que la police
+// Helvetica du PDF n'affiche pas correctement — elle apparaît comme "/".)
+function fmt(n: number): string {
+  const rounded = Math.round(n * 100) / 100;
+  const [intPart, decPart] = rounded.toFixed(2).split(".");
+  const withSpaces = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return decPart === "00" ? withSpaces : `${withSpaces},${decPart}`;
+}
+
 export default function TemplateAko({ data }: { data: DocumentData }) {
   const discountRate = data.discountRate ?? 0;
   const discountAmount = discountRate > 0 ? (data.subtotal * discountRate) / 100 : 0;
   const taxableAmount = data.subtotal - discountAmount;
   const taxAmount = data.total - taxableAmount;
   const amountWords = `${nombreEnLettres(data.total)} francs CFA`;
+
+  const dueDateLabel =
+    data.kind === "Devis" ? "VALIDITÉ" : data.kind === "Bordereau" ? "CLÔTURE" : "ÉCHÉANCE";
+
+  const documentWord =
+    data.kind === "Devis" ? "devis" : data.kind === "Bordereau" ? "bordereau de livraison" : "facture";
 
   return (
     <Document>
@@ -125,7 +141,14 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
           </View>
 
           <View style={styles.metaRow}>
-            <Text style={styles.metaLeft}>DATE : {data.issueDate}</Text>
+            <View>
+              <Text style={styles.metaLeft}>DATE : {data.issueDate}</Text>
+              {data.dueOrExpiryDate && (
+                <Text style={[styles.metaLeft, { marginTop: 3 }]}>
+                  {dueDateLabel} : {data.dueOrExpiryDate}
+                </Text>
+              )}
+            </View>
             <Text style={styles.metaRight}>{data.kind.toUpperCase()} N° : {data.number}</Text>
           </View>
           <View style={styles.divider} />
@@ -159,9 +182,9 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
             {data.items.map((item, i) => (
               <View style={styles.tableRow} key={i}>
                 <Text style={styles.colDesc}>{item.description}</Text>
-                <Text style={styles.colPrice}>{item.unit_price.toLocaleString("fr-FR")} {data.currency}</Text>
+                <Text style={styles.colPrice}>{fmt(item.unit_price)} {data.currency}</Text>
                 <Text style={styles.colQty}>{item.quantity}</Text>
-                <Text style={styles.colTotal}>{item.line_total.toLocaleString("fr-FR")} {data.currency}</Text>
+                <Text style={styles.colTotal}>{fmt(item.line_total)} {data.currency}</Text>
               </View>
             ))}
           </View>
@@ -170,27 +193,27 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
             <View style={styles.totalsBlock}>
               <View style={styles.totalsRow}>
                 <Text style={styles.totalsLabel}>TOTAL HT :</Text>
-                <Text style={styles.totalsValue}>{data.subtotal.toLocaleString("fr-FR")} {data.currency}</Text>
+                <Text style={styles.totalsValue}>{fmt(data.subtotal)} {data.currency}</Text>
               </View>
               <View style={styles.totalsRow}>
                 <Text style={styles.totalsLabel}>TVA {data.taxRate}% :</Text>
-                <Text style={styles.totalsValue}>{taxAmount.toLocaleString("fr-FR")} {data.currency}</Text>
+                <Text style={styles.totalsValue}>{fmt(taxAmount)} {data.currency}</Text>
               </View>
               <View style={styles.totalsRow}>
                 <Text style={styles.totalsLabel}>REMISE :</Text>
                 <Text style={styles.totalsValue}>
-                  {discountAmount > 0 ? `${discountAmount.toLocaleString("fr-FR")} ${data.currency}` : "-"}
+                  {discountAmount > 0 ? `${fmt(discountAmount)} ${data.currency}` : "-"}
                 </Text>
               </View>
               <View style={styles.grandRow}>
                 <Text style={styles.grandLabel}>TOTAL TTC :</Text>
-                <Text style={styles.grandValue}>{data.total.toLocaleString("fr-FR")} {data.currency}</Text>
+                <Text style={styles.grandValue}>{fmt(data.total)} {data.currency}</Text>
               </View>
             </View>
           </View>
 
           <Text style={styles.amountInWords}>
-            Arrêté le présent {data.kind === "Devis" ? "devis" : "facture"} à la somme de {amountWords}
+            Arrêté le présent {documentWord} à la somme de {amountWords}
           </Text>
 
           <Text style={styles.legal}>
