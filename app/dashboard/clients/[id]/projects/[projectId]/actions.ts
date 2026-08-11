@@ -112,6 +112,7 @@ async function generateInvoicesForProject(projectId: string) {
         due_date: dueDate.toISOString().slice(0, 10),
         objet: quote.objet ?? null,
         subtotal: quote.subtotal,
+        discount_rate: quote.discount_rate ?? 0,
         tax_rate: quote.tax_rate,
         total: quote.total,
         currency: quote.currency,
