@@ -1,8 +1,8 @@
 // app/dashboard/clients/[id]/projects/[projectId]/page.tsx
 import Link from "next/link";
-import { FileText, ChevronRight, Plus } from "lucide-react";
+import { FileText, Download, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { updateProjectStatus } from "./actions";
+import ProjectStatusButtons from "./ProjectStatusButtons";
 
 const statusLabels: Record<string, string> = {
   draft: "Brouillon",
@@ -19,12 +19,6 @@ const statusStyles: Record<string, string> = {
   declined: "bg-[#FDEBEA] text-[#E5533F]",
   expired: "bg-[#F3F4F6] text-[#6B7280]",
 };
-
-const projectStatusOptions: { value: "en_cours" | "attente" | "termine"; label: string }[] = [
-  { value: "attente", label: "En attente" },
-  { value: "en_cours", label: "En cours" },
-  { value: "termine", label: "Terminé" },
-];
 
 export default async function ProjectDetailPage({
   params,
@@ -52,13 +46,17 @@ export default async function ProjectDetailPage({
   const { data: relatedInvoices } = quoteId
     ? await supabase
         .from("invoices")
-        .select("id, invoice_number, document_type, status, total, currency, issue_date")
+        .select("id, invoice_number, document_type, status, total, amount_paid, currency, issue_date")
         .eq("quote_id", quoteId)
         .order("document_type", { ascending: true })
     : { data: null };
 
   const facture = relatedInvoices?.find((i) => i.document_type === "facture");
   const bordereau = relatedInvoices?.find((i) => i.document_type === "bordereau");
+
+  const remainingDue = facture
+    ? Number(facture.total) - Number(facture.amount_paid)
+    : null;
 
   if (!project) {
     return <p className="text-sm text-[#6B7280] dark:text-white/50">Projet introuvable.</p>;
@@ -95,29 +93,17 @@ export default async function ProjectDetailPage({
         )}
       </div>
 
-      {/* Statut du projet */}
+      {/* Statut du projet — "En cours" et "Terminé" ouvrent une popup de paiement */}
       <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-[#6B7280] dark:text-white/40">
         Statut du projet
       </p>
-      <div className="mt-2 flex flex-wrap items-center gap-2">
-        {projectStatusOptions.map((opt) => (
-          <form
-            key={opt.value}
-            action={updateProjectStatus.bind(null, project.id, params.id, opt.value)}
-          >
-            <button
-              type="submit"
-              className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${
-                project.status === opt.value
-                  ? "border-[#00A6AC] bg-[#00A6AC] text-white"
-                  : "border-paperline bg-white text-[#4B5563] hover:border-[#00A6AC] dark:border-white/15 dark:bg-transparent dark:text-white/60"
-              }`}
-            >
-              {opt.label}
-            </button>
-          </form>
-        ))}
-      </div>
+      <ProjectStatusButtons
+        projectId={project.id}
+        clientId={params.id}
+        currentStatus={project.status}
+        remainingDue={remainingDue}
+        currency={facture?.currency ?? "FCFA"}
+      />
 
       <div className="mt-6 overflow-hidden rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626]">
         {!quotes || quotes.length === 0 ? (
@@ -127,9 +113,10 @@ export default async function ProjectDetailPage({
         ) : (
           <div className="divide-y divide-paperline dark:divide-white/10">
             {quotes.map((q) => (
-              <Link
+              <a
                 key={q.id}
-                href={`/dashboard/quotes/${q.id}`}
+                href={`/api/quotes/${q.id}/pdf`}
+                download
                 className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
               >
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
@@ -157,13 +144,14 @@ export default async function ProjectDetailPage({
                     </span>
                   </div>
                 </div>
-                <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
-              </Link>
+                <Download size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
+              </a>
             ))}
 
             {facture && (
-              <Link
-                href={`/dashboard/invoices/${facture.id}`}
+              <a
+                href={`/api/invoices/${facture.id}/pdf`}
+                download
                 className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
               >
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7FAF9] text-[#00A6AC] dark:bg-white/10">
@@ -182,13 +170,14 @@ export default async function ProjectDetailPage({
                     {facture.issue_date}
                   </p>
                 </div>
-                <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
-              </Link>
+                <Download size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
+              </a>
             )}
 
             {bordereau && (
-              <Link
-                href={`/dashboard/invoices/${bordereau.id}`}
+              <a
+                href={`/api/invoices/${bordereau.id}/pdf`}
+                download
                 className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
               >
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
@@ -204,8 +193,8 @@ export default async function ProjectDetailPage({
                     {bordereau.issue_date}
                   </p>
                 </div>
-                <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
-              </Link>
+                <Download size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
+              </a>
             )}
           </div>
         )}
