@@ -25,11 +25,13 @@ export async function GET(
     .eq("invoice_id", params.id)
     .order("sort_order");
 
+  const kind = invoice.document_type === "bordereau" ? "Bordereau" : "Facture";
+
   const stream = await renderToStream(
     <DocumentPDF
       templateId={invoice.profiles?.invoice_template}
       data={{
-        kind: "Facture",
+        kind,
         number: invoice.invoice_number,
         objet: invoice.objet ?? null,
         issueDate: invoice.issue_date,
@@ -55,7 +57,7 @@ export async function GET(
   return new Response(stream as unknown as ReadableStream, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="facture-${invoice.invoice_number}.pdf"`,
+      "Content-Disposition": `attachment; filename="${invoice.document_type}-${invoice.invoice_number}.pdf"`,
     },
   });
 }
