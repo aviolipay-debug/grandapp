@@ -23,7 +23,9 @@ export default async function QuotesPage() {
   const supabase = createClient();
   const { data: quotes } = await supabase
     .from("quotes")
-    .select("id, quote_number, status, total, currency, issue_date, clients(name)")
+    .select(
+      "id, quote_number, status, total, currency, issue_date, project_id, client_id, clients(name)"
+    )
     .order("created_at", { ascending: false });
 
   return (
@@ -37,7 +39,6 @@ export default async function QuotesPage() {
           Nouveau devis
         </Link>
       </div>
-
       <div className="mt-8 overflow-hidden rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626]">
         {!quotes || quotes.length === 0 ? (
           <p className="p-10 text-center text-sm text-[#6B7280] dark:text-white/50">
@@ -45,42 +46,50 @@ export default async function QuotesPage() {
           </p>
         ) : (
           <div className="divide-y divide-paperline dark:divide-white/10">
-            {quotes.map((q: any) => (
-              <Link
-                key={q.id}
-                href={`/dashboard/quotes/${q.id}/edit`}
-                className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
-                  <FileText size={18} />
-                </div>
+            {quotes.map((q: any) => {
+              // Un devis mène toujours à la fiche de son projet (là où on peut
+              // le modifier, changer le statut, voir facture/bordereau...).
+              // Filet de sécurité si jamais un devis n'a pas de projet rattaché.
+              const href =
+                q.project_id && q.client_id
+                  ? `/dashboard/clients/${q.client_id}/projects/${q.project_id}`
+                  : `/dashboard/quotes/${q.id}/edit`;
 
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="truncate font-medium text-ink dark:text-white">
-                      {q.quote_number}
-                    </p>
-                    <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
-                      {Number(q.total).toLocaleString("fr-FR")} {q.currency}
-                    </p>
+              return (
+                <Link
+                  key={q.id}
+                  href={href}
+                  className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
+                    <FileText size={18} />
                   </div>
-                  <div className="mt-1 flex items-center justify-between gap-2">
-                    <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
-                      {q.clients?.name ?? "—"} · {q.issue_date}
-                    </p>
-                    <span
-                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                        statusStyles[q.status] ?? "bg-[#F3F4F6] text-[#6B7280]"
-                      }`}
-                    >
-                      {statusLabels[q.status] ?? q.status}
-                    </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="truncate font-medium text-ink dark:text-white">
+                        {q.quote_number}
+                      </p>
+                      <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
+                        {Number(q.total).toLocaleString("fr-FR")} {q.currency}
+                      </p>
+                    </div>
+                    <div className="mt-1 flex items-center justify-between gap-2">
+                      <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
+                        {q.clients?.name ?? "—"} · {q.issue_date}
+                      </p>
+                      <span
+                        className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                          statusStyles[q.status] ?? "bg-[#F3F4F6] text-[#6B7280]"
+                        }`}
+                      >
+                        {statusLabels[q.status] ?? q.status}
+                      </span>
+                    </div>
                   </div>
-                </div>
-
-                <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
-              </Link>
-            ))}
+                  <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
