@@ -68,7 +68,7 @@ export default function ProjetsRecentsSection({ projects }: { projects: Projet[]
           <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50">
             Projets récents
           </h2>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => {
