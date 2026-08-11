@@ -57,7 +57,7 @@ export async function GET(
   return new Response(stream as unknown as ReadableStream, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${invoice.document_type}-${invoice.invoice_number}.pdf"`,
+      "Content-Disposition": `inline; filename="${invoice.document_type}-${invoice.invoice_number}.pdf"`,
     },
   });
 }
