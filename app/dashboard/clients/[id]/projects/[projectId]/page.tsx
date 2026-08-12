@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { formatDateFR } from "@/lib/format-date";
 import ProjectStatusButtons from "./ProjectStatusButtons";
 import DocumentPreviewRow from "./DocumentPreviewRow";
 
@@ -121,7 +122,7 @@ export default async function ProjectDetailPage({
                 iconBg="#F3EEFC"
                 iconColor="#5B21B6"
                 title={`Devis · ${q.quote_number}`}
-                subtitle={`${q.issue_date} · ${statusLabels[q.status] ?? q.status}`}
+                subtitle={`${formatDateFR(q.issue_date)} · ${statusLabels[q.status] ?? q.status}`}
                 amount={`${Number(q.total).toLocaleString("fr-FR")} ${q.currency}`}
               />
             ))}
@@ -133,7 +134,7 @@ export default async function ProjectDetailPage({
                 iconBg="#E7FAF9"
                 iconColor="#00A6AC"
                 title={`Facture · ${facture.invoice_number}`}
-                subtitle={facture.issue_date}
+                subtitle={formatDateFR(facture.issue_date)}
                 amount={`${Number(facture.total).toLocaleString("fr-FR")} ${facture.currency}`}
               />
             )}
@@ -145,7 +146,7 @@ export default async function ProjectDetailPage({
                 iconBg="#EAF3FC"
                 iconColor="#2A89DA"
                 title={`Bordereau de livraison · ${bordereau.invoice_number}`}
-                subtitle={bordereau.issue_date}
+                subtitle={formatDateFR(bordereau.issue_date)}
               />
             )}
           </div>
