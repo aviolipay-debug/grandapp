@@ -18,6 +18,8 @@ export default function EditQuotePage() {
   const [notFound, setNotFound] = useState(false);
   const [clientName, setClientName] = useState("");
   const [projectName, setProjectName] = useState<string | null>(null);
+  const [projectId, setProjectId] = useState<string | null>(null);
+  const [clientId, setClientId] = useState<string | null>(null);
   const [quoteNumber, setQuoteNumber] = useState("");
   const [taxRate, setTaxRate] = useState("0");
   const [discountRate, setDiscountRate] = useState("0");
@@ -31,7 +33,7 @@ export default function EditQuotePage() {
     async function load() {
       const { data: quote } = await supabase
         .from("quotes")
-        .select("*, clients(name), projects(name)")
+        .select("*, clients(name), projects(name), project_id, client_id")
         .eq("id", params.id)
         .single();
 
@@ -49,6 +51,8 @@ export default function EditQuotePage() {
 
       setClientName((quote as any).clients?.name ?? "—");
       setProjectName((quote as any).projects?.name ?? null);
+      setProjectId((quote as any).project_id ?? null);
+      setClientId((quote as any).client_id ?? null);
       setQuoteNumber(quote.quote_number);
       setTaxRate(String(quote.tax_rate ?? 0));
       setDiscountRate(String(quote.discount_rate ?? 0));
@@ -134,7 +138,12 @@ export default function EditQuotePage() {
     // sont resynchronisés immédiatement avec ces nouvelles données du devis.
     await syncInvoicesFromQuote(String(params.id));
 
-    router.push(`/dashboard/quotes/${params.id}`);
+    // Retour vers la fiche du projet rattaché à ce devis (plutôt que la vue du devis).
+    if (projectId && clientId) {
+      router.push(`/dashboard/clients/${clientId}/projects/${projectId}`);
+    } else {
+      router.push(`/dashboard/quotes/${params.id}`);
+    }
     router.refresh();
   }
 
