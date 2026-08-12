@@ -1,12 +1,20 @@
 // app/dashboard/bottom-nav.tsx
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Wallet, Users, UserCircle2, FileText } from "lucide-react";
 export default function BottomNav() {
   const pathname = usePathname();
   const [gestionOpen, setGestionOpen] = useState(false);
+
+  // Ferme automatiquement la popup Gestion à chaque changement de page —
+  // sinon elle reste affichée si on quitte la page autrement qu'en cliquant
+  // sur "Clients"/"Devis" à l'intérieur (bouton retour, autre lien, etc.).
+  useEffect(() => {
+    setGestionOpen(false);
+  }, [pathname]);
+
   const isHome = pathname === "/dashboard";
   const isFinance = pathname?.startsWith("/dashboard/invoices");
   const isGestion =
