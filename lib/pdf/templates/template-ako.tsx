@@ -163,7 +163,7 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
               {data.companyAddress && <Text style={styles.partyValue}>{data.companyAddress}</Text>}
             </View>
             <View style={[styles.partyBlock, { alignItems: "flex-end" }]}>
-              <Text style={[styles.partyLabel, { textAlign: "right" }]}>DESTINATAIRE :</Text>
+              <Text style={[styles.partyLabel, { textAlign: "right" }]}>CLIENT :</Text>
               <Text style={styles.partyValueRight}>{data.clientName}</Text>
               {data.clientEmail && <Text style={styles.partyValueRight}>{data.clientEmail}</Text>}
               {data.clientAddress && <Text style={styles.partyValueRight}>{data.clientAddress}</Text>}
