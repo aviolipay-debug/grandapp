@@ -52,7 +52,7 @@ export default function NewClientPage() {
   // Étape 1 : choix du type de client
   if (!clientType) {
     return (
-      <div className="mx-auto flex min-h-[70vh] max-w-lg flex-col items-center justify-center px-4 text-center sm:px-0">
+      <div className="mx-auto max-w-lg px-4 pt-10 text-center sm:px-0">
         <h1 className="font-display text-2xl font-bold text-ink dark:text-white">
           Nouveau client
         </h1>
@@ -60,7 +60,7 @@ export default function NewClientPage() {
           C&apos;est un client professionnel ou particulier ?
         </p>
 
-        <div className="mt-8 grid w-full grid-cols-2 gap-4">
+        <div className="mt-8 grid grid-cols-2 gap-4">
           <button
             type="button"
             onClick={() => setClientType("entreprise")}
@@ -103,27 +103,26 @@ export default function NewClientPage() {
 
   // Étape 2 : formulaire
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-lg flex-col items-center justify-center px-4 sm:px-0">
-      <div className="w-full">
-        <button
-          type="button"
-          onClick={() => setClientType(null)}
-          className="mb-4 text-sm font-semibold text-ledger-deep"
-        >
-          ← Changer le type de client
-        </button>
+    <div className="mx-auto max-w-lg px-4 pt-6 sm:px-0">
+      <button
+        type="button"
+        onClick={() => setClientType(null)}
+        className="mb-4 text-sm font-semibold text-ledger-deep"
+      >
+        ← Changer le type de client
+      </button>
 
-        <div className="rounded-2xl border border-paperline bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#2F2F2F] sm:p-8">
-          <div className="mb-6 flex flex-col items-center gap-2 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
-              {clientType === "entreprise" ? <Building2 size={20} /> : <User size={20} />}
-            </div>
-            <h1 className="font-display text-xl font-bold text-ink dark:text-white">
-              Nouveau client {clientType === "entreprise" ? "— Entreprise" : "— Particulier"}
-            </h1>
+      <div className="rounded-2xl border border-paperline bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#2F2F2F] sm:p-8">
+        <div className="mb-6 flex flex-col items-center gap-2 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
+            {clientType === "entreprise" ? <Building2 size={20} /> : <User size={20} />}
           </div>
+          <h1 className="font-display text-xl font-bold text-ink dark:text-white">
+            Nouveau client {clientType === "entreprise" ? "— Entreprise" : "— Particulier"}
+          </h1>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="mb-1.5 block text-sm font-medium text-ink dark:text-white/80">
                 {clientType === "entreprise" ? "Raison sociale" : "Nom complet"}
@@ -180,7 +179,6 @@ export default function NewClientPage() {
               </button>
             </div>
           </form>
-        </div>
       </div>
     </div>
   );
