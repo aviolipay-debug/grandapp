@@ -48,6 +48,7 @@ export async function GET(
         discountRate: invoice.discount_rate != null ? Number(invoice.discount_rate) : null,
         taxRate: Number(invoice.tax_rate),
         total: Number(invoice.total),
+        amountPaid: Number(invoice.amount_paid) || 0,
         currency: invoice.currency,
         notes: invoice.notes,
       }}
