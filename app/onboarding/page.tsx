@@ -27,18 +27,46 @@ const sectors = [
 
 type Contact = { indicatif: string; numero: string };
 
-// Modèles disponibles — un seul pour l'instant (AKO), mais la liste est prête
-// à en accueillir d'autres : chaque nouvel id ajouté ici, avec son aperçu,
-// apparaîtra automatiquement comme option pour le client.
-const invoiceTemplates = ["template-ako"] as const;
+// Modèles disponibles — la liste est prête à en accueillir d'autres : chaque
+// nouvel id ajouté ici, avec son aperçu, apparaît automatiquement comme
+// option pour le client.
+const invoiceTemplates = ["template-ako", "template-degrade"] as const;
 
 const templateLabels: Record<string, string> = {
   "template-ako": "AKO — Jaune & Noir",
+  "template-degrade": "La Facture — Dégradé coloré",
 };
 
 // Miniature visuelle du modèle de facture (aperçu, pas le vrai PDF)
 function TemplatePreview({ id, logoPreview }: { id: string; logoPreview: string | null }) {
-  // template-ako (seul modèle actif actuellement)
+  if (id === "template-degrade") {
+    return (
+      <div
+        className="relative h-40 w-full overflow-hidden text-[6px] leading-none"
+        style={{ background: "linear-gradient(135deg, #F3C9A088, #E8748B55, #C9A2D955)" }}
+      >
+        <div className="flex flex-col items-center pt-4">
+          <span className="italic text-[7px] font-bold text-[#111]">La</span>
+          <span className="text-[13px] font-black tracking-wide text-[#111]">FACTURE</span>
+          <span className="mt-0.5 text-[5px] font-semibold text-[#111]">N° 0001 — 01/01/2026</span>
+        </div>
+        <div className="mt-2 flex justify-between px-3">
+          <div className="h-1.5 w-10 rounded-sm bg-[#111]" />
+          <div className="h-1.5 w-10 rounded-sm bg-[#111]" />
+        </div>
+        <div className="mx-3 mt-3 overflow-hidden rounded-sm">
+          <div className="h-2.5 w-full bg-[#111]" />
+          <div className="h-2 w-full border-b border-white/60 bg-white/70" />
+          <div className="h-2 w-full bg-white/70" />
+        </div>
+        <div className="mt-2 flex justify-end px-3">
+          <div className="h-2 w-16 rounded-sm bg-[#111]" />
+        </div>
+        <div className="mt-3 text-center text-[6px] font-black text-[#111]">MERCI</div>
+      </div>
+    );
+  }
+  // template-ako (défaut)
   return (
     <div className="relative h-40 w-full overflow-hidden bg-white text-[6px] leading-none dark:bg-[#1e1e1e]">
       <div className="h-2 w-full bg-[#0E0E0E]" />
