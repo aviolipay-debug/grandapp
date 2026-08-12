@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -25,103 +25,50 @@ const sectors = [
   "Autre",
 ];
 
-const invoiceTemplates = ["template-mono", "template-geo", "template-blue", "template-gradient"] as const;
-
 type Contact = { indicatif: string; numero: string };
 
-// Miniature visuelle de chaque modèle de facture (aperçu, pas le vrai PDF)
+// Modèles disponibles — un seul pour l'instant (AKO), mais la liste est prête
+// à en accueillir d'autres : chaque nouvel id ajouté ici, avec son aperçu,
+// apparaîtra automatiquement comme option pour le client.
+const invoiceTemplates = ["template-ako"] as const;
+
+const templateLabels: Record<string, string> = {
+  "template-ako": "AKO — Jaune & Noir",
+};
+
+// Miniature visuelle du modèle de facture (aperçu, pas le vrai PDF)
 function TemplatePreview({ id, logoPreview }: { id: string; logoPreview: string | null }) {
-  if (id === "template-geo") {
-    return (
-      <div className="relative h-40 w-full overflow-hidden bg-white text-[6px] leading-none dark:bg-[#1e1e1e]">
-        <div className="relative h-10 w-full overflow-hidden bg-[#26282B]">
-          <div className="absolute -right-4 top-0 h-16 w-16 rotate-45 bg-[#E5D9C3]" />
-        </div>
-        <div className="p-3">
-          <div className="flex items-center justify-between">
-            {logoPreview ? (
-              <img src={logoPreview} alt="" className="h-4 max-w-[40px] object-contain" />
-            ) : (
-              <div className="h-1.5 w-10 rounded-sm bg-[#26282B]" />
-            )}
-            <div className="h-1 w-8 rounded-sm bg-[#9CA3AF]" />
-          </div>
-          <div className="mt-2 h-3 w-16 rounded-sm bg-[#111111]" />
-          <div className="mt-2 h-1 w-full rounded-sm bg-[#E5E5E5]" />
-          <div className="mt-1 h-1.5 w-full rounded-sm bg-[#F3F4F6]" />
-          <div className="mt-1 h-1.5 w-full rounded-sm bg-[#F3F4F6]" />
-          <div className="mt-2 h-2 w-14 self-end rounded-sm bg-[#E5D9C3]" />
-        </div>
-      </div>
-    );
-  }
-  if (id === "template-blue") {
-    return (
-      <div className="h-40 w-full overflow-hidden bg-white text-[6px] leading-none dark:bg-[#1e1e1e]">
-        <div className="flex items-center justify-between bg-[#1450C4] px-3 py-3">
-          {logoPreview ? (
-            <div className="rounded bg-white p-0.5">
-              <img src={logoPreview} alt="" className="h-4 max-w-[36px] object-contain" />
-            </div>
-          ) : (
-            <div className="h-2 w-10 rounded-sm bg-white/90" />
-          )}
-          <div className="h-2 w-10 rounded-sm bg-white/90" />
-        </div>
-        <div className="p-3">
-          <div className="h-1 w-10 rounded-sm bg-[#1450C4]" />
-          <div className="mt-2 h-1.5 w-full rounded-sm border-b border-[#1450C4]" />
-          <div className="mt-1 h-1.5 w-full rounded-sm bg-[#F3F4F6]" />
-          <div className="mt-1 h-1.5 w-full rounded-sm bg-[#F3F4F6]" />
-          <div className="mt-3 flex justify-center">
-            <div className="h-1.5 w-20 rounded-sm bg-[#1450C4]/30" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-  if (id === "template-gradient") {
-    return (
-      <div
-        className="h-40 w-full overflow-hidden text-[6px] leading-none"
-        style={{ background: "linear-gradient(135deg, #F6C89A55, #E8748B55, #F3A16A55)" }}
-      >
-        <div className="p-3">
-          {logoPreview ? (
-            <img src={logoPreview} alt="" className="mx-auto h-4 max-w-[40px] object-contain" />
-          ) : (
-            <div className="mx-auto h-2.5 w-16 rounded-sm bg-[#111111]" />
-          )}
-          <div className="mx-auto mt-1 h-1 w-10 rounded-sm bg-[#9CA3AF]" />
-          <div className="mt-3 h-2.5 w-full rounded-sm bg-[#161616]" />
-          <div className="mt-1 h-1.5 w-full rounded-sm bg-white/70" />
-          <div className="mt-1 h-1.5 w-full rounded-sm bg-white/70" />
-          <div className="mt-2 h-2 w-14 self-end rounded-sm bg-[#161616]" />
-        </div>
-      </div>
-    );
-  }
-  // template-mono (par défaut)
+  // template-ako (seul modèle actif actuellement)
   return (
-    <div className="h-40 w-full overflow-hidden bg-white text-[6px] leading-none dark:bg-[#1e1e1e]">
-      <div className="h-1.5 w-full bg-[#0E0E0E]" />
-      <div className="p-3">
+    <div className="relative h-40 w-full overflow-hidden bg-white text-[6px] leading-none dark:bg-[#1e1e1e]">
+      <div className="h-2 w-full bg-[#0E0E0E]" />
+      <div className="absolute left-0 top-6 h-14 w-1.5 bg-[#E9F23A]" />
+      <div className="p-3 pl-4">
         <div className="flex items-start justify-between">
           {logoPreview ? (
-            <div className="flex h-6 max-w-[60px] items-center rounded-sm bg-[#E9F23A] px-1">
+            <div className="flex h-6 max-w-[50px] items-center rounded-sm bg-[#E9F23A] px-1">
               <img src={logoPreview} alt="" className="h-4 object-contain" />
             </div>
           ) : (
-            <div className="h-3 w-10 rounded-sm bg-[#E9F23A]" />
+            <div className="h-5 w-10 rounded-sm bg-[#E9F23A]" />
           )}
-          <div className="h-3 w-12 rounded-sm bg-[#111111]" />
+          <div className="flex items-end gap-0.5">
+            <div className="h-4 w-10 rounded-sm bg-[#111111]" />
+            <div className="h-4 w-1 rounded-sm bg-[#E9F23A]" />
+          </div>
         </div>
         <div className="mt-2 h-px w-full bg-[#111111]" />
+        <div className="mt-2 flex justify-between">
+          <div className="h-1.5 w-10 rounded-sm bg-[#D4D4D4]" />
+          <div className="h-1.5 w-14 rounded-sm bg-[#D4D4D4]" />
+        </div>
         <div className="mt-2 h-1.5 w-full rounded-sm border-b border-[#D4D4D4]" />
         <div className="mt-1 h-1.5 w-full rounded-sm border-b border-[#D4D4D4]" />
-        <div className="mt-2 h-2 w-14 self-end rounded-sm bg-[#111111]" />
+        <div className="mt-2 flex justify-end">
+          <div className="h-2 w-14 rounded-sm bg-[#111111]" />
+        </div>
       </div>
-      <div className="mt-1 h-2 w-full bg-[#0E0E0E]" />
+      <div className="mt-1 h-1.5 w-2/3 self-end bg-[#E9F23A]" />
     </div>
   );
 }
@@ -130,8 +77,14 @@ export default function OnboardingPage() {
   const router = useRouter();
   const supabase = createClient();
 
+  // "loading" pendant qu'on vérifie si le profil existe déjà, "wizard" pour
+  // l'assistant en plusieurs étapes (première configuration), "profile" pour
+  // la fiche profil sur une seule page (modification directe).
+  const [mode, setMode] = useState<"loading" | "wizard" | "profile">("loading");
+
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Étape 1 — Structure
@@ -141,6 +94,7 @@ export default function OnboardingPage() {
   // Étape 2 — Adresses
   const [siegeSocial, setSiegeSocial] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
+  const [companyPhone, setCompanyPhone] = useState("");
   const [contacts, setContacts] = useState<Contact[]>([{ indicatif: "+229", numero: "" }]);
 
   // Étape 3 — Documents
@@ -152,11 +106,61 @@ export default function OnboardingPage() {
   const [signatureFile, setSignatureFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
+  // URLs déjà enregistrées en base — conservées si aucun nouveau fichier n'est choisi.
+  const [existingLogoUrl, setExistingLogoUrl] = useState<string | null>(null);
+  const [existingSignatureUrl, setExistingSignatureUrl] = useState<string | null>(null);
 
-  // Étape 5 — Facture
-  const [template, setTemplate] = useState<string>("template-mono");
+  // Étape 5 — Facture (modèle choisi par le client)
+  const [template, setTemplate] = useState<string>("template-ako");
 
   const isLastStep = step === steps.length - 1;
+
+  // Au chargement : si un profil déjà configuré existe, on bascule en mode
+  // "fiche profil" pré-remplie plutôt que de relancer l'assistant.
+  useEffect(() => {
+    async function loadProfile() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setMode("wizard");
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (profile?.company_name) {
+        setCompanyName(profile.company_name ?? "");
+        setSector(profile.business_sector ?? "");
+        setSiegeSocial(profile.company_address ?? "");
+        setCompanyEmail(profile.company_email ?? "");
+        setCompanyPhone(profile.company_phone ?? "");
+        setContacts(
+          Array.isArray(profile.company_contacts) && profile.company_contacts.length > 0
+            ? profile.company_contacts
+            : [{ indicatif: "+229", numero: "" }]
+        );
+        setRccm(profile.rccm_number ?? "");
+        setTaxIds(
+          Array.isArray(profile.tax_ids) && profile.tax_ids.length > 0 ? profile.tax_ids : [""]
+        );
+        setExistingLogoUrl(profile.company_logo_url ?? null);
+        setExistingSignatureUrl(profile.signature_url ?? null);
+        setLogoPreview(profile.company_logo_url ?? null);
+        setSignaturePreview(profile.signature_url ?? null);
+        setTemplate(profile.invoice_template ?? "template-ako");
+        setMode("profile");
+      } else {
+        setMode("wizard");
+      }
+    }
+    loadProfile();
+  }, [supabase]);
 
   function updateContact(i: number, field: keyof Contact, value: string) {
     setContacts((prev) => prev.map((c, idx) => (idx === i ? { ...c, [field]: value } : c)));
@@ -193,6 +197,19 @@ export default function OnboardingPage() {
     return true;
   }
 
+  function validateProfileForm(): boolean {
+    if (!companyName.trim() || !sector) {
+      setError("Le nom de l'entreprise et le secteur d'activité sont obligatoires.");
+      return false;
+    }
+    if (!siegeSocial.trim() || !companyEmail.trim() || !contacts[0]?.numero.trim()) {
+      setError("Le siège social, l'email et le contact principal sont obligatoires.");
+      return false;
+    }
+    setError(null);
+    return true;
+  }
+
   function goNext() {
     if (!validateStep()) return;
     setStep((s) => Math.min(s + 1, steps.length - 1));
@@ -214,10 +231,10 @@ export default function OnboardingPage() {
     return data.publicUrl;
   }
 
-  async function handleFinish() {
-    if (!validateStep()) return;
+  async function saveProfileData(afterSave: () => void) {
     setError(null);
     setLoading(true);
+    setSaved(false);
 
     const {
       data: { user },
@@ -230,8 +247,9 @@ export default function OnboardingPage() {
     }
 
     try {
-      let logoUrl: string | null = null;
-      let signatureUrl: string | null = null;
+      // On conserve les fichiers déjà enregistrés tant qu'aucun nouveau n'est choisi.
+      let logoUrl = existingLogoUrl;
+      let signatureUrl = existingSignatureUrl;
 
       if (logoFile) logoUrl = await uploadFile(logoFile, user.id, "logo");
       if (signatureFile) signatureUrl = await uploadFile(signatureFile, user.id, "signature");
@@ -243,6 +261,7 @@ export default function OnboardingPage() {
           business_sector: sector,
           company_address: siegeSocial,
           company_email: companyEmail,
+          company_phone: companyPhone || null,
           company_contacts: contacts.filter((c) => c.numero.trim()),
           rccm_number: rccm || null,
           tax_ids: taxIds.filter((t) => t.trim()),
@@ -254,13 +273,31 @@ export default function OnboardingPage() {
 
       if (profileError) throw profileError;
 
-      router.push("/dashboard");
-      router.refresh();
+      afterSave();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue.");
     } finally {
       setLoading(false);
     }
+  }
+
+  // Fin de l'assistant (première configuration) -> retour au dashboard.
+  async function handleFinish() {
+    if (!validateStep()) return;
+    await saveProfileData(() => {
+      router.push("/dashboard");
+      router.refresh();
+    });
+  }
+
+  // Enregistrement depuis la fiche profil -> on reste sur place avec confirmation.
+  async function handleSaveProfile(e: React.FormEvent) {
+    e.preventDefault();
+    if (!validateProfileForm()) return;
+    await saveProfileData(() => {
+      setSaved(true);
+      router.refresh();
+    });
   }
 
   const inputClass =
@@ -269,6 +306,280 @@ export default function OnboardingPage() {
   const addBtnClass =
     "flex items-center gap-2 text-sm font-semibold text-ledger-deep dark:text-ledger";
 
+  if (mode === "loading") {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#F0F0F3] dark:bg-[#2F2F2F]">
+        <p className="text-sm text-[#6B7280] dark:text-white/50">Chargement...</p>
+      </main>
+    );
+  }
+
+  // ---------- MODE "FICHE PROFIL" (compte déjà configuré) ----------
+  if (mode === "profile") {
+    return (
+      <main className="min-h-screen bg-[#F0F0F3] px-4 py-10 dark:bg-[#2F2F2F] sm:px-6">
+        <div className="mx-auto max-w-2xl">
+          <h1 className="font-display text-center text-2xl font-bold text-ink dark:text-white">
+            Profil de l&apos;entreprise
+          </h1>
+          <p className="mb-8 text-center text-sm text-[#6B7280] dark:text-white/50">
+            Ces informations apparaissent sur vos devis et factures. Modifiez-les directement
+            ici.
+          </p>
+
+          <form
+            onSubmit={handleSaveProfile}
+            className="space-y-6 rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8"
+          >
+            {/* Structure */}
+            <div>
+              <h2 className="font-display mb-4 text-lg font-bold text-ink dark:text-white">
+                Structure
+              </h2>
+              <div className="flex flex-col gap-4">
+                <div>
+                  <label className={labelClass}>Nom de l&apos;entreprise *</label>
+                  <input
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Secteur d&apos;activité *</label>
+                  <select
+                    value={sector}
+                    onChange={(e) => setSector(e.target.value)}
+                    className={inputClass}
+                  >
+                    <option value="">—</option>
+                    {sectors.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="h-px bg-paperline dark:bg-white/10" />
+
+            {/* Adresses */}
+            <div>
+              <h2 className="font-display mb-4 text-lg font-bold text-ink dark:text-white">
+                Adresses & contacts
+              </h2>
+              <div className="flex flex-col gap-4">
+                <div>
+                  <label className={labelClass}>Siège social *</label>
+                  <input
+                    value={siegeSocial}
+                    onChange={(e) => setSiegeSocial(e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Adresse email *</label>
+                  <input
+                    type="email"
+                    value={companyEmail}
+                    onChange={(e) => setCompanyEmail(e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Téléphone</label>
+                  <input
+                    value={companyPhone}
+                    onChange={(e) => setCompanyPhone(e.target.value)}
+                    placeholder="Affiché sur vos documents"
+                    className={inputClass}
+                  />
+                </div>
+                {contacts.map((c, i) => (
+                  <div key={i} className="flex gap-3">
+                    <div className="w-24">
+                      <label className={labelClass}>Indicatif {i === 0 && "*"}</label>
+                      <input
+                        value={c.indicatif}
+                        onChange={(e) => updateContact(i, "indicatif", e.target.value)}
+                        placeholder="+229"
+                        className={inputClass}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className={labelClass}>
+                        {i === 0 ? "Contact primaire *" : "Contact"}
+                      </label>
+                      <input
+                        value={c.numero}
+                        onChange={(e) => updateContact(i, "numero", e.target.value)}
+                        placeholder="Numéro"
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setContacts((prev) => [...prev, { indicatif: "+229", numero: "" }])}
+                  className={addBtnClass}
+                >
+                  + Ajouter un contact
+                </button>
+              </div>
+            </div>
+
+            <div className="h-px bg-paperline dark:bg-white/10" />
+
+            {/* Documents */}
+            <div>
+              <h2 className="font-display mb-4 text-lg font-bold text-ink dark:text-white">
+                Informations fiscales
+              </h2>
+              <div className="flex flex-col gap-4">
+                <div>
+                  <label className={labelClass}>N° Registre du commerce</label>
+                  <input
+                    value={rccm}
+                    onChange={(e) => setRccm(e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+                {taxIds.map((t, i) => (
+                  <div key={i}>
+                    <label className={labelClass}>Numéro d&apos;identification</label>
+                    <input
+                      value={t}
+                      onChange={(e) => updateTaxId(i, e.target.value)}
+                      className={inputClass}
+                    />
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setTaxIds((prev) => [...prev, ""])}
+                  className={addBtnClass}
+                >
+                  + Ajouter un numéro d&apos;identification
+                </button>
+              </div>
+            </div>
+
+            <div className="h-px bg-paperline dark:bg-white/10" />
+
+            {/* Fichiers */}
+            <div>
+              <h2 className="font-display mb-4 text-lg font-bold text-ink dark:text-white">
+                Logo & signature
+              </h2>
+              <div className="flex flex-col gap-4">
+                <label className="flex cursor-pointer items-center gap-4 rounded-xl border border-paperline bg-white p-4 dark:border-white/10 dark:bg-[#2F2F2F]">
+                  {logoPreview ? (
+                    <img src={logoPreview} alt="Logo" className="h-10 w-10 rounded-lg object-cover" />
+                  ) : (
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-paperline text-ink dark:bg-white/10 dark:text-white">
+                      ↑
+                    </div>
+                  )}
+                  <div>
+                    <div className="text-sm font-semibold text-ink dark:text-white">Logo</div>
+                    <div className="text-xs text-[#6B7280] dark:text-white/50">
+                      Cliquez pour remplacer — max. 2 Mo
+                    </div>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleFileSelect(e, setLogoFile, setLogoPreview)}
+                  />
+                </label>
+
+                <label className="flex cursor-pointer items-center gap-4 rounded-xl border border-paperline bg-white p-4 dark:border-white/10 dark:bg-[#2F2F2F]">
+                  {signaturePreview ? (
+                    <img
+                      src={signaturePreview}
+                      alt="Signature"
+                      className="h-10 w-10 rounded-lg object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-paperline text-ink dark:bg-white/10 dark:text-white">
+                      ↑
+                    </div>
+                  )}
+                  <div>
+                    <div className="text-sm font-semibold text-ink dark:text-white">
+                      Signature
+                    </div>
+                    <div className="text-xs text-[#6B7280] dark:text-white/50">
+                      Cliquez pour remplacer — max. 2 Mo
+                    </div>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleFileSelect(e, setSignatureFile, setSignaturePreview)}
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div className="h-px bg-paperline dark:bg-white/10" />
+
+            {/* Facture */}
+            <div>
+              <h2 className="font-display mb-4 text-lg font-bold text-ink dark:text-white">
+                Modèle de facturation
+              </h2>
+              <div className="grid grid-cols-2 gap-4">
+                {invoiceTemplates.map((id) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setTemplate(id)}
+                    className={`overflow-hidden rounded-xl border-2 text-left transition-colors ${
+                      template === id
+                        ? "border-ledger-deep"
+                        : "border-paperline dark:border-white/10"
+                    }`}
+                  >
+                    <TemplatePreview id={id} logoPreview={logoPreview} />
+                    <p className="px-2 py-1.5 text-center text-xs font-semibold text-ink dark:text-white">
+                      {templateLabels[id] ?? id}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {error && (
+              <p className="rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">{error}</p>
+            )}
+            {saved && !error && (
+              <p className="rounded-xl bg-[#E7FAF9] px-4 py-2.5 text-sm font-semibold text-[#00A6AC] dark:bg-white/5">
+                Modifications enregistrées.
+              </p>
+            )}
+
+            <div className="flex justify-center">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60 sm:w-auto sm:px-12"
+              >
+                {loading ? "Enregistrement..." : "Enregistrer les modifications"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
+    );
+  }
+
+  // ---------- MODE "ASSISTANT" (première configuration) ----------
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F0F0F3] px-6 py-12 dark:bg-[#2F2F2F]">
       <div className="w-full max-w-md rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8">
@@ -355,6 +666,15 @@ export default function OnboardingPage() {
                   value={companyEmail}
                   onChange={(e) => setCompanyEmail(e.target.value)}
                   placeholder="Adresse email"
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Téléphone</label>
+                <input
+                  value={companyPhone}
+                  onChange={(e) => setCompanyPhone(e.target.value)}
+                  placeholder="Affiché sur vos documents"
                   className={inputClass}
                 />
               </div>
@@ -521,6 +841,9 @@ export default function OnboardingPage() {
                   }`}
                 >
                   <TemplatePreview id={id} logoPreview={logoPreview} />
+                  <p className="px-2 py-1.5 text-center text-xs font-semibold text-ink dark:text-white">
+                    {templateLabels[id] ?? id}
+                  </p>
                 </button>
               ))}
             </div>
