@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { syncInvoicesFromQuote } from "@/lib/invoices/sync-from-quote";
 
 export async function updateProjectStatus(
   projectId: string,
@@ -72,21 +73,18 @@ export async function updateProjectStatusWithPayment(
   // 1. Change le statut du projet (et génère Facture + Bordereau si "En cours").
   await updateProjectStatus(projectId, clientId, status);
 
-  // 2. Retrouve le devis (source de vérité) et ses lignes actuelles.
+  // 2. Retrouve le devis (source de vérité).
   const { data: quote } = await supabase
     .from("quotes")
-    .select("*")
+    .select("id, total")
     .eq("project_id", projectId)
     .limit(1)
     .maybeSingle();
 
   if (!quote) return;
 
-  const { data: quoteItems } = await supabase
-    .from("quote_items")
-    .select("*")
-    .eq("quote_id", quote.id)
-    .order("sort_order");
+  // 3. Resynchronise Facture + Bordereau avec le devis actuel.
+  await syncInvoicesFromQuote(quote.id);
 
   const { data: invoices } = await supabase
     .from("invoices")
@@ -94,36 +92,6 @@ export async function updateProjectStatusWithPayment(
     .eq("quote_id", quote.id);
 
   if (!invoices || invoices.length === 0) return;
-
-  // 3. Resynchronise chaque document (Facture + Bordereau) avec le devis actuel.
-  for (const inv of invoices) {
-    await supabase
-      .from("invoices")
-      .update({
-        objet: quote.objet ?? null,
-        subtotal: quote.subtotal,
-        discount_rate: quote.discount_rate ?? 0,
-        tax_rate: quote.tax_rate,
-        total: quote.total,
-        currency: quote.currency,
-        notes: quote.notes,
-      })
-      .eq("id", inv.id);
-
-    await supabase.from("invoice_items").delete().eq("invoice_id", inv.id);
-    if (quoteItems && quoteItems.length > 0) {
-      await supabase.from("invoice_items").insert(
-        quoteItems.map((item) => ({
-          invoice_id: inv.id,
-          description: item.description,
-          quantity: item.quantity,
-          unit_price: item.unit_price,
-          line_total: item.line_total,
-          sort_order: item.sort_order,
-        }))
-      );
-    }
-  }
 
   if (!amount || amount <= 0) {
     revalidatePath(`/dashboard/clients/${clientId}/projects/${projectId}`);
