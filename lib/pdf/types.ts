@@ -24,6 +24,7 @@ export type DocumentData = {
   discountRate?: number | null; // NOUVEAU — remise en %, appliquée avant la TVA
   taxRate: number;
   total: number;
+  amountPaid?: number | null; // NOUVEAU — acompte(s) déjà enregistré(s), affiché sous la Remise
   currency: string;
   notes: string | null;
 };
