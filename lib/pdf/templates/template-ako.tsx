@@ -116,8 +116,8 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
   const remainingDue = data.total - amountPaid;
   const amountWords = `${nombreEnLettres(data.total)} francs CFA`;
 
-  const dueDateLabel =
-    data.kind === "Devis" ? "VALIDITÉ" : data.kind === "Bordereau" ? "CLÔTURE" : "ÉCHÉANCE";
+  const dueDateLabel = data.kind === "Devis" ? "VALIDITÉ" : "ÉCHÉANCE";
+  const showDueDate = data.kind !== "Facture"; // Échéance supprimée sur la Facture, gardée (renommée) sur le Bordereau
 
   const documentWord =
     data.kind === "Devis" ? "devis" : data.kind === "Bordereau" ? "bordereau de livraison" : "facture";
@@ -145,7 +145,7 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
           <View style={styles.metaRow}>
             <View>
               <Text style={styles.metaLeft}>DATE : {data.issueDate}</Text>
-              {data.dueOrExpiryDate && (
+              {showDueDate && data.dueOrExpiryDate && (
                 <Text style={[styles.metaLeft, { marginTop: 3 }]}>
                   {dueDateLabel} : {data.dueOrExpiryDate}
                 </Text>
