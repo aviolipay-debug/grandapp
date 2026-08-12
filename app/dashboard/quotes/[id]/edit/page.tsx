@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { syncInvoicesFromQuote } from "@/lib/invoices/sync-from-quote";
 
 type LineItem = { description: string; quantity: string; unit_price: string };
 
@@ -128,6 +129,10 @@ export default function EditQuotePage() {
       setLoading(false);
       return;
     }
+
+    // La Facture et le Bordereau déjà générés (si le projet est passé "En cours")
+    // sont resynchronisés immédiatement avec ces nouvelles données du devis.
+    await syncInvoicesFromQuote(String(params.id));
 
     router.push(`/dashboard/quotes/${params.id}`);
     router.refresh();
