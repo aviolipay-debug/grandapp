@@ -1,5 +1,6 @@
 import { renderToStream } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/server";
+import { formatDateFR } from "@/lib/format-date";
 import DocumentPDF from "@/lib/pdf/document";
 
 export async function GET(
@@ -34,8 +35,8 @@ export async function GET(
         kind,
         number: invoice.invoice_number,
         objet: invoice.objet ?? null,
-        issueDate: invoice.issue_date,
-        dueOrExpiryDate: invoice.due_date,
+        issueDate: formatDateFR(invoice.issue_date),
+        dueOrExpiryDate: formatDateFR(invoice.due_date) || null,
         companyName: invoice.profiles?.company_name ?? "Votre entreprise",
         companyAddress: invoice.profiles?.company_address ?? null,
         companyLogoUrl: invoice.profiles?.company_logo_url ?? null,
