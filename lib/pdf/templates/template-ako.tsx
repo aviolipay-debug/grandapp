@@ -112,6 +112,8 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
   const discountAmount = discountRate > 0 ? (data.subtotal * discountRate) / 100 : 0;
   const taxableAmount = data.subtotal - discountAmount;
   const taxAmount = data.total - taxableAmount;
+  const amountPaid = data.amountPaid ?? 0;
+  const remainingDue = data.total - amountPaid;
   const amountWords = `${nombreEnLettres(data.total)} francs CFA`;
 
   const dueDateLabel =
@@ -205,10 +207,22 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
                   {discountAmount > 0 ? `${fmt(discountAmount)} ${data.currency}` : "-"}
                 </Text>
               </View>
+              {amountPaid > 0 && (
+                <View style={styles.totalsRow}>
+                  <Text style={styles.totalsLabel}>ACOMPTE VERSÉ :</Text>
+                  <Text style={styles.totalsValue}>- {fmt(amountPaid)} {data.currency}</Text>
+                </View>
+              )}
               <View style={styles.grandRow}>
                 <Text style={styles.grandLabel}>TOTAL TTC :</Text>
                 <Text style={styles.grandValue}>{fmt(data.total)} {data.currency}</Text>
               </View>
+              {amountPaid > 0 && (
+                <View style={[styles.totalsRow, { marginTop: 2 }]}>
+                  <Text style={styles.grandLabel}>RESTE À PAYER :</Text>
+                  <Text style={styles.grandValue}>{fmt(remainingDue)} {data.currency}</Text>
+                </View>
+              )}
             </View>
           </View>
 
