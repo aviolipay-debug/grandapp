@@ -12,6 +12,13 @@ export default async function DashboardPage() {
 
   const firstName = user?.user_metadata?.first_name ?? "";
 
+  // Le profil est considéré "configuré" dès que le nom d'entreprise est renseigné
+  // (rempli à la fin de l'assistant d'onboarding) — sert à masquer le bouton.
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("company_name").eq("id", user.id).single()
+    : { data: null };
+  const isConfigured = !!profile?.company_name;
+
   // Devis générés / Clients / Projets en cours / Projets en attente —
   // ajuste les noms de table/colonne/statut si besoin.
   const { count: clientsActifsCount } = await supabase
@@ -70,15 +77,17 @@ export default async function DashboardPage() {
     <>
       {/* ---------- MOBILE (inchangé) ---------- */}
       <div className="lg:hidden flex flex-col gap-8 max-w-6xl">
-        {/* En-tête */}
-        <div className="flex items-center justify-center gap-4">
-          <Link
-            href="/onboarding"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/10 transition-colors w-fit"
-          >
-            Configurer mon compte
-          </Link>
-        </div>
+        {/* En-tête — le bouton disparaît une fois le compte configuré */}
+        {!isConfigured && (
+          <div className="flex items-center justify-center gap-4">
+            <Link
+              href="/onboarding"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/10 transition-colors w-fit"
+            >
+              Configurer mon compte
+            </Link>
+          </div>
+        )}
 
         {/* Stats — synchronisées avec la version desktop */}
         <div className="grid grid-cols-2 gap-4">
@@ -145,15 +154,17 @@ export default async function DashboardPage() {
 
       {/* ---------- DESKTOP (réorganisé) ---------- */}
       <div className="hidden lg:flex lg:flex-col gap-8 max-w-6xl">
-        {/* En-tête */}
-        <div className="flex items-center justify-center gap-4">
-          <Link
-            href="/onboarding"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/10 transition-colors w-fit"
-          >
-            Configurer mon compte
-          </Link>
-        </div>
+        {/* En-tête — le bouton disparaît une fois le compte configuré */}
+        {!isConfigured && (
+          <div className="flex items-center justify-center gap-4">
+            <Link
+              href="/onboarding"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/10 transition-colors w-fit"
+            >
+              Configurer mon compte
+            </Link>
+          </div>
+        )}
 
         {/* Stats — 4 cartes sur la même ligne */}
         <div className="grid grid-cols-4 gap-4">
