@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   docType: { fontSize: 40, fontWeight: 700, letterSpacing: 1 },
   docTypeChip: { width: 14, height: 46, backgroundColor: YELLOW, marginLeft: 6 },
 
-  metaRow: { flexDirection: "row", justifyContent: "space-between", marginTop: 26, marginBottom: 8 },
+  metaRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 26, marginBottom: 8 },
   metaLeft: { fontSize: 9, fontWeight: 700 },
   metaRight: { fontSize: 12, fontWeight: 700 },
   divider: { height: 1.5, backgroundColor: BLACK, marginVertical: 12 },
