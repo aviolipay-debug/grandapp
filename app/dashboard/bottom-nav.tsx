@@ -1,25 +1,60 @@
 // app/dashboard/bottom-nav.tsx
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Wallet, Users, UserCircle2, FileText } from "lucide-react";
 export default function BottomNav() {
   const pathname = usePathname();
   const [gestionOpen, setGestionOpen] = useState(false);
+  const pushedHistoryRef = useRef(false);
 
   // Ferme automatiquement la popup Gestion à chaque changement de page —
   // sinon elle reste affichée si on quitte la page autrement qu'en cliquant
-  // sur "Clients"/"Devis" à l'intérieur (bouton retour, autre lien, etc.).
+  // sur "Clients"/"Devis" à l'intérieur (autre lien, etc.).
   useEffect(() => {
     setGestionOpen(false);
+    pushedHistoryRef.current = false;
   }, [pathname]);
+
+  // Quand la popup s'ouvre, on ajoute une entrée d'historique factice.
+  // Ainsi, un appui sur le bouton "retour" du téléphone ferme d'abord la
+  // popup (elle consomme cette entrée) au lieu de faire quitter la page.
+  useEffect(() => {
+    if (gestionOpen) {
+      window.history.pushState({ gestionSheet: true }, "");
+      pushedHistoryRef.current = true;
+    }
+  }, [gestionOpen]);
+
+  useEffect(() => {
+    function handlePopState() {
+      if (gestionOpen) {
+        pushedHistoryRef.current = false;
+        setGestionOpen(false);
+      }
+    }
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [gestionOpen]);
 
   const isHome = pathname === "/dashboard";
   const isFinance = pathname?.startsWith("/dashboard/invoices");
   const isGestion =
     pathname?.startsWith("/dashboard/clients") || pathname?.startsWith("/dashboard/quotes");
   const isProfil = pathname?.startsWith("/onboarding");
+
+  // Ferme la popup en consommant l'entrée d'historique factice si elle existe,
+  // sans naviguer ailleurs (utilisé pour le fond noir et le bouton Gestion).
+  function closeGestion() {
+    if (pushedHistoryRef.current) {
+      pushedHistoryRef.current = false;
+      window.history.back();
+    } else {
+      setGestionOpen(false);
+    }
+  }
+
   return (
     <>
       {/* Sheet Gestion : choix Clients / Devis, même style de cartes que "Nouveau client" */}
@@ -27,7 +62,7 @@ export default function BottomNav() {
         <>
           <div
             className="fixed inset-0 z-40 bg-black/40 md:hidden"
-            onClick={() => setGestionOpen(false)}
+            onClick={closeGestion}
           />
           <div className="fixed bottom-[64px] left-0 right-0 z-50 rounded-t-2xl border-t border-paperline bg-white p-4 dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
             <div className="grid grid-cols-2 gap-4">
@@ -92,7 +127,7 @@ export default function BottomNav() {
           Finances
         </Link>
         <button
-          onClick={() => setGestionOpen((v) => !v)}
+          onClick={() => (gestionOpen ? closeGestion() : setGestionOpen(true))}
           className={`flex flex-col items-center justify-center gap-1 py-2.5 text-[11px] font-bold ${
             isGestion || gestionOpen
               ? "text-ledger-deep dark:text-ledger"
