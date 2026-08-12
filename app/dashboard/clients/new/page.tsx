@@ -52,7 +52,7 @@ export default function NewClientPage() {
   // Étape 1 : choix du type de client
   if (!clientType) {
     return (
-      <div className="mx-auto max-w-lg px-4 sm:px-0">
+      <div className="mx-auto flex min-h-[70vh] max-w-lg flex-col items-center justify-center px-4 text-center sm:px-0">
         <h1 className="font-display text-2xl font-bold text-ink dark:text-white">
           Nouveau client
         </h1>
@@ -60,11 +60,11 @@ export default function NewClientPage() {
           C&apos;est un client professionnel ou particulier ?
         </p>
 
-        <div className="mt-8 grid grid-cols-2 gap-4">
+        <div className="mt-8 grid w-full grid-cols-2 gap-4">
           <button
             type="button"
             onClick={() => setClientType("entreprise")}
-            className="flex flex-col items-center gap-3 rounded-2xl border border-paperline bg-white p-6 text-center transition-colors hover:border-ledger-deep dark:border-white/10 dark:bg-[#2F2F2F]"
+            className="flex flex-col items-center gap-3 rounded-2xl border border-paperline bg-white p-6 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-ledger-deep hover:shadow-md dark:border-white/10 dark:bg-[#2F2F2F]"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
               <Building2 size={22} />
@@ -82,7 +82,7 @@ export default function NewClientPage() {
           <button
             type="button"
             onClick={() => setClientType("particulier")}
-            className="flex flex-col items-center gap-3 rounded-2xl border border-paperline bg-white p-6 text-center transition-colors hover:border-ledger-deep dark:border-white/10 dark:bg-[#2F2F2F]"
+            className="flex flex-col items-center gap-3 rounded-2xl border border-paperline bg-white p-6 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-ledger-deep hover:shadow-md dark:border-white/10 dark:bg-[#2F2F2F]"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
               <User size={22} />
@@ -103,77 +103,85 @@ export default function NewClientPage() {
 
   // Étape 2 : formulaire
   return (
-    <div className="mx-auto max-w-lg px-4 sm:px-0">
-      <button
-        type="button"
-        onClick={() => setClientType(null)}
-        className="mb-4 text-sm font-semibold text-ledger-deep"
-      >
-        ← Changer le type de client
-      </button>
-
-      <div className="mb-6 flex items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
-          {clientType === "entreprise" ? <Building2 size={16} /> : <User size={16} />}
-        </div>
-        <h1 className="font-display text-2xl font-bold text-ink dark:text-white">
-          Nouveau client {clientType === "entreprise" ? "— Entreprise" : "— Particulier"}
-        </h1>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-ink dark:text-white/80">
-            {clientType === "entreprise" ? "Raison sociale" : "Nom complet"}
-          </label>
-          <input
-            required
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full rounded border border-paperline bg-white px-4 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-          />
-        </div>
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-ink dark:text-white/80">
-            Email
-          </label>
-          <input
-            type="email"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full rounded border border-paperline bg-white px-4 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-          />
-        </div>
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-ink dark:text-white/80">
-            Téléphone
-          </label>
-          <input
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            className="w-full rounded border border-paperline bg-white px-4 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-          />
-        </div>
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-ink dark:text-white/80">
-            Adresse
-          </label>
-          <textarea
-            value={form.address}
-            onChange={(e) => setForm({ ...form, address: e.target.value })}
-            className="w-full rounded border border-paperline bg-white px-4 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-            rows={2}
-          />
-        </div>
-        {error && <p className="text-sm text-stamp">{error}</p>}
+    <div className="mx-auto flex min-h-[70vh] max-w-lg flex-col items-center justify-center px-4 sm:px-0">
+      <div className="w-full">
         <button
-          type="submit"
-          disabled={loading}
-          className="rounded bg-ledger-deep px-5 py-2.5 text-sm font-semibold text-paper hover:bg-stamp disabled:opacity-60"
+          type="button"
+          onClick={() => setClientType(null)}
+          className="mb-4 text-sm font-semibold text-ledger-deep"
         >
-          {loading ? "Enregistrement..." : "Enregistrer le client"}
+          ← Changer le type de client
         </button>
-      </form>
+
+        <div className="rounded-2xl border border-paperline bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#2F2F2F] sm:p-8">
+          <div className="mb-6 flex flex-col items-center gap-2 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
+              {clientType === "entreprise" ? <Building2 size={20} /> : <User size={20} />}
+            </div>
+            <h1 className="font-display text-xl font-bold text-ink dark:text-white">
+              Nouveau client {clientType === "entreprise" ? "— Entreprise" : "— Particulier"}
+            </h1>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-ink dark:text-white/80">
+                {clientType === "entreprise" ? "Raison sociale" : "Nom complet"}
+              </label>
+              <input
+                required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className="w-full rounded-lg border border-paperline bg-white px-4 py-2.5 text-sm transition-colors focus:border-ledger-deep focus:outline-none focus:ring-2 focus:ring-ledger-deep/10 dark:border-white/10 dark:bg-[#262626] dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-ink dark:text-white/80">
+                Email
+              </label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className="w-full rounded-lg border border-paperline bg-white px-4 py-2.5 text-sm transition-colors focus:border-ledger-deep focus:outline-none focus:ring-2 focus:ring-ledger-deep/10 dark:border-white/10 dark:bg-[#262626] dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-ink dark:text-white/80">
+                Téléphone
+              </label>
+              <input
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                className="w-full rounded-lg border border-paperline bg-white px-4 py-2.5 text-sm transition-colors focus:border-ledger-deep focus:outline-none focus:ring-2 focus:ring-ledger-deep/10 dark:border-white/10 dark:bg-[#262626] dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-ink dark:text-white/80">
+                Adresse
+              </label>
+              <textarea
+                value={form.address}
+                onChange={(e) => setForm({ ...form, address: e.target.value })}
+                className="w-full rounded-lg border border-paperline bg-white px-4 py-2.5 text-sm transition-colors focus:border-ledger-deep focus:outline-none focus:ring-2 focus:ring-ledger-deep/10 dark:border-white/10 dark:bg-[#262626] dark:text-white"
+                rows={2}
+              />
+            </div>
+
+            {error && <p className="text-center text-sm text-stamp">{error}</p>}
+
+            <div className="flex justify-center pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-lg bg-ledger-deep px-5 py-3 text-sm font-semibold text-paper transition-colors hover:bg-stamp disabled:opacity-60 sm:w-auto sm:px-10"
+              >
+                {loading ? "Enregistrement..." : "Enregistrer le client"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
