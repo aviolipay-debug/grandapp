@@ -26,6 +26,10 @@ export default function SignupPage() {
       password,
       options: {
         data: { full_name: fullName },
+        // Le lien de confirmation dans l'email renvoie ici plutôt que sur le
+        // Site URL par défaut — cette route échange le code contre une
+        // session et redirige directement vers /dashboard (connexion auto).
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
