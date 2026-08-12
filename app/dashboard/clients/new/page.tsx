@@ -64,7 +64,7 @@ export default function NewClientPage() {
           <button
             type="button"
             onClick={() => setClientType("entreprise")}
-            className="flex flex-col items-center gap-3 rounded-2xl border border-paperline bg-white p-6 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-ledger-deep hover:shadow-md dark:border-white/10 dark:bg-[#2F2F2F]"
+            className="flex flex-col items-center gap-3 rounded-2xl border border-paperline bg-white p-6 text-center transition-colors hover:border-ledger-deep dark:border-white/10 dark:bg-[#262626]"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
               <Building2 size={22} />
@@ -82,7 +82,7 @@ export default function NewClientPage() {
           <button
             type="button"
             onClick={() => setClientType("particulier")}
-            className="flex flex-col items-center gap-3 rounded-2xl border border-paperline bg-white p-6 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-ledger-deep hover:shadow-md dark:border-white/10 dark:bg-[#2F2F2F]"
+            className="flex flex-col items-center gap-3 rounded-2xl border border-paperline bg-white p-6 text-center transition-colors hover:border-ledger-deep dark:border-white/10 dark:bg-[#262626]"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
               <User size={22} />
