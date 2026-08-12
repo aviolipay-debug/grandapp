@@ -217,21 +217,8 @@ export default function OnboardingPage() {
       setError("Le siège social, l'email et le contact principal sont obligatoires.");
       return false;
     }
-    if (step === 3 && !logoFile) {
+    if (step === 3 && !logoFile && !logoPreview) {
       setError("Le logo est obligatoire.");
-      return false;
-    }
-    setError(null);
-    return true;
-  }
-
-  function validateProfileForm(): boolean {
-    if (!companyName.trim() || !sector) {
-      setError("Le nom de l'entreprise et le secteur d'activité sont obligatoires.");
-      return false;
-    }
-    if (!siegeSocial.trim() || !companyEmail.trim() || !contacts[0]?.numero.trim()) {
-      setError("Le siège social, l'email et le contact principal sont obligatoires.");
       return false;
     }
     setError(null);
@@ -240,11 +227,13 @@ export default function OnboardingPage() {
 
   function goNext() {
     if (!validateStep()) return;
+    setSaved(false);
     setStep((s) => Math.min(s + 1, steps.length - 1));
   }
 
   function goBack() {
     setError(null);
+    setSaved(false);
     setStep((s) => Math.max(s - 1, 0));
   }
 
@@ -309,22 +298,18 @@ export default function OnboardingPage() {
     }
   }
 
-  // Fin de l'assistant (première configuration) -> retour au dashboard.
-  async function handleFinish() {
+  // Bouton final : "Terminer" -> dashboard (première configuration),
+  // "Enregistrer" -> reste sur place avec confirmation (fiche déjà configurée).
+  async function handlePrimaryAction() {
     if (!validateStep()) return;
     await saveProfileData(() => {
-      router.push("/dashboard");
-      router.refresh();
-    });
-  }
-
-  // Enregistrement depuis la fiche profil -> on reste sur place avec confirmation.
-  async function handleSaveProfile(e: React.FormEvent) {
-    e.preventDefault();
-    if (!validateProfileForm()) return;
-    await saveProfileData(() => {
-      setSaved(true);
-      router.refresh();
+      if (mode === "wizard") {
+        router.push("/dashboard");
+        router.refresh();
+      } else {
+        setSaved(true);
+        router.refresh();
+      }
     });
   }
 
@@ -338,271 +323,6 @@ export default function OnboardingPage() {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#F0F0F3] dark:bg-[#2F2F2F]">
         <p className="text-sm text-[#6B7280] dark:text-white/50">Chargement...</p>
-      </main>
-    );
-  }
-
-  // ---------- MODE "FICHE PROFIL" (compte déjà configuré) ----------
-  if (mode === "profile") {
-    return (
-      <main className="min-h-screen bg-[#F0F0F3] px-4 py-10 dark:bg-[#2F2F2F] sm:px-6">
-        <div className="mx-auto max-w-2xl">
-          <h1 className="font-display text-center text-2xl font-bold text-ink dark:text-white">
-            Profil de l&apos;entreprise
-          </h1>
-          <p className="mb-8 text-center text-sm text-[#6B7280] dark:text-white/50">
-            Ces informations apparaissent sur vos devis et factures. Modifiez-les directement
-            ici.
-          </p>
-
-          <form
-            onSubmit={handleSaveProfile}
-            className="space-y-6 rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8"
-          >
-            {/* Structure */}
-            <div>
-              <h2 className="font-display mb-4 text-lg font-bold text-ink dark:text-white">
-                Structure
-              </h2>
-              <div className="flex flex-col gap-4">
-                <div>
-                  <label className={labelClass}>Nom de l&apos;entreprise *</label>
-                  <input
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    className={inputClass}
-                  />
-                </div>
-                <div>
-                  <label className={labelClass}>Secteur d&apos;activité *</label>
-                  <select
-                    value={sector}
-                    onChange={(e) => setSector(e.target.value)}
-                    className={inputClass}
-                  >
-                    <option value="">—</option>
-                    {sectors.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div className="h-px bg-paperline dark:bg-white/10" />
-
-            {/* Adresses */}
-            <div>
-              <h2 className="font-display mb-4 text-lg font-bold text-ink dark:text-white">
-                Adresses & contacts
-              </h2>
-              <div className="flex flex-col gap-4">
-                <div>
-                  <label className={labelClass}>Siège social *</label>
-                  <input
-                    value={siegeSocial}
-                    onChange={(e) => setSiegeSocial(e.target.value)}
-                    className={inputClass}
-                  />
-                </div>
-                <div>
-                  <label className={labelClass}>Adresse email *</label>
-                  <input
-                    type="email"
-                    value={companyEmail}
-                    onChange={(e) => setCompanyEmail(e.target.value)}
-                    className={inputClass}
-                  />
-                </div>
-                <div>
-                  <label className={labelClass}>Téléphone</label>
-                  <input
-                    value={companyPhone}
-                    onChange={(e) => setCompanyPhone(e.target.value)}
-                    placeholder="Affiché sur vos documents"
-                    className={inputClass}
-                  />
-                </div>
-                {contacts.map((c, i) => (
-                  <div key={i} className="flex gap-3">
-                    <div className="w-24">
-                      <label className={labelClass}>Indicatif {i === 0 && "*"}</label>
-                      <input
-                        value={c.indicatif}
-                        onChange={(e) => updateContact(i, "indicatif", e.target.value)}
-                        placeholder="+229"
-                        className={inputClass}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <label className={labelClass}>
-                        {i === 0 ? "Contact primaire *" : "Contact"}
-                      </label>
-                      <input
-                        value={c.numero}
-                        onChange={(e) => updateContact(i, "numero", e.target.value)}
-                        placeholder="Numéro"
-                        className={inputClass}
-                      />
-                    </div>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setContacts((prev) => [...prev, { indicatif: "+229", numero: "" }])}
-                  className={addBtnClass}
-                >
-                  + Ajouter un contact
-                </button>
-              </div>
-            </div>
-
-            <div className="h-px bg-paperline dark:bg-white/10" />
-
-            {/* Documents */}
-            <div>
-              <h2 className="font-display mb-4 text-lg font-bold text-ink dark:text-white">
-                Informations fiscales
-              </h2>
-              <div className="flex flex-col gap-4">
-                <div>
-                  <label className={labelClass}>N° Registre du commerce</label>
-                  <input
-                    value={rccm}
-                    onChange={(e) => setRccm(e.target.value)}
-                    className={inputClass}
-                  />
-                </div>
-                {taxIds.map((t, i) => (
-                  <div key={i}>
-                    <label className={labelClass}>Numéro d&apos;identification</label>
-                    <input
-                      value={t}
-                      onChange={(e) => updateTaxId(i, e.target.value)}
-                      className={inputClass}
-                    />
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setTaxIds((prev) => [...prev, ""])}
-                  className={addBtnClass}
-                >
-                  + Ajouter un numéro d&apos;identification
-                </button>
-              </div>
-            </div>
-
-            <div className="h-px bg-paperline dark:bg-white/10" />
-
-            {/* Fichiers */}
-            <div>
-              <h2 className="font-display mb-4 text-lg font-bold text-ink dark:text-white">
-                Logo & signature
-              </h2>
-              <div className="flex flex-col gap-4">
-                <label className="flex cursor-pointer items-center gap-4 rounded-xl border border-paperline bg-white p-4 dark:border-white/10 dark:bg-[#2F2F2F]">
-                  {logoPreview ? (
-                    <img src={logoPreview} alt="Logo" className="h-10 w-10 rounded-lg object-cover" />
-                  ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-paperline text-ink dark:bg-white/10 dark:text-white">
-                      ↑
-                    </div>
-                  )}
-                  <div>
-                    <div className="text-sm font-semibold text-ink dark:text-white">Logo</div>
-                    <div className="text-xs text-[#6B7280] dark:text-white/50">
-                      Cliquez pour remplacer — max. 2 Mo
-                    </div>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => handleFileSelect(e, setLogoFile, setLogoPreview)}
-                  />
-                </label>
-
-                <label className="flex cursor-pointer items-center gap-4 rounded-xl border border-paperline bg-white p-4 dark:border-white/10 dark:bg-[#2F2F2F]">
-                  {signaturePreview ? (
-                    <img
-                      src={signaturePreview}
-                      alt="Signature"
-                      className="h-10 w-10 rounded-lg object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-paperline text-ink dark:bg-white/10 dark:text-white">
-                      ↑
-                    </div>
-                  )}
-                  <div>
-                    <div className="text-sm font-semibold text-ink dark:text-white">
-                      Signature
-                    </div>
-                    <div className="text-xs text-[#6B7280] dark:text-white/50">
-                      Cliquez pour remplacer — max. 2 Mo
-                    </div>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => handleFileSelect(e, setSignatureFile, setSignaturePreview)}
-                  />
-                </label>
-              </div>
-            </div>
-
-            <div className="h-px bg-paperline dark:bg-white/10" />
-
-            {/* Facture */}
-            <div>
-              <h2 className="font-display mb-4 text-lg font-bold text-ink dark:text-white">
-                Modèle de facturation
-              </h2>
-              <div className="grid grid-cols-2 gap-4">
-                {invoiceTemplates.map((id) => (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => setTemplate(id)}
-                    className={`overflow-hidden rounded-xl border-2 text-left transition-colors ${
-                      template === id
-                        ? "border-ledger-deep"
-                        : "border-paperline dark:border-white/10"
-                    }`}
-                  >
-                    <TemplatePreview id={id} logoPreview={logoPreview} />
-                    <p className="px-2 py-1.5 text-center text-xs font-semibold text-ink dark:text-white">
-                      {templateLabels[id] ?? id}
-                    </p>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {error && (
-              <p className="rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">{error}</p>
-            )}
-            {saved && !error && (
-              <p className="rounded-xl bg-[#E7FAF9] px-4 py-2.5 text-sm font-semibold text-[#00A6AC] dark:bg-white/5">
-                Modifications enregistrées.
-              </p>
-            )}
-
-            <div className="flex justify-center">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60 sm:w-auto sm:px-12"
-              >
-                {loading ? "Enregistrement..." : "Enregistrer les modifications"}
-              </button>
-            </div>
-          </form>
-        </div>
       </main>
     );
   }
@@ -881,6 +601,11 @@ export default function OnboardingPage() {
         {error && (
           <p className="mt-4 rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">{error}</p>
         )}
+        {saved && !error && (
+          <p className="mt-4 rounded-xl bg-[#E7FAF9] px-4 py-2.5 text-sm font-semibold text-[#00A6AC] dark:bg-white/5">
+            Modifications enregistrées.
+          </p>
+        )}
 
         <div className="mt-8 flex gap-3">
           <button
@@ -894,11 +619,17 @@ export default function OnboardingPage() {
           {isLastStep ? (
             <button
               type="button"
-              onClick={handleFinish}
+              onClick={handlePrimaryAction}
               disabled={loading}
               className="flex-1 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
             >
-              {loading ? "Finalisation…" : "Terminer"}
+              {loading
+                ? mode === "wizard"
+                  ? "Finalisation…"
+                  : "Enregistrement..."
+                : mode === "wizard"
+                ? "Terminer"
+                : "Enregistrer"}
             </button>
           ) : (
             <button
@@ -914,3 +645,4 @@ export default function OnboardingPage() {
     </main>
   );
 }
+
