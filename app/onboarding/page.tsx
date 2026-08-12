@@ -299,7 +299,7 @@ export default function OnboardingPage() {
   }
 
   // Bouton final : "Terminer" -> dashboard (première configuration),
-  // "Enregistrer" -> reste sur place avec confirmation (fiche déjà configurée).
+  // "Enregistrer" -> affiche la confirmation puis redirige aussi vers le dashboard.
   async function handlePrimaryAction() {
     if (!validateStep()) return;
     await saveProfileData(() => {
@@ -309,6 +309,9 @@ export default function OnboardingPage() {
       } else {
         setSaved(true);
         router.refresh();
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 1200);
       }
     });
   }
