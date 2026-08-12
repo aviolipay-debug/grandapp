@@ -1,6 +1,7 @@
 import { renderToStream } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateFR } from "@/lib/format-date";
+import { slugifyFilename } from "@/lib/slugify-filename";
 import DocumentPDF from "@/lib/pdf/document";
 
 export async function GET(
@@ -56,10 +57,15 @@ export async function GET(
     />
   );
 
+  const filename = slugifyFilename(
+    invoice.objet,
+    `${invoice.document_type}-${invoice.invoice_number}`
+  );
+
   return new Response(stream as unknown as ReadableStream, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="${invoice.document_type}-${invoice.invoice_number}.pdf"`,
+      "Content-Disposition": `inline; filename="${filename}.pdf"`,
     },
   });
 }
