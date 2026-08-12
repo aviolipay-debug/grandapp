@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { FileText, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { formatDateFR } from "@/lib/format-date";
 
 const statusLabels: Record<string, string> = {
   draft: "Brouillon",
@@ -75,7 +76,7 @@ export default async function QuotesPage() {
                     </div>
                     <div className="mt-1 flex items-center justify-between gap-2">
                       <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
-                        {q.clients?.name ?? "—"} · {q.issue_date}
+                        {q.clients?.name ?? "—"} · {formatDateFR(q.issue_date)}
                       </p>
                       <span
                         className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
