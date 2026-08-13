@@ -95,24 +95,28 @@ export default async function DashboardPage() {
             label="Devis générés"
             value={stats.devisGeneres}
             accent="#7D2AE7"
+            gradient="linear-gradient(135deg, #9B4DFF, #6A1FD0)"
             icon={<FileText size={18} />}
           />
           <StatCard
             label="Projets en attente"
             value={stats.projetsEnAttente}
             accent="#2A89DA"
+            gradient="linear-gradient(135deg, #4FA3F0, #1D5FB0)"
             icon={<Clock size={18} />}
           />
           <StatCard
             label="Clients"
             value={stats.clientsActifs}
             accent="#00C4CC"
+            gradient="linear-gradient(135deg, #2EE0D9, #00959B)"
             icon={<Users size={18} />}
           />
           <StatCard
             label="Projets en cours"
             value={stats.projetsEnCours}
             accent="#FE6F61"
+            gradient="linear-gradient(135deg, #FF9270, #E8483A)"
             icon={<FolderKanban size={18} />}
           />
         </div>
@@ -172,24 +176,28 @@ export default async function DashboardPage() {
             label="Devis générés"
             value={stats.devisGeneres}
             accent="#7D2AE7"
+            gradient="linear-gradient(135deg, #9B4DFF, #6A1FD0)"
             icon={<FileText size={18} />}
           />
           <StatCard
             label="Projets en attente"
             value={stats.projetsEnAttente}
             accent="#2A89DA"
+            gradient="linear-gradient(135deg, #4FA3F0, #1D5FB0)"
             icon={<Clock size={18} />}
           />
           <StatCard
             label="Clients"
             value={stats.clientsActifs}
             accent="#00C4CC"
+            gradient="linear-gradient(135deg, #2EE0D9, #00959B)"
             icon={<Users size={18} />}
           />
           <StatCard
             label="Projets en cours"
             value={stats.projetsEnCours}
             accent="#FE6F61"
+            gradient="linear-gradient(135deg, #FF9270, #E8483A)"
             icon={<FolderKanban size={18} />}
           />
         </div>
@@ -242,25 +250,25 @@ function StatCard({
   label,
   value,
   accent,
+  gradient,
   icon,
 }: {
   label: string;
   value: string | number;
   accent: string;
+  gradient: string;
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl p-4 bg-white dark:bg-[#262626] border border-black/5 dark:border-white/10">
-      <div
-        className="w-9 h-9 rounded-xl flex items-center justify-center text-white mb-3"
-        style={{ backgroundColor: accent }}
-      >
+    <div
+      className="rounded-2xl p-4 text-white shadow-[0_8px_20px_-8px_rgba(0,0,0,0.35)]"
+      style={{ background: gradient }}
+    >
+      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-white/25 backdrop-blur-sm">
         {icon}
       </div>
       <p className="font-display text-xl font-bold">{value}</p>
-      <p className="text-xs text-[#1C1C1C]/50 dark:text-white/50 mt-0.5">
-        {label}
-      </p>
+      <p className="mt-0.5 text-xs text-white/80">{label}</p>
     </div>
   );
 }
