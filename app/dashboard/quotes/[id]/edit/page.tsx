@@ -218,7 +218,7 @@ export default function EditQuotePage() {
 
             <div className="divide-y divide-paperline dark:divide-white/10">
               {items.map((item, i) => (
-                <div key={i} className="p-5">
+                <div key={i} className="p-5 sm:p-4">
                   {/* Mobile */}
                   <div className="space-y-4 sm:hidden">
                     <div>
