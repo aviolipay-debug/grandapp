@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Wallet, Users, UserCircle2, FileText } from "lucide-react";
+import { poppins } from "@/lib/fonts";
 export default function BottomNav() {
   const pathname = usePathname();
   const [gestionOpen, setGestionOpen] = useState(false);
@@ -64,7 +65,7 @@ export default function BottomNav() {
             className="fixed inset-0 z-40 bg-black/40 md:hidden"
             onClick={closeGestion}
           />
-          <div className="fixed bottom-[64px] left-0 right-0 z-50 rounded-t-2xl border-t border-paperline bg-white p-4 dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
+          <div className={`fixed bottom-[64px] left-0 right-0 z-50 rounded-t-2xl border-t border-paperline bg-white p-4 dark:border-white/10 dark:bg-[#2F2F2F] md:hidden ${poppins.className}`}>
             <div className="grid grid-cols-2 gap-4">
               <Link
                 href="/dashboard/clients"
@@ -105,7 +106,7 @@ export default function BottomNav() {
           </div>
         </>
       )}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 grid grid-cols-4 border-t border-paperline bg-white pb-[env(safe-area-inset-bottom)] dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
+      <nav className={`fixed bottom-0 left-0 right-0 z-50 grid grid-cols-4 border-t border-paperline bg-white pb-[env(safe-area-inset-bottom)] dark:border-white/10 dark:bg-[#2F2F2F] md:hidden ${poppins.className}`}>
         <Link
           href="/dashboard"
           onClick={() => setGestionOpen(false)}
