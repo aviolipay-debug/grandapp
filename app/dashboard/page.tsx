@@ -1,8 +1,11 @@
 // app/dashboard/page.tsx
 import Link from "next/link";
 import { FileText, Users, FolderKanban, Clock, Folder, FolderPlus } from "lucide-react";
+import { Poppins } from "next/font/google";
 import { createClient } from "@/lib/supabase/server"; // adapte le chemin si besoin
 import ProjetsRecentsSection from "./projets-recents";
+
+const poppins = Poppins({ subsets: ["latin"], weight: ["600", "700", "800"] });
 
 export default async function DashboardPage() {
   const supabase = createClient();
@@ -90,33 +93,38 @@ export default async function DashboardPage() {
         )}
 
         {/* Stats — synchronisées avec la version desktop */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className={`grid grid-cols-2 gap-4 ${poppins.className}`}>
           <StatCard
-            label="Devis générés"
+            label="DEVIS"
             value={stats.devisGeneres}
-            accent="#7D2AE7"
-            gradient="linear-gradient(135deg, #9B4DFF, #6A1FD0)"
+            subtitle="générés"
+            dark
+            iconBg="rgba(255,255,255,0.15)"
+            iconColor="#FFFFFF"
             icon={<FileText size={18} />}
           />
           <StatCard
-            label="Projets en attente"
+            label="PROJETS"
             value={stats.projetsEnAttente}
-            accent="#2A89DA"
-            gradient="linear-gradient(135deg, #4FA3F0, #1D5FB0)"
+            subtitle="en attente"
+            iconBg="#EAF3FC"
+            iconColor="#2A89DA"
             icon={<Clock size={18} />}
           />
           <StatCard
-            label="Clients"
+            label="CLIENTS"
             value={stats.clientsActifs}
-            accent="#00C4CC"
-            gradient="linear-gradient(135deg, #2EE0D9, #00959B)"
+            subtitle="enregistrés"
+            iconBg="#E7FAF9"
+            iconColor="#00A6AC"
             icon={<Users size={18} />}
           />
           <StatCard
-            label="Projets en cours"
+            label="PROJETS"
             value={stats.projetsEnCours}
-            accent="#FE6F61"
-            gradient="linear-gradient(135deg, #FF9270, #E8483A)"
+            subtitle="en cours"
+            iconBg="#FDEBEA"
+            iconColor="#E5533F"
             icon={<FolderKanban size={18} />}
           />
         </div>
@@ -171,33 +179,38 @@ export default async function DashboardPage() {
         )}
 
         {/* Stats — 4 cartes sur la même ligne */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className={`grid grid-cols-4 gap-4 ${poppins.className}`}>
           <StatCard
-            label="Devis générés"
+            label="DEVIS"
             value={stats.devisGeneres}
-            accent="#7D2AE7"
-            gradient="linear-gradient(135deg, #9B4DFF, #6A1FD0)"
+            subtitle="générés"
+            dark
+            iconBg="rgba(255,255,255,0.15)"
+            iconColor="#FFFFFF"
             icon={<FileText size={18} />}
           />
           <StatCard
-            label="Projets en attente"
+            label="PROJETS"
             value={stats.projetsEnAttente}
-            accent="#2A89DA"
-            gradient="linear-gradient(135deg, #4FA3F0, #1D5FB0)"
+            subtitle="en attente"
+            iconBg="#EAF3FC"
+            iconColor="#2A89DA"
             icon={<Clock size={18} />}
           />
           <StatCard
-            label="Clients"
+            label="CLIENTS"
             value={stats.clientsActifs}
-            accent="#00C4CC"
-            gradient="linear-gradient(135deg, #2EE0D9, #00959B)"
+            subtitle="enregistrés"
+            iconBg="#E7FAF9"
+            iconColor="#00A6AC"
             icon={<Users size={18} />}
           />
           <StatCard
-            label="Projets en cours"
+            label="PROJETS"
             value={stats.projetsEnCours}
-            accent="#FE6F61"
-            gradient="linear-gradient(135deg, #FF9270, #E8483A)"
+            subtitle="en cours"
+            iconBg="#FDEBEA"
+            iconColor="#E5533F"
             icon={<FolderKanban size={18} />}
           />
         </div>
@@ -249,26 +262,39 @@ export default async function DashboardPage() {
 function StatCard({
   label,
   value,
-  accent,
-  gradient,
+  subtitle,
+  iconBg,
+  iconColor,
   icon,
+  dark = false,
 }: {
   label: string;
   value: string | number;
-  accent: string;
-  gradient: string;
+  subtitle: string;
+  iconBg: string;
+  iconColor: string;
   icon: React.ReactNode;
+  dark?: boolean;
 }) {
   return (
     <div
-      className="rounded-2xl p-4 text-white shadow-[0_8px_20px_-8px_rgba(0,0,0,0.35)]"
-      style={{ background: gradient }}
+      className={`rounded-3xl p-5 ${
+        dark
+          ? "bg-[#181818] text-white"
+          : "border border-black/5 bg-white text-ink dark:border-white/10 dark:bg-[#262626] dark:text-white"
+      }`}
     >
-      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-white/25 backdrop-blur-sm">
-        {icon}
+      <div className="flex items-start justify-between">
+        <span className="text-xs font-bold uppercase tracking-wide">{label}</span>
+        <div
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+          style={{ backgroundColor: iconBg, color: iconColor }}
+        >
+          {icon}
+        </div>
       </div>
-      <p className="font-display text-xl font-bold">{value}</p>
-      <p className="mt-0.5 text-xs text-white/80">{label}</p>
+      <p className="mt-4 text-3xl font-extrabold">{value}</p>
+      <p className={`mt-1 text-sm ${dark ? "text-white/50" : "text-[#9CA3AF]"}`}>{subtitle}</p>
     </div>
   );
 }
