@@ -1,11 +1,9 @@
 // app/dashboard/page.tsx
 import Link from "next/link";
 import { FileText, Users, FolderKanban, Clock, Folder, FolderPlus } from "lucide-react";
-import { Poppins } from "next/font/google";
 import { createClient } from "@/lib/supabase/server"; // adapte le chemin si besoin
+import { poppins } from "@/lib/fonts";
 import ProjetsRecentsSection from "./projets-recents";
-
-const poppins = Poppins({ subsets: ["latin"], weight: ["600", "700", "800"] });
 
 export default async function DashboardPage() {
   const supabase = createClient();
@@ -130,7 +128,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Clients récents */}
-        <div>
+        <div className={poppins.className}>
           <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50 mb-3">
             Clients récents
           </h2>
@@ -216,7 +214,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Clients récents — cartes façon dossier, inspirées de la référence */}
-        <div>
+        <div className={poppins.className}>
           <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50 mb-3">
             Clients récents
           </h2>
