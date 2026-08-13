@@ -218,9 +218,9 @@ export default function EditQuotePage() {
 
             <div className="divide-y divide-paperline dark:divide-white/10">
               {items.map((item, i) => (
-                <div key={i} className="p-4">
+                <div key={i} className="p-5">
                   {/* Mobile */}
-                  <div className="space-y-3 sm:hidden">
+                  <div className="space-y-4 sm:hidden">
                     <div>
                       <label className="mb-1 block text-xs font-semibold text-[#6B7280] dark:text-white/50">
                         Désignation
@@ -358,7 +358,7 @@ export default function EditQuotePage() {
 
         <div className="rounded-2xl border border-paperline bg-white p-5 font-mono text-sm dark:border-white/10 dark:bg-[#262626]">
           <div className="flex justify-between text-[#6B7280] dark:text-white/60">
-            <span>Montant Total HT</span>
+            <span>Total HT</span>
             <span>{subtotal.toLocaleString("fr-FR")} {currency}</span>
           </div>
           {(Number(discountRate) || 0) > 0 && (
@@ -374,7 +374,7 @@ export default function EditQuotePage() {
             </div>
           )}
           <div className="mt-2 flex justify-between border-t border-paperline pt-2 text-base font-bold text-ink dark:border-white/10 dark:text-white">
-            <span>Montant Total TTC</span>
+            <span>Total TTC</span>
             <span>{total.toLocaleString("fr-FR")} {currency}</span>
           </div>
         </div>
