@@ -403,7 +403,7 @@ function NewQuoteForm() {
 
         <div className="rounded-2xl border border-paperline bg-white p-5 font-mono text-sm dark:border-white/10 dark:bg-[#262626]">
           <div className="flex justify-between text-[#6B7280] dark:text-white/60">
-            <span>Total HT</span>
+            <span className="sm:hidden">Total HT</span><span className="hidden sm:inline">Montant Total HT</span>
             <span>{subtotal.toLocaleString("fr-FR")} {currency}</span>
           </div>
           {(Number(discountRate) || 0) > 0 && (
@@ -419,7 +419,7 @@ function NewQuoteForm() {
             </div>
           )}
           <div className="mt-2 flex justify-between border-t border-paperline pt-2 text-base font-bold text-ink dark:border-white/10 dark:text-white">
-            <span>Total TTC</span>
+            <span className="sm:hidden">Total TTC</span><span className="hidden sm:inline">Montant Total TTC</span>
             <span>{total.toLocaleString("fr-FR")} {currency}</span>
           </div>
         </div>
