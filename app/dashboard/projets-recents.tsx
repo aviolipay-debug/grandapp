@@ -4,6 +4,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Search, SlidersHorizontal, X } from "lucide-react";
+import { poppins } from "@/lib/fonts";
 
 type Projet = {
   id: string;
@@ -63,7 +64,7 @@ export default function ProjetsRecentsSection({ projects }: { projects: Projet[]
   return (
     <>
       {/* ---------- MOBILE ---------- */}
-      <div className="lg:hidden">
+      <div className={`lg:hidden ${poppins.className}`}>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50">
             Projets récents
@@ -171,7 +172,7 @@ export default function ProjetsRecentsSection({ projects }: { projects: Projet[]
       </div>
 
       {/* ---------- DESKTOP ---------- */}
-      <div className="hidden lg:block">
+      <div className={`hidden lg:block ${poppins.className}`}>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50">
             Projets récents
