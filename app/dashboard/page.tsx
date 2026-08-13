@@ -75,7 +75,15 @@ export default async function DashboardPage() {
     })) ?? [];
 
   return (
-    <>
+    <div className="relative">
+      {/* Fond décoratif — taches de couleur floutées, discret, dans l'esprit OliPay */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute -top-20 -left-16 h-72 w-72 rounded-full bg-[#7D2AE7]/15 blur-3xl dark:bg-[#7D2AE7]/10" />
+        <div className="absolute -top-10 right-0 h-64 w-64 rounded-full bg-[#00C4CC]/15 blur-3xl dark:bg-[#00C4CC]/10" />
+        <div className="absolute top-64 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-[#2A89DA]/10 blur-3xl dark:bg-[#2A89DA]/[0.06]" />
+        <div className="absolute bottom-0 right-10 h-72 w-72 rounded-full bg-[#FE6F61]/15 blur-3xl dark:bg-[#FE6F61]/10" />
+      </div>
+
       {/* ---------- MOBILE (inchangé) ---------- */}
       <div className="lg:hidden flex flex-col gap-8 max-w-6xl">
         {/* En-tête — le bouton disparaît une fois le compte configuré */}
@@ -253,7 +261,7 @@ export default async function DashboardPage() {
       <div className="max-w-6xl mt-8">
         <ProjetsRecentsSection projects={projetsRecents} />
       </div>
-    </>
+    </div>
   );
 }
 
