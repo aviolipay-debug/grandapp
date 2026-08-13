@@ -1,7 +1,8 @@
 // app/dashboard/invoices/page.tsx
 import Link from "next/link";
-import { Receipt, ChevronRight } from "lucide-react";
+import { Receipt, ChevronRight, Wallet, Clock, AlertTriangle, FileStack } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { formatDateFR } from "@/lib/format-date";
 
 const statusLabels: Record<string, string> = {
   draft: "Brouillon",
@@ -21,68 +22,168 @@ const statusStyles: Record<string, string> = {
   cancelled: "bg-[#F3F4F6] text-[#6B7280]",
 };
 
+// Le champ `status` en base ne passe jamais automatiquement à "overdue" —
+// on calcule donc le statut réellement affiché à partir de la date
+// d'échéance, plutôt que de se fier uniquement à la colonne stockée.
+function getEffectiveStatus(inv: {
+  status: string;
+  due_date: string | null;
+  total: number;
+  amount_paid: number;
+}): string {
+  if (inv.status === "paid" || inv.status === "cancelled") return inv.status;
+  const remaining = Number(inv.total) - Number(inv.amount_paid);
+  if (remaining <= 0) return "paid";
+  if (inv.due_date && new Date(inv.due_date) < new Date(new Date().toDateString())) {
+    return "overdue";
+  }
+  if (Number(inv.amount_paid) > 0) return "partially_paid";
+  return inv.status;
+}
+
 export default async function InvoicesPage() {
   const supabase = createClient();
-  const { data: invoices } = await supabase
+
+  // On ne récupère que les Factures — les Bordereaux de livraison ne
+  // représentent pas un encaissement et fausseraient les totaux financiers.
+  const { data: invoicesData } = await supabase
     .from("invoices")
     .select("id, invoice_number, status, total, amount_paid, currency, due_date, clients(name)")
+    .eq("document_type", "facture")
     .order("created_at", { ascending: false });
+
+  const invoices = (invoicesData ?? []) as any[];
+  const currency = invoices[0]?.currency ?? "FCFA";
+
+  const totalEncaisse = invoices.reduce((sum, inv) => sum + Number(inv.amount_paid), 0);
+
+  const totalRestantDu = invoices.reduce((sum, inv) => {
+    const remaining = Number(inv.total) - Number(inv.amount_paid);
+    return inv.status !== "cancelled" && remaining > 0 ? sum + remaining : sum;
+  }, 0);
+
+  const facturesEnRetard = invoices.filter((inv) => getEffectiveStatus(inv) === "overdue").length;
+
+  const stats = {
+    encaisse: totalEncaisse,
+    restantDu: totalRestantDu,
+    enRetard: facturesEnRetard,
+    total: invoices.length,
+  };
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold text-ink dark:text-white">Factures</h1>
+      <h1 className="font-display text-2xl font-bold text-ink dark:text-white">Finances</h1>
       <p className="mt-1 text-sm text-[#6B7280] dark:text-white/50">
-        Les factures naissent d&apos;un devis accepté. Ouvrez un devis pour le convertir.
+        Vue d&apos;ensemble de vos encaissements et factures.
       </p>
 
+      {/* Vue d'ensemble */}
+      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard
+          label="Encaissé"
+          value={`${stats.encaisse.toLocaleString("fr-FR")} ${currency}`}
+          accent="#00C4CC"
+          icon={<Wallet size={18} />}
+        />
+        <StatCard
+          label="Restant dû"
+          value={`${stats.restantDu.toLocaleString("fr-FR")} ${currency}`}
+          accent="#2A89DA"
+          icon={<Clock size={18} />}
+        />
+        <StatCard
+          label="Factures en retard"
+          value={stats.enRetard}
+          accent="#E5533F"
+          icon={<AlertTriangle size={18} />}
+        />
+        <StatCard
+          label="Factures émises"
+          value={stats.total}
+          accent="#7D2AE7"
+          icon={<FileStack size={18} />}
+        />
+      </div>
+
+      {/* Liste des factures */}
       <div className="mt-8 overflow-hidden rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626]">
-        {!invoices || invoices.length === 0 ? (
+        {invoices.length === 0 ? (
           <p className="p-10 text-center text-sm text-[#6B7280] dark:text-white/50">
-            Aucune facture pour l&apos;instant.
+            Aucune facture pour l&apos;instant. Elles sont générées automatiquement quand un
+            projet passe "En cours".
           </p>
         ) : (
           <div className="divide-y divide-paperline dark:divide-white/10">
-            {invoices.map((inv: any) => (
-              <Link
-                key={inv.id}
-                href={`/dashboard/invoices/${inv.id}`}
-                className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7FAF9] text-[#00A6AC] dark:bg-white/10">
-                  <Receipt size={18} />
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="truncate font-medium text-ink dark:text-white">
-                      {inv.invoice_number}
-                    </p>
-                    <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
-                      {(Number(inv.total) - Number(inv.amount_paid)).toLocaleString("fr-FR")}{" "}
-                      {inv.currency}
-                    </p>
+            {invoices.map((inv) => {
+              const remaining = Number(inv.total) - Number(inv.amount_paid);
+              const effectiveStatus = getEffectiveStatus(inv);
+              return (
+                <Link
+                  key={inv.id}
+                  href={`/dashboard/invoices/${inv.id}`}
+                  className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7FAF9] text-[#00A6AC] dark:bg-white/10">
+                    <Receipt size={18} />
                   </div>
-                  <div className="mt-1 flex items-center justify-between gap-2">
-                    <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
-                      {inv.clients?.name ?? "—"}
-                      {inv.due_date ? ` · Échéance ${inv.due_date}` : ""}
-                    </p>
-                    <span
-                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                        statusStyles[inv.status] ?? "bg-[#F3F4F6] text-[#6B7280]"
-                      }`}
-                    >
-                      {statusLabels[inv.status] ?? inv.status}
-                    </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="truncate font-medium text-ink dark:text-white">
+                        {inv.invoice_number}
+                      </p>
+                      <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
+                        {remaining > 0
+                          ? `${remaining.toLocaleString("fr-FR")} ${inv.currency}`
+                          : "Payée"}
+                      </p>
+                    </div>
+                    <div className="mt-1 flex items-center justify-between gap-2">
+                      <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
+                        {inv.clients?.name ?? "—"}
+                        {inv.due_date ? ` · Échéance ${formatDateFR(inv.due_date)}` : ""}
+                      </p>
+                      <span
+                        className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                          statusStyles[effectiveStatus] ?? "bg-[#F3F4F6] text-[#6B7280]"
+                        }`}
+                      >
+                        {statusLabels[effectiveStatus] ?? effectiveStatus}
+                      </span>
+                    </div>
                   </div>
-                </div>
-
-                <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
-              </Link>
-            ))}
+                  <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  accent,
+  icon,
+}: {
+  label: string;
+  value: string | number;
+  accent: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-[#262626]">
+      <div
+        className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl text-white"
+        style={{ backgroundColor: accent }}
+      >
+        {icon}
+      </div>
+      <p className="font-display text-lg font-bold text-ink dark:text-white">{value}</p>
+      <p className="mt-0.5 text-xs text-[#1C1C1C]/50 dark:text-white/50">{label}</p>
     </div>
   );
 }
