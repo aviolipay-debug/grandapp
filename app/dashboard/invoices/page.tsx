@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Receipt, ChevronRight, Wallet, Clock, AlertTriangle, FileStack } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateFR } from "@/lib/format-date";
+import { poppins } from "@/lib/fonts";
 
 const statusLabels: Record<string, string> = {
   draft: "Brouillon",
@@ -72,7 +73,7 @@ export default async function InvoicesPage() {
   };
 
   return (
-    <div>
+    <div className={poppins.className}>
       <h1 className="font-display text-2xl font-bold text-ink dark:text-white">Finances</h1>
       <p className="mt-1 text-sm text-[#6B7280] dark:text-white/50">
         Vue d&apos;ensemble de vos encaissements et factures.
