@@ -77,11 +77,11 @@ export default async function DashboardPage() {
   return (
     <div className="relative isolate min-h-full">
       {/* Fond décoratif — taches de couleur floutées, discret, dans l'esprit OliPay */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-20 -left-16 h-72 w-72 rounded-full bg-[#7D2AE7]/25 blur-3xl dark:bg-[#7D2AE7]/15" />
-        <div className="absolute -top-10 right-0 h-64 w-64 rounded-full bg-[#00C4CC]/25 blur-3xl dark:bg-[#00C4CC]/15" />
-        <div className="absolute top-64 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-[#2A89DA]/20 blur-3xl dark:bg-[#2A89DA]/10" />
-        <div className="absolute bottom-0 right-10 h-72 w-72 rounded-full bg-[#FE6F61]/25 blur-3xl dark:bg-[#FE6F61]/15" />
+      <div className="pointer-events-none absolute -left-[6vw] -right-[6vw] -top-8 -bottom-24 -z-10 overflow-hidden md:-top-10 md:-bottom-10">
+        <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-[#7D2AE7]/25 blur-3xl dark:bg-[#7D2AE7]/15" />
+        <div className="absolute -top-16 right-[-40px] h-80 w-80 rounded-full bg-[#00C4CC]/25 blur-3xl dark:bg-[#00C4CC]/15" />
+        <div className="absolute top-72 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-[#2A89DA]/20 blur-3xl dark:bg-[#2A89DA]/10" />
+        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#FE6F61]/25 blur-3xl dark:bg-[#FE6F61]/15" />
       </div>
 
       {/* ---------- MOBILE (inchangé) ---------- */}
