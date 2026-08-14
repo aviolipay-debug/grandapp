@@ -78,8 +78,8 @@ export default async function InvoicesPage() {
         Vue d&apos;ensemble de vos encaissements et factures.
       </p>
 
-      {/* Vue d'ensemble */}
-      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      {/* Vue d'ensemble — cartes 304x226 en rangée scrollable sur mobile, grille inchangée à partir de sm */}
+      <div className="mt-6 flex gap-[24px] overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-1 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible lg:grid-cols-4">
         <StatCard
           label="Encaissé"
           value={`${stats.encaisse.toLocaleString("fr-FR")} ${currency}`}
@@ -175,7 +175,7 @@ function StatCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-[#262626]">
+    <div className="w-[304px] h-[226px] shrink-0 snap-start rounded-[30px] border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-[#262626] sm:w-auto sm:h-auto sm:shrink sm:snap-none sm:rounded-2xl">
       <div
         className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl text-white"
         style={{ backgroundColor: accent }}
