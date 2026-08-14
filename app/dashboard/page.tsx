@@ -90,8 +90,8 @@ export default async function DashboardPage() {
           </div>
         )}
 
-        {/* Stats — cartes 304x226 en rangée scrollable sur mobile */}
-        <div className={`flex gap-[24px] overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-1 ${poppins.className}`}>
+        {/* Stats — synchronisées avec la version desktop */}
+        <div className={`grid grid-cols-2 gap-4 ${poppins.className}`}>
           <StatCard
             label="DEVIS"
             value={stats.devisGeneres}
@@ -276,7 +276,7 @@ function StatCard({
 }) {
   return (
     <div
-      className={`w-[304px] h-[226px] shrink-0 snap-start rounded-[30px] p-5 lg:w-auto lg:h-auto lg:shrink lg:snap-none lg:rounded-3xl ${
+      className={`rounded-3xl p-5 ${
         dark
           ? "bg-[#181818] text-white"
           : "border border-black/5 bg-white text-ink dark:border-white/10 dark:bg-[#262626] dark:text-white"
