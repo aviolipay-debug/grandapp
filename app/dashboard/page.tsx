@@ -75,7 +75,7 @@ export default async function DashboardPage() {
     })) ?? [];
 
   return (
-    <div className="relative isolate">
+    <div className="relative isolate min-h-full">
       {/* Fond décoratif — taches de couleur floutées, discret, dans l'esprit OliPay */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-20 -left-16 h-72 w-72 rounded-full bg-[#7D2AE7]/25 blur-3xl dark:bg-[#7D2AE7]/15" />
