@@ -83,25 +83,29 @@ export default async function InvoicesPage() {
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           label="Encaissé"
-          value={`${stats.encaisse.toLocaleString("fr-FR")} ${currency}`}
+          value={stats.encaisse.toLocaleString("fr-FR")}
+          subtitle={currency}
           accent="#00C4CC"
           icon={<Wallet size={18} />}
         />
         <StatCard
           label="Restant dû"
-          value={`${stats.restantDu.toLocaleString("fr-FR")} ${currency}`}
+          value={stats.restantDu.toLocaleString("fr-FR")}
+          subtitle={currency}
           accent="#2A89DA"
           icon={<Clock size={18} />}
         />
         <StatCard
-          label="Factures en retard"
+          label="Factures"
           value={stats.enRetard}
+          subtitle="en retard"
           accent="#E5533F"
           icon={<AlertTriangle size={18} />}
         />
         <StatCard
-          label="Factures émises"
+          label="Factures"
           value={stats.total}
+          subtitle="émises"
           accent="#7D2AE7"
           icon={<FileStack size={18} />}
         />
@@ -167,24 +171,29 @@ export default async function InvoicesPage() {
 function StatCard({
   label,
   value,
+  subtitle,
   accent,
   icon,
 }: {
   label: string;
   value: string | number;
+  subtitle: string;
   accent: string;
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-[#262626]">
-      <div
-        className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl text-white"
-        style={{ backgroundColor: accent }}
-      >
-        {icon}
+    <div className="rounded-3xl border border-black/5 bg-white p-5 text-ink dark:border-white/10 dark:bg-[#262626] dark:text-white">
+      <div className="flex items-start justify-between">
+        <span className="text-xs font-bold uppercase tracking-wide">{label}</span>
+        <div
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-white"
+          style={{ backgroundColor: accent }}
+        >
+          {icon}
+        </div>
       </div>
-      <p className="font-display whitespace-nowrap text-base font-bold text-ink dark:text-white sm:text-lg">{value}</p>
-      <p className="mt-0.5 text-xs text-[#1C1C1C]/50 dark:text-white/50">{label}</p>
+      <p className="font-display mt-4 whitespace-nowrap text-2xl font-extrabold sm:text-3xl">{value}</p>
+      <p className="mt-1 text-sm text-[#9CA3AF]">{subtitle}</p>
     </div>
   );
 }
