@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import LoadingOverlay from "../components/loading-overlay";
 
 export default function SignupPage() {
   const supabase = createClient();
@@ -61,7 +62,9 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center relative isolate overflow-hidden bg-[#F0F0F3] px-6 py-16 dark:bg-[#2F2F2F]">
+    <>
+      <LoadingOverlay show={loading || googleLoading} message={loading ? "Création en cours…" : "Connexion à Google…"} />
+      <main className="flex min-h-screen items-center justify-center relative isolate overflow-hidden bg-[#F0F0F3] px-6 py-16 dark:bg-[#2F2F2F]">
       {/* Fond décoratif — taches de couleur floutées, cohérent avec le dashboard */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-[#7D2AE7]/25 blur-3xl dark:bg-[#7D2AE7]/15" />
@@ -211,6 +214,7 @@ export default function SignupPage() {
           </>
         )}
       </div>
-    </main>
+      </main>
+    </>
   );
 }
