@@ -59,7 +59,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8">
         <Link
           href="/"
-          className="font-display mb-10 block text-center text-3xl font-semibold text-ink dark:text-white"
+          className="font-display mb-6 block text-center text-3xl font-semibold text-ink dark:text-white sm:mb-10"
         >
           OliPay<span className="text-stamp">.</span>
         </Link>
@@ -67,11 +67,11 @@ export default function LoginPage() {
         <h1 className="font-display mb-2 text-center text-3xl font-bold text-ink dark:text-white">
           Identifiez-vous
         </h1>
-        <p className="mb-10 text-center text-sm text-[#6B7280] dark:text-white/50">
+        <p className="mb-6 text-center text-sm text-[#6B7280] dark:text-white/50 sm:mb-10">
           Bon retour sur votre application préférée
         </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:gap-4">
           <input
             type="email"
             required
@@ -134,12 +134,12 @@ export default function LoginPage() {
 
         <Link
           href="/reset-password"
-          className="mt-5 block text-center text-sm font-medium text-ledger-deep underline underline-offset-2 dark:text-ledger"
+          className="mt-3 block text-center text-sm font-medium text-ledger-deep underline underline-offset-2 dark:text-ledger sm:mt-5"
         >
           Mot de passe oublié ?
         </Link>
 
-        <div className="my-7 flex items-center gap-3">
+        <div className="my-4 flex items-center gap-3 sm:my-7">
           <div className="h-px flex-1 bg-paperline dark:bg-white/10" />
           <span className="text-sm text-[#6B7280] dark:text-white/40">ou</span>
           <div className="h-px flex-1 bg-paperline dark:bg-white/10" />
@@ -172,7 +172,7 @@ export default function LoginPage() {
           {googleLoading ? "Connexion…" : "Continuer avec Google"}
         </button>
 
-        <p className="mt-8 text-center text-sm text-[#6B7280] dark:text-white/50">
+        <p className="mt-5 text-center text-sm text-[#6B7280] dark:text-white/50 sm:mt-8">
           Nouveau ici ?{" "}
           <Link href="/signup" className="font-semibold text-ledger-deep dark:text-ledger">
             Créez un compte
