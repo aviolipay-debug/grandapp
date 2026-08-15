@@ -46,49 +46,50 @@ export default function PaymentHistoryChart({
   periodTotal: number;
 }) {
   return (
-    <div className="rounded-3xl border border-black/5 bg-white px-3 py-5 dark:border-white/10 dark:bg-[#262626] sm:p-6">
+    <div className="rounded-3xl border border-black/5 bg-white px-3 py-4 dark:border-white/10 dark:bg-[#262626] sm:p-6">
       {/* En-tête : icône + titre à gauche, période à droite */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-3">
-          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
-            <BarChart3 size={18} />
+      <div className="flex items-start justify-between gap-2 sm:gap-3">
+        <div className="flex items-start gap-2 sm:gap-3">
+          <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10 sm:h-9 sm:w-9 sm:rounded-xl">
+            <BarChart3 size={14} className="sm:hidden" />
+            <BarChart3 size={18} className="hidden sm:block" />
           </div>
-          <h2 className="font-display text-lg font-bold leading-snug text-ink dark:text-white sm:text-xl">
+          <h2 className="font-display text-sm font-bold leading-snug text-ink dark:text-white sm:text-xl">
             Historique des
             <br />
             paiements
           </h2>
         </div>
-        <p className="shrink-0 whitespace-nowrap text-right text-sm text-[#9CA3AF]">
+        <p className="shrink-0 whitespace-nowrap text-right text-xs text-[#9CA3AF] sm:text-sm">
           6 derniers
           <br />
           mois
         </p>
       </div>
 
-      <div className="mt-4 h-px bg-black/5 dark:bg-white/10" />
+      <div className="mt-3 h-px bg-black/5 dark:bg-white/10 sm:mt-4" />
 
       {/* Résumé */}
-      <p className="mt-4 text-sm text-[#9CA3AF]">
+      <p className="mt-3 text-xs text-[#9CA3AF] sm:mt-4 sm:text-sm">
         Ce mois{" "}
-        <span className="text-base font-bold text-ink dark:text-white">
+        <span className="text-sm font-bold text-ink dark:text-white sm:text-base">
           {currentMonthTotal.toLocaleString("fr-FR")} {currency}
         </span>{" "}
         <span className="text-[#D1D5DB]">/</span> Total{" "}
-        <span className="text-base font-bold text-ink dark:text-white">
+        <span className="text-sm font-bold text-ink dark:text-white sm:text-base">
           {periodTotal.toLocaleString("fr-FR")} {currency}
         </span>
       </p>
 
       {/* Graphique */}
       {data.length === 0 ? (
-        <div className="flex h-48 items-center justify-center text-center text-sm text-[#6B7280] dark:text-white/50 sm:h-56">
+        <div className="flex h-36 items-center justify-center text-center text-xs text-[#6B7280] dark:text-white/50 sm:h-56 sm:text-sm">
           Aucun paiement enregistré pour l&apos;instant.
         </div>
       ) : (
-        <div className="mt-4 h-48 w-full sm:h-56">
+        <div className="mt-3 h-36 w-full sm:mt-4 sm:h-56">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 8, right: 4, left: -20, bottom: 8 }}>
+            <AreaChart data={data} margin={{ top: 8, right: 4, left: -24, bottom: 4 }}>
               <defs>
                 <linearGradient id="paymentFill" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#2A89DA" stopOpacity={0.25} />
@@ -102,19 +103,19 @@ export default function PaymentHistoryChart({
               />
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 11, fill: "#9CA3AF" }}
+                tick={{ fontSize: 9, fill: "#9CA3AF" }}
                 axisLine={false}
                 tickLine={false}
                 angle={-25}
                 textAnchor="end"
-                height={40}
-                dy={6}
+                height={32}
+                dy={4}
               />
               <YAxis
-                tick={{ fontSize: 11, fill: "#9CA3AF" }}
+                tick={{ fontSize: 9, fill: "#9CA3AF" }}
                 axisLine={false}
                 tickLine={false}
-                width={52}
+                width={40}
                 tickFormatter={(v: number) => `${v.toLocaleString("fr-FR")} ${currency}`}
               />
               <Tooltip
@@ -124,17 +125,17 @@ export default function PaymentHistoryChart({
                   borderRadius: 12,
                   border: "none",
                   boxShadow: "0 10px 30px -15px rgba(14,19,24,0.25)",
-                  fontSize: 13,
+                  fontSize: 12,
                 }}
               />
               <Area
                 type="monotone"
                 dataKey="total"
                 stroke="#2A89DA"
-                strokeWidth={2.5}
+                strokeWidth={2}
                 fill="url(#paymentFill)"
                 dot={(props: any) => renderDot({ ...props, dataLength: data.length })}
-                activeDot={{ r: 6 }}
+                activeDot={{ r: 5 }}
               />
             </AreaChart>
           </ResponsiveContainer>
