@@ -296,7 +296,6 @@ export default function OnboardingPage() {
       afterSave();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue.");
-    } finally {
       setLoading(false);
     }
   }
