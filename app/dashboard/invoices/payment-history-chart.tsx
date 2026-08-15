@@ -46,7 +46,7 @@ export default function PaymentHistoryChart({
   periodTotal: number;
 }) {
   return (
-    <div className="rounded-3xl border border-black/5 bg-white p-5 dark:border-white/10 dark:bg-[#262626] sm:p-6">
+    <div className="rounded-3xl border border-black/5 bg-white px-3 py-5 dark:border-white/10 dark:bg-[#262626] sm:p-6">
       {/* En-tête : icône + titre à gauche, période à droite */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
