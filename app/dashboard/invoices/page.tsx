@@ -133,12 +133,12 @@ export default async function InvoicesPage() {
       </div>
 
       {/* Historique des paiements */}
-      <div className="mt-6 rounded-3xl border border-black/5 bg-white p-5 dark:border-white/10 dark:bg-[#262626]">
+      <div className="mt-6 rounded-3xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-[#262626] sm:p-5">
         <h2 className="font-display text-base font-bold text-ink dark:text-white">
           Historique des paiements
         </h2>
         <p className="mt-0.5 text-sm text-[#9CA3AF]">Montant encaissé par mois</p>
-        <div className="mt-4">
+        <div className="mt-4 -mx-1 sm:mx-0">
           <PaymentHistoryChart data={monthlyPayments} currency={currency} />
         </div>
       </div>
