@@ -82,9 +82,18 @@ export default async function InvoicesPage() {
       monthlyMap.set(key, { label, total: amount });
     }
   }
-  const monthlyPayments = Array.from(monthlyMap.entries())
+  const monthlyPaymentsAll = Array.from(monthlyMap.entries())
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([, v]) => ({ month: v.label, total: v.total }));
+    .map(([key, v]) => ({ key, month: v.label, total: v.total }));
+
+  // On n'affiche que les 6 derniers mois sur la carte, comme la maquette.
+  const monthlyPayments = monthlyPaymentsAll.slice(-6).map(({ month, total }) => ({ month, total }));
+
+  const now = new Date();
+  const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const currentMonthTotal =
+    monthlyPaymentsAll.find((m) => m.key === currentMonthKey)?.total ?? 0;
+  const periodTotal = monthlyPayments.reduce((sum, m) => sum + m.total, 0);
 
   const stats = {
     encaisse: totalEncaisse,
@@ -133,14 +142,13 @@ export default async function InvoicesPage() {
       </div>
 
       {/* Historique des paiements */}
-      <div className="mt-6 rounded-3xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-[#262626] sm:p-5">
-        <h2 className="font-display text-base font-bold text-ink dark:text-white">
-          Historique des paiements
-        </h2>
-        <p className="mt-0.5 text-sm text-[#9CA3AF]">Montant encaissé par mois</p>
-        <div className="mt-4 -mx-1 sm:mx-0">
-          <PaymentHistoryChart data={monthlyPayments} currency={currency} />
-        </div>
+      <div className="mt-6">
+        <PaymentHistoryChart
+          data={monthlyPayments}
+          currency={currency}
+          currentMonthTotal={currentMonthTotal}
+          periodTotal={periodTotal}
+        />
       </div>
 
       {/* Liste des factures */}
