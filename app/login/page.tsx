@@ -27,9 +27,8 @@ export default function LoginPage() {
       password,
     });
 
-    setLoading(false);
-
     if (signInError) {
+      setLoading(false);
       setError("Email ou mot de passe incorrect.");
       return;
     }
