@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import DashboardHeader from "../dashboard/header";
 import BottomNav from "../dashboard/bottom-nav";
+import LoadingOverlay from "../components/loading-overlay";
 
 const steps = [
   { key: "structure", label: "Structure", desc: "Modèle d'organisation" },
@@ -327,6 +328,7 @@ export default function OnboardingPage() {
   if (mode === "loading") {
     return (
       <div className="flex min-h-screen flex-col bg-[#F7F8FB] font-sans text-ink dark:bg-[#2F2F2F] dark:text-white">
+        <LoadingOverlay show message="Chargement…" />
         <DashboardHeader />
         <main className="flex flex-1 items-center justify-center px-6 py-12 pb-24 md:pb-12">
           <p className="text-sm text-[#6B7280] dark:text-white/50">Chargement...</p>
@@ -339,6 +341,10 @@ export default function OnboardingPage() {
   // ---------- MODE "ASSISTANT" (première configuration) ----------
   return (
     <div className="flex min-h-screen flex-col bg-[#F7F8FB] font-sans text-ink dark:bg-[#2F2F2F] dark:text-white">
+      <LoadingOverlay
+        show={loading}
+        message={mode === "wizard" ? "Finalisation…" : "Enregistrement…"}
+      />
       <DashboardHeader />
       <main className="relative isolate flex flex-1 items-center justify-center overflow-hidden px-6 py-12 pb-24 md:pb-12">
         {/* Fond décoratif — taches de couleur floutées, cohérent avec le dashboard */}
