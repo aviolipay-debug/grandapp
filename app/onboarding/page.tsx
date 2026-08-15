@@ -334,7 +334,7 @@ export default function OnboardingPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F0F0F3] px-6 py-12 dark:bg-[#2F2F2F]">
       <div className="w-full max-w-md rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8">
-        <div className="mb-8 flex gap-2">
+        <div className="mb-5 flex gap-2 sm:mb-8">
           {steps.map((s, i) => (
             <div
               key={s.key}
@@ -348,10 +348,10 @@ export default function OnboardingPage() {
         <h1 className="font-display text-center text-2xl font-bold text-ink dark:text-white">
           {steps[step].label}
         </h1>
-        <p className="mb-6 text-center text-sm text-[#6B7280] dark:text-white/50">
+        <p className="mb-4 text-center text-sm text-[#6B7280] dark:text-white/50 sm:mb-6">
           {steps[step].desc}
         </p>
-        <div className="mb-6 h-px bg-paperline dark:bg-white/10" />
+        <div className="mb-4 h-px bg-paperline dark:bg-white/10 sm:mb-6" />
 
         {/* Étape 1 : Structure */}
         {step === 0 && (
@@ -359,10 +359,10 @@ export default function OnboardingPage() {
             <h2 className="font-display mb-1 text-xl font-bold text-ink dark:text-white">
               Personnalisez votre profil
             </h2>
-            <p className="mb-6 text-sm text-[#6B7280] dark:text-white/50">
+            <p className="mb-4 text-sm text-[#6B7280] dark:text-white/50 sm:mb-6">
               Créez votre compte et définissez la structure de votre entreprise.
             </p>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3 sm:gap-4">
               <div>
                 <label className={labelClass}>Nom de l&apos;entreprise *</label>
                 <input
@@ -397,10 +397,10 @@ export default function OnboardingPage() {
             <h2 className="font-display mb-1 text-xl font-bold text-ink dark:text-white">
               Où peut-on vous joindre ?
             </h2>
-            <p className="mb-6 text-sm text-[#6B7280] dark:text-white/50">
+            <p className="mb-4 text-sm text-[#6B7280] dark:text-white/50 sm:mb-6">
               Ces informations apparaîtront sur vos devis et factures.
             </p>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3 sm:gap-4">
               <div>
                 <label className={labelClass}>Siège social *</label>
                 <input
@@ -470,10 +470,10 @@ export default function OnboardingPage() {
             <h2 className="font-display mb-1 text-xl font-bold text-ink dark:text-white">
               Enregistrez vos informations fiscales
             </h2>
-            <p className="mb-6 text-sm text-[#6B7280] dark:text-white/50">
+            <p className="mb-4 text-sm text-[#6B7280] dark:text-white/50 sm:mb-6">
               Évitez les retards en préparant vos documents administratifs à l&apos;avance.
             </p>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3 sm:gap-4">
               <div>
                 <label className={labelClass}>N° Registre du commerce</label>
                 <input
@@ -511,10 +511,10 @@ export default function OnboardingPage() {
             <h2 className="font-display mb-1 text-xl font-bold text-ink dark:text-white">
               Ajoutez les fichiers joints nécessaires
             </h2>
-            <p className="mb-6 text-sm text-[#6B7280] dark:text-white/50">
+            <p className="mb-4 text-sm text-[#6B7280] dark:text-white/50 sm:mb-6">
               Assurez-vous que les fichiers sont dans un format compatible et de bonne qualité.
             </p>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3 sm:gap-4">
               <label className="flex cursor-pointer items-center gap-4 rounded-xl border border-paperline bg-white p-4 dark:border-white/10 dark:bg-[#2F2F2F]">
                 {logoPreview ? (
                   <img src={logoPreview} alt="Logo" className="h-10 w-10 rounded-lg object-cover" />
@@ -576,7 +576,7 @@ export default function OnboardingPage() {
             <h2 className="font-display mb-1 text-xl font-bold text-ink dark:text-white">
               Personnalisez votre style de facturation
             </h2>
-            <p className="mb-6 text-sm text-[#6B7280] dark:text-white/50">
+            <p className="mb-4 text-sm text-[#6B7280] dark:text-white/50 sm:mb-6">
               Choisissez simplement celui qui vous plaît.
             </p>
             <div className="grid grid-cols-2 gap-4">
@@ -610,7 +610,7 @@ export default function OnboardingPage() {
           </p>
         )}
 
-        <div className="mt-8 flex gap-3">
+        <div className="mt-5 flex gap-3 sm:mt-8">
           <button
             type="button"
             onClick={goBack}
@@ -648,4 +648,3 @@ export default function OnboardingPage() {
     </main>
   );
 }
-
