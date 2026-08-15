@@ -106,7 +106,15 @@ export default function LandingPage() {
         </Link>
       </header>
 
-      <section className="grid grid-cols-1 items-center gap-10 bg-[#F0F0F3] px-[6vw] pb-16 pt-6 dark:bg-[#2F2F2F] md:grid-cols-[1.1fr_0.9fr] md:pb-24 md:pt-8">
+      <section className="relative isolate overflow-hidden grid grid-cols-1 items-center gap-10 bg-[#F0F0F3] px-[6vw] pb-16 pt-6 dark:bg-[#2F2F2F] md:grid-cols-[1.1fr_0.9fr] md:pb-24 md:pt-8">
+        {/* Fond décoratif — taches de couleur floutées, cohérent avec le dashboard */}
+        <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-[#7D2AE7]/25 blur-3xl dark:bg-[#7D2AE7]/15" />
+          <div className="absolute -top-16 right-[-40px] h-80 w-80 rounded-full bg-[#00C4CC]/25 blur-3xl dark:bg-[#00C4CC]/15" />
+          <div className="absolute top-72 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-[#2A89DA]/20 blur-3xl dark:bg-[#2A89DA]/10" />
+          <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#FE6F61]/25 blur-3xl dark:bg-[#FE6F61]/15" />
+        </div>
+
         <div>
           <div className="mb-5 flex items-center gap-2.5 font-sans text-[13px] font-semibold uppercase tracking-widest text-ledger">
             <span className="inline-block h-0.5 w-5 rounded bg-stamp" />
