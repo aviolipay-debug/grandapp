@@ -37,29 +37,30 @@ export default async function InvoiceDetailPage({
   const currency = (invoice as any).currency ?? "FCFA";
   const clientName = (invoice as any).clients?.name ?? "—";
 
-  // Historique détaillé des paiements — table optionnelle. Si elle n'existe
-  // pas encore (ou si les colonnes diffèrent), on se rabat silencieusement
-  // sur l'affichage du seul montant total encaissé, sans faire planter la page.
-  let payments: { id: string; amount: number; payment_date: string | null; type: string | null }[] = [];
+  // Historique détaillé des paiements — chaque acompte/solde est enregistré
+  // par updateProjectStatusWithPayment (invoice_id, amount, method), avec
+  // created_at généré automatiquement par Supabase au moment de la saisie.
+  let payments: { id: string; amount: number; method: string | null; created_at: string | null }[] = [];
   try {
     const { data: paymentsData, error: paymentsError } = await supabase
       .from("payments")
-      .select("id, amount, payment_date, type")
+      .select("id, amount, method, created_at")
       .eq("invoice_id", params.id)
-      .order("payment_date", { ascending: true });
+      .order("created_at", { ascending: true });
 
     if (!paymentsError && paymentsData) {
       payments = paymentsData as any[];
     }
   } catch {
-    // Table absente ou schéma différent — on ignore et on utilise le repli.
+    // Repli silencieux si la requête échoue pour une raison imprévue.
   }
 
-  const paymentTypeLabels: Record<string, string> = {
-    acompte: "Acompte",
-    solde: "Solde",
-    partial: "Acompte",
-    full: "Solde",
+  const paymentMethodLabels: Record<string, string> = {
+    mobile_money: "Mobile Money",
+    bank_transfer: "Virement",
+    cash: "Espèces",
+    card: "Carte",
+    other: "Autre",
   };
 
   return (
@@ -85,6 +86,10 @@ export default async function InvoiceDetailPage({
           </div>
         </div>
 
+        <h2 className="mb-3 text-sm font-semibold text-ink dark:text-white">
+          Historique des paiements
+        </h2>
+
         {/* Résumé Total / Payé / Restant dû */}
         <div className="divide-y divide-paperline rounded-xl border border-paperline dark:divide-white/10 dark:border-white/10">
           <div className="flex items-center justify-between px-4 py-3">
@@ -107,10 +112,10 @@ export default async function InvoiceDetailPage({
           </div>
         </div>
 
-        {/* Historique des acomptes / paiements */}
+        {/* Détail des acomptes / paiements */}
         <div className="mt-6">
           <h2 className="mb-3 text-sm font-semibold text-ink dark:text-white">
-            Historique des paiements
+            Paiements enregistrés
           </h2>
 
           {payments.length > 0 ? (
@@ -119,11 +124,11 @@ export default async function InvoiceDetailPage({
                 <div key={p.id} className="flex items-center justify-between px-4 py-3">
                   <div>
                     <p className="text-sm font-medium text-ink dark:text-white">
-                      {paymentTypeLabels[p.type ?? ""] ?? "Paiement"}
+                      {paymentMethodLabels[p.method ?? ""] ?? "Paiement"}
                     </p>
-                    {p.payment_date && (
+                    {p.created_at && (
                       <p className="text-xs text-[#6B7280] dark:text-white/50">
-                        {formatDateFR(p.payment_date)}
+                        {formatDateFR(p.created_at)}
                       </p>
                     )}
                   </div>
