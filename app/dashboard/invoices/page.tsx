@@ -160,7 +160,7 @@ export default async function InvoicesPage() {
           </p>
         ) : (
           <div className="divide-y divide-paperline dark:divide-white/10">
-            {invoices.map((inv) => {
+            {invoices.slice(0, 5).map((inv) => {
               const remaining = Number(inv.total) - Number(inv.amount_paid);
               const effectiveStatus = getEffectiveStatus(inv);
               return (
