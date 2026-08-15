@@ -4,6 +4,7 @@ import { Receipt, ChevronRight, Wallet, Clock, AlertTriangle, FileStack } from "
 import { createClient } from "@/lib/supabase/server";
 import { formatDateFR } from "@/lib/format-date";
 import { poppins } from "@/lib/fonts";
+import PaymentHistoryChart from "./payment-history-chart";
 
 const statusLabels: Record<string, string> = {
   draft: "Brouillon",
@@ -49,7 +50,7 @@ export default async function InvoicesPage() {
   // représentent pas un encaissement et fausseraient les totaux financiers.
   const { data: invoicesData } = await supabase
     .from("invoices")
-    .select("id, invoice_number, status, total, amount_paid, currency, due_date, clients(name)")
+    .select("id, invoice_number, status, total, amount_paid, currency, due_date, created_at, clients(name)")
     .eq("document_type", "facture")
     .order("created_at", { ascending: false });
 
@@ -64,6 +65,26 @@ export default async function InvoicesPage() {
   }, 0);
 
   const facturesEnRetard = invoices.filter((inv) => getEffectiveStatus(inv) === "overdue").length;
+
+  // Historique des paiements — somme de amount_paid groupée par mois de
+  // création de la facture (created_at), triée chronologiquement.
+  const monthlyMap = new Map<string, { label: string; total: number }>();
+  for (const inv of invoices) {
+    if (!inv.created_at) continue;
+    const d = new Date(inv.created_at);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const label = d.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
+    const amount = Number(inv.amount_paid);
+    const existing = monthlyMap.get(key);
+    if (existing) {
+      existing.total += amount;
+    } else {
+      monthlyMap.set(key, { label, total: amount });
+    }
+  }
+  const monthlyPayments = Array.from(monthlyMap.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, v]) => ({ month: v.label, total: v.total }));
 
   const stats = {
     encaisse: totalEncaisse,
@@ -89,11 +110,11 @@ export default async function InvoicesPage() {
           icon={<Wallet size={18} />}
         />
         <StatCard
-          label="Restant dû"
-          value={stats.restantDu.toLocaleString("fr-FR")}
-          subtitle={currency}
-          accent="#2A89DA"
-          icon={<Clock size={18} />}
+          label="Factures"
+          value={stats.total}
+          subtitle="émises"
+          accent="#7D2AE7"
+          icon={<FileStack size={18} />}
         />
         <StatCard
           label="Factures"
@@ -103,12 +124,23 @@ export default async function InvoicesPage() {
           icon={<AlertTriangle size={18} />}
         />
         <StatCard
-          label="Factures"
-          value={stats.total}
-          subtitle="émises"
-          accent="#7D2AE7"
-          icon={<FileStack size={18} />}
+          label="Restant dû"
+          value={stats.restantDu.toLocaleString("fr-FR")}
+          subtitle={currency}
+          accent="#2A89DA"
+          icon={<Clock size={18} />}
         />
+      </div>
+
+      {/* Historique des paiements */}
+      <div className="mt-6 rounded-3xl border border-black/5 bg-white p-5 dark:border-white/10 dark:bg-[#262626]">
+        <h2 className="font-display text-base font-bold text-ink dark:text-white">
+          Historique des paiements
+        </h2>
+        <p className="mt-0.5 text-sm text-[#9CA3AF]">Montant encaissé par mois</p>
+        <div className="mt-4">
+          <PaymentHistoryChart data={monthlyPayments} currency={currency} />
+        </div>
       </div>
 
       {/* Liste des factures */}
