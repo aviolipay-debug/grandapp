@@ -195,7 +195,7 @@ export default function SignupPage() {
             </button>
 
             <p className="mt-5 text-center text-sm text-[#6B7280] dark:text-white/50 sm:mt-8">
-              Nouveau ici ?{" "}
+              Déjà un compte ?{" "}
               <Link href="/login" className="font-semibold text-ledger-deep dark:text-ledger">
                 Se connecter
               </Link>
