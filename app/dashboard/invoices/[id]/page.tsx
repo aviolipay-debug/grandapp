@@ -121,20 +121,18 @@ export default async function InvoiceDetailPage({
           {payments.length > 0 ? (
             <div className="divide-y divide-paperline rounded-xl border border-paperline dark:divide-white/10 dark:border-white/10">
               {payments.map((p) => (
-                <div key={p.id} className="flex items-center justify-between px-4 py-3">
-                  <div>
-                    <p className="text-sm font-medium text-ink dark:text-white">
-                      {paymentMethodLabels[p.method ?? ""] ?? "Paiement"}
-                    </p>
-                    {p.created_at && (
-                      <p className="text-xs text-[#6B7280] dark:text-white/50">
-                        {formatDateFR(p.created_at)}
-                      </p>
-                    )}
+                <div key={p.id} className="flex flex-col gap-1 px-4 py-3">
+                  <p className="text-xs text-[#6B7280] dark:text-white/50">
+                    {p.created_at ? formatDateFR(p.created_at) : "—"}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-sm font-semibold text-ink dark:text-white">
+                      {Number(p.amount).toLocaleString("fr-FR")} {currency}
+                    </span>
+                    <span className="text-xs font-medium text-[#6B7280] dark:text-white/50">
+                      {paymentMethodLabels[p.method ?? ""] ?? "Autre"}
+                    </span>
                   </div>
-                  <span className="font-mono text-sm font-semibold text-ink dark:text-white">
-                    {Number(p.amount).toLocaleString("fr-FR")} {currency}
-                  </span>
                 </div>
               ))}
             </div>
