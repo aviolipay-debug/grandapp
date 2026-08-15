@@ -63,6 +63,21 @@ const faqs = [
 export default function LandingPage() {
   return (
     <main id="top">
+      {/* Animation "flottement" de la carte facture dans le hero */}
+      <style>{`
+        @keyframes float-card {
+          0%, 100% { transform: translateY(0) rotate(-6deg); }
+          50% { transform: translateY(-14px) rotate(-6deg); }
+        }
+        .animate-float-card {
+          animation: float-card 4.5s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-float-card {
+            animation: none;
+          }
+        }
+      `}</style>
       {/* Header mobile : fond blanc, logo centré, toggle jour/nuit fonctionnel */}
       <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center border-b border-paperline bg-white px-[6vw] py-4 dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
         <div className="flex items-center">
@@ -160,7 +175,7 @@ export default function LandingPage() {
 
         <div className="relative order-last flex justify-center md:order-none">
           <div className="absolute h-[260px] w-[260px] rounded-full bg-gradient-to-br from-ledger-deep to-ledger opacity-40 blur-3xl" />
-          <div className="relative w-[300px] -rotate-6 rounded-[20px] bg-white px-6 py-[30px] text-sm text-ink shadow-[0_24px_60px_-20px_rgba(125,42,231,0.35)]">
+          <div className="relative w-[300px] -rotate-6 rounded-[20px] bg-white px-6 py-[30px] text-sm text-ink shadow-[0_24px_60px_-20px_rgba(125,42,231,0.35)] animate-float-card">
             <div className="mb-[18px] inline-block rounded-full bg-gradient-to-r from-ledger to-ledger-deep px-3 py-1 text-[11px] font-bold tracking-wide text-white">
               FACTURE N˚ 0142
             </div>
