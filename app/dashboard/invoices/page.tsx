@@ -183,7 +183,7 @@ function StatCard({
       >
         {icon}
       </div>
-      <p className="font-display text-lg font-bold text-ink dark:text-white">{value}</p>
+      <p className="font-display whitespace-nowrap text-base font-bold text-ink dark:text-white sm:text-lg">{value}</p>
       <p className="mt-0.5 text-xs text-[#1C1C1C]/50 dark:text-white/50">{label}</p>
     </div>
   );
