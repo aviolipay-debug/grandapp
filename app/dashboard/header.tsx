@@ -59,10 +59,10 @@ export default function DashboardHeader() {
           OliPay<span className="text-stamp">.</span>
         </Link>
 
-        <nav className="hidden items-center gap-12 md:flex">
+        <nav className="hidden items-center gap-14 md:flex">
           <Link
             href="/dashboard"
-            className={`text-base font-bold hover:text-ledger-deep dark:hover:text-ledger ${
+            className={`text-lg font-bold hover:text-ledger-deep dark:hover:text-ledger ${
               pathname === "/dashboard"
                 ? "text-ledger-deep dark:text-ledger"
                 : "text-ink dark:text-white"
@@ -73,7 +73,7 @@ export default function DashboardHeader() {
 
           <Link
             href="/dashboard/invoices"
-            className={`text-base font-bold hover:text-ledger-deep dark:hover:text-ledger ${
+            className={`text-lg font-bold hover:text-ledger-deep dark:hover:text-ledger ${
               isActive("/dashboard/invoices")
                 ? "text-ledger-deep dark:text-ledger"
                 : "text-ink dark:text-white"
@@ -86,7 +86,7 @@ export default function DashboardHeader() {
           <div className="group relative py-2">
             <button
               type="button"
-              className={`flex items-center gap-1.5 text-base font-bold hover:text-ledger-deep dark:hover:text-ledger ${
+              className={`flex items-center gap-2 text-lg font-bold hover:text-ledger-deep dark:hover:text-ledger ${
                 isGestionActive
                   ? "text-ledger-deep dark:text-ledger"
                   : "text-ink dark:text-white"
@@ -94,7 +94,7 @@ export default function DashboardHeader() {
             >
               Gestion
               <ChevronDown
-                size={16}
+                size={18}
                 className="transition-transform group-hover:rotate-180"
               />
             </button>
@@ -119,7 +119,7 @@ export default function DashboardHeader() {
 
           <Link
             href="/onboarding"
-            className={`text-base font-bold hover:text-ledger-deep dark:hover:text-ledger ${
+            className={`text-lg font-bold hover:text-ledger-deep dark:hover:text-ledger ${
               isActive("/onboarding")
                 ? "text-ledger-deep dark:text-ledger"
                 : "text-ink dark:text-white"
