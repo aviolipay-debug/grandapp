@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import DashboardHeader from "../dashboard/header";
+import BottomNav from "../dashboard/bottom-nav";
 
 const steps = [
   { key: "structure", label: "Structure", desc: "Modèle d'organisation" },
@@ -324,24 +326,30 @@ export default function OnboardingPage() {
 
   if (mode === "loading") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#F0F0F3] dark:bg-[#2F2F2F]">
-        <p className="text-sm text-[#6B7280] dark:text-white/50">Chargement...</p>
-      </main>
+      <div className="flex min-h-screen flex-col bg-[#F7F8FB] font-sans text-ink dark:bg-[#2F2F2F] dark:text-white">
+        <DashboardHeader />
+        <main className="flex flex-1 items-center justify-center px-6 py-12 pb-24 md:pb-12">
+          <p className="text-sm text-[#6B7280] dark:text-white/50">Chargement...</p>
+        </main>
+        <BottomNav />
+      </div>
     );
   }
 
   // ---------- MODE "ASSISTANT" (première configuration) ----------
   return (
-    <main className="flex min-h-screen items-center justify-center relative isolate overflow-hidden bg-[#F0F0F3] px-6 py-12 dark:bg-[#2F2F2F]">
-      {/* Fond décoratif — taches de couleur floutées, cohérent avec le dashboard */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-[#7D2AE7]/25 blur-3xl dark:bg-[#7D2AE7]/15" />
-        <div className="absolute -top-16 right-[-40px] h-80 w-80 rounded-full bg-[#00C4CC]/25 blur-3xl dark:bg-[#00C4CC]/15" />
-        <div className="absolute top-72 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-[#2A89DA]/20 blur-3xl dark:bg-[#2A89DA]/10" />
-        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#FE6F61]/25 blur-3xl dark:bg-[#FE6F61]/15" />
-      </div>
+    <div className="flex min-h-screen flex-col bg-[#F7F8FB] font-sans text-ink dark:bg-[#2F2F2F] dark:text-white">
+      <DashboardHeader />
+      <main className="relative isolate flex flex-1 items-center justify-center overflow-hidden px-6 py-12 pb-24 md:pb-12">
+        {/* Fond décoratif — taches de couleur floutées, cohérent avec le dashboard */}
+        <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-[#7D2AE7]/25 blur-3xl dark:bg-[#7D2AE7]/15" />
+          <div className="absolute -top-16 right-[-40px] h-80 w-80 rounded-full bg-[#00C4CC]/25 blur-3xl dark:bg-[#00C4CC]/15" />
+          <div className="absolute top-72 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-[#2A89DA]/20 blur-3xl dark:bg-[#2A89DA]/10" />
+          <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#FE6F61]/25 blur-3xl dark:bg-[#FE6F61]/15" />
+        </div>
 
-      <div className="w-full max-w-md rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8">
+        <div className="w-full max-w-md rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8">
         <div className="mb-5 flex gap-2 sm:mb-8">
           {steps.map((s, i) => (
             <div
@@ -652,7 +660,9 @@ export default function OnboardingPage() {
             </button>
           )}
         </div>
-      </div>
-    </main>
+        </div>
+      </main>
+      <BottomNav />
+    </div>
   );
 }
