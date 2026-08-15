@@ -104,8 +104,8 @@ export default async function InvoicesPage() {
 
   return (
     <div className={poppins.className}>
-      <h1 className="font-display text-2xl font-bold text-ink dark:text-white">Finances</h1>
-      <p className="mt-1 text-sm text-[#6B7280] dark:text-white/50">
+      <h1 className="hidden font-display text-2xl font-bold text-ink dark:text-white sm:block">Finances</h1>
+      <p className="mt-1 hidden text-sm text-[#6B7280] dark:text-white/50 sm:block">
         Vue d&apos;ensemble de vos encaissements et factures.
       </p>
 
