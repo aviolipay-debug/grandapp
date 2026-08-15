@@ -167,7 +167,7 @@ export default async function InvoicesPage() {
                 <Link
                   key={inv.id}
                   href={`/dashboard/invoices/${inv.id}`}
-                  className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
+                  className="flex items-center gap-3 px-3 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
                 >
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7FAF9] text-[#00A6AC] dark:bg-white/10">
                     <Receipt size={18} />
@@ -222,7 +222,7 @@ function StatCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-3xl border border-black/5 bg-white p-5 text-ink dark:border-white/10 dark:bg-[#262626] dark:text-white">
+    <div className="rounded-3xl border border-black/5 bg-white px-3 py-4 text-ink dark:border-white/10 dark:bg-[#262626] dark:text-white sm:p-5">
       <div className="flex items-start justify-between">
         <span className="text-xs font-bold uppercase tracking-wide">{label}</span>
         <div
