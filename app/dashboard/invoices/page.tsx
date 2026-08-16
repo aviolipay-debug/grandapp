@@ -110,7 +110,7 @@ export default async function InvoicesPage() {
       </p>
 
       {/* Vue d'ensemble */}
-      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mt-3 grid grid-cols-2 gap-4 sm:mt-6 lg:grid-cols-4">
         <StatCard
           label="Encaissé"
           value={stats.encaisse.toLocaleString("fr-FR")}
