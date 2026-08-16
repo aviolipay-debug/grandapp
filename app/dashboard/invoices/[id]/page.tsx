@@ -4,6 +4,12 @@ import { ArrowLeft, Receipt } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateFR } from "@/lib/format-date";
 
+// Cette page affiche des données financières qui changent à chaque paiement
+// enregistré (montant, restant dû, historique) — on désactive donc tout
+// cache Next.js pour garantir que chaque visite reflète l'état réel en base.
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function InvoiceDetailPage({
   params,
 }: {
