@@ -43,7 +43,7 @@ export default function BottomNav() {
   const isFinance = pathname?.startsWith("/dashboard/invoices");
   const isGestion =
     pathname?.startsWith("/dashboard/clients") || pathname?.startsWith("/dashboard/quotes");
-  const isProfil = pathname?.startsWith("/onboarding");
+  const isProfil = pathname?.startsWith("/dashboard/profile") || pathname?.startsWith("/onboarding");
 
   // Ferme la popup en consommant l'entrée d'historique factice si elle existe,
   // sans naviguer ailleurs (utilisé pour le fond noir et le bouton Gestion).
@@ -139,7 +139,7 @@ export default function BottomNav() {
           Gestion
         </button>
         <Link
-          href="/onboarding"
+          href="/dashboard/profile"
           onClick={() => setGestionOpen(false)}
           className={`flex flex-col items-center justify-center gap-1 py-2.5 text-[11px] font-bold ${
             isProfil ? "text-ledger-deep dark:text-ledger" : "text-ink/60 dark:text-white/60"
