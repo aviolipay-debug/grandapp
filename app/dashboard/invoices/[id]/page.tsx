@@ -78,7 +78,7 @@ export default async function InvoiceDetailPage({
   };
 
   return (
-    <div className="min-h-[70vh] py-8">
+    <div className="min-h-[70vh] pb-8 pt-4 sm:py-8">
       <div className="mx-auto flex w-full max-w-lg flex-col gap-6 lg:max-w-none">
         <Link
           href="/dashboard/invoices"
