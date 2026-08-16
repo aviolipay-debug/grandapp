@@ -118,9 +118,9 @@ export default function DashboardHeader() {
           </div>
 
           <Link
-            href="/onboarding"
+            href="/dashboard/profile"
             className={`text-lg font-bold hover:text-ledger-deep dark:hover:text-ledger ${
-              isActive("/onboarding")
+              isActive("/dashboard/profile")
                 ? "text-ledger-deep dark:text-ledger"
                 : "text-ink dark:text-white"
             }`}
