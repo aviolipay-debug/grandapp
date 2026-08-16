@@ -54,11 +54,16 @@ export default async function InvoiceDetailPage({
       .eq("invoice_id", params.id)
       .order("created_at", { ascending: true });
 
+    if (paymentsError) {
+      // Visible dans Vercel → Logs, sous la fonction de cette page.
+      console.error("Erreur SELECT payments:", paymentsError.message, paymentsError.details ?? "");
+    }
+
     if (!paymentsError && paymentsData) {
       payments = paymentsData as any[];
     }
-  } catch {
-    // Repli silencieux si la requête échoue pour une raison imprévue.
+  } catch (err) {
+    console.error("Exception inattendue sur la requête payments:", err);
   }
 
   const paymentMethodLabels: Record<string, string> = {
