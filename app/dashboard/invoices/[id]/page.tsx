@@ -75,7 +75,7 @@ export default async function InvoiceDetailPage({
   };
 
   return (
-    <div className="flex min-h-[70vh] items-center justify-center px-4 py-8">
+    <div className="flex min-h-[70vh] items-center justify-center py-8">
       <div className="w-full rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#262626] dark:shadow-none sm:p-8">
         <Link
           href="/dashboard/invoices"
