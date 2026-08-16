@@ -19,7 +19,9 @@ export default async function InvoiceDetailPage({
 
   const { data: invoice } = await supabase
     .from("invoices")
-    .select("id, invoice_number, total, amount_paid, currency, due_date, clients(name)")
+    .select(
+      "id, invoice_number, total, amount_paid, currency, due_date, clients(name), quotes(projects(name))"
+    )
     .eq("id", params.id)
     .single();
 
@@ -42,6 +44,7 @@ export default async function InvoiceDetailPage({
   const remaining = total - paid;
   const currency = (invoice as any).currency ?? "FCFA";
   const clientName = (invoice as any).clients?.name ?? "—";
+  const projectName = (invoice as any).quotes?.projects?.name ?? null;
 
   // Historique détaillé des paiements — chaque acompte/solde est enregistré
   // par updateProjectStatusWithPayment (invoice_id, amount, method), avec
@@ -75,17 +78,18 @@ export default async function InvoiceDetailPage({
   };
 
   return (
-    <div className="flex min-h-[70vh] items-center justify-center py-8">
-      <div className="mx-auto w-full max-w-lg rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#262626] dark:shadow-none sm:p-8 lg:max-w-none">
+    <div className="min-h-[70vh] py-8">
+      <div className="mx-auto flex w-full max-w-lg flex-col gap-6 lg:max-w-none">
         <Link
           href="/dashboard/invoices"
-          className="mb-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[#6B7280] hover:text-ink dark:text-white/50 dark:hover:text-white"
+          className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-[#6B7280] hover:text-ink dark:text-white/50 dark:hover:text-white"
         >
           <ArrowLeft size={16} />
           Retour
         </Link>
 
-        <div className="mb-6 flex items-center gap-3">
+        {/* En-tête : informations de la facture (pas encadré, juste au-dessus des 2 cartes) */}
+        <div className="flex items-center gap-3 px-1">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#E7FAF9] text-[#00A6AC] dark:bg-white/10">
             <Receipt size={20} />
           </div>
@@ -93,38 +97,43 @@ export default async function InvoiceDetailPage({
             <p className="truncate font-display text-lg font-bold text-ink dark:text-white">
               {(invoice as any).invoice_number}
             </p>
-            <p className="truncate text-sm text-[#6B7280] dark:text-white/50">{clientName}</p>
+            <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
+              {clientName}
+              {projectName ? ` · ${projectName}` : ""}
+            </p>
           </div>
         </div>
 
-        <h2 className="mb-3 text-sm font-semibold text-ink dark:text-white">
-          Historique des paiements
-        </h2>
+        {/* Carte : Historique des paiements (résumé Total / Payé / Restant dû) */}
+        <div className="rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#262626] dark:shadow-none sm:p-8">
+          <h2 className="mb-3 text-sm font-semibold text-ink dark:text-white">
+            Historique des paiements
+          </h2>
 
-        {/* Résumé Total / Payé / Restant dû */}
-        <div className="divide-y divide-paperline rounded-xl border border-paperline dark:divide-white/10 dark:border-white/10">
-          <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm text-[#6B7280] dark:text-white/50">Total</span>
-            <span className="font-mono text-sm font-bold text-ink dark:text-white">
-              {total.toLocaleString("fr-FR")} {currency}
-            </span>
-          </div>
-          <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm text-[#6B7280] dark:text-white/50">Payé</span>
-            <span className="font-mono text-sm font-bold text-[#00A6AC]">
-              {paid.toLocaleString("fr-FR")} {currency}
-            </span>
-          </div>
-          <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm text-[#6B7280] dark:text-white/50">Restant dû</span>
-            <span className="font-mono text-sm font-bold text-[#E5533F]">
-              {remaining.toLocaleString("fr-FR")} {currency}
-            </span>
+          <div className="divide-y divide-paperline rounded-xl border border-paperline dark:divide-white/10 dark:border-white/10">
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-sm text-[#6B7280] dark:text-white/50">Total</span>
+              <span className="font-mono text-sm font-bold text-ink dark:text-white">
+                {total.toLocaleString("fr-FR")} {currency}
+              </span>
+            </div>
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-sm text-[#6B7280] dark:text-white/50">Payé</span>
+              <span className="font-mono text-sm font-bold text-[#00A6AC]">
+                {paid.toLocaleString("fr-FR")} {currency}
+              </span>
+            </div>
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-sm text-[#6B7280] dark:text-white/50">Restant dû</span>
+              <span className="font-mono text-sm font-bold text-[#E5533F]">
+                {remaining.toLocaleString("fr-FR")} {currency}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Détail des acomptes / paiements */}
-        <div className="mt-6">
+        {/* Carte : Paiements enregistrés (détail de chaque acompte/solde) */}
+        <div className="rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#262626] dark:shadow-none sm:p-8">
           <h2 className="mb-3 text-sm font-semibold text-ink dark:text-white">
             Paiements enregistrés
           </h2>
