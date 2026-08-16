@@ -76,7 +76,7 @@ export default async function InvoiceDetailPage({
 
   return (
     <div className="flex min-h-[70vh] items-center justify-center py-8">
-      <div className="w-full rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#262626] dark:shadow-none sm:p-8">
+      <div className="mx-auto w-full max-w-3xl rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#262626] dark:shadow-none sm:p-8">
         <Link
           href="/dashboard/invoices"
           className="mb-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[#6B7280] hover:text-ink dark:text-white/50 dark:hover:text-white"
