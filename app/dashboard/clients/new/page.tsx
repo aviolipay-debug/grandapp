@@ -15,6 +15,13 @@ export default function NewClientPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Formate le numéro à la volée avec un espace tous les 2 chiffres
+  // (ex: "01 66 08 13 51"), comme pour le Contact primaire dans l'onboarding.
+  function handlePhoneChange(value: string) {
+    const formatted = value.replace(/\D/g, "").replace(/(\d{2})(?=\d)/g, "$1 ");
+    setForm((prev) => ({ ...prev, phone: formatted }));
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -151,7 +158,7 @@ export default function NewClientPage() {
               </label>
               <input
                 value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                onChange={(e) => handlePhoneChange(e.target.value)}
                 className="w-full rounded-lg border border-paperline bg-white px-4 py-2.5 text-sm transition-colors focus:border-ledger-deep focus:outline-none focus:ring-2 focus:ring-ledger-deep/10 dark:border-white/10 dark:bg-[#262626] dark:text-white"
               />
             </div>
