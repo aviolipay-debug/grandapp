@@ -194,7 +194,11 @@ export default function OnboardingPage() {
   }, [supabase]);
 
   function updateContact(i: number, field: keyof Contact, value: string) {
-    setContacts((prev) => prev.map((c, idx) => (idx === i ? { ...c, [field]: value } : c)));
+    // Pour le numéro, on formate à la volée avec un espace tous les 2 chiffres
+    // (ex: "01 66 08 13 51"), tout en laissant l'indicatif tel quel.
+    const finalValue =
+      field === "numero" ? value.replace(/\D/g, "").replace(/(\d{2})(?=\d)/g, "$1 ") : value;
+    setContacts((prev) => prev.map((c, idx) => (idx === i ? { ...c, [field]: finalValue } : c)));
   }
 
   function updateTaxId(i: number, value: string) {
