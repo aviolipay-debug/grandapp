@@ -5,7 +5,6 @@ export type LineItem = {
   unit_price: number;
   line_total: number;
 };
-
 export type DocumentData = {
   kind: "Devis" | "Facture" | "Bordereau";
   number: string;
@@ -13,18 +12,19 @@ export type DocumentData = {
   issueDate: string;
   dueOrExpiryDate: string | null;
   companyName: string;
-  companyAddress: string | null;
+  companyAddress: string | null; // Siège social — affiché sous le nom de l'ÉMETTEUR
   companyLogoUrl: string | null;
-  companyPhone?: string | null; // NOUVEAU — affiché sous l'ÉMETTEUR sur le modèle AKO
+  companyPhone?: string | null; // Contact primaire (indicatif + numéro) — affiché sous l'ÉMETTEUR
   clientName: string;
-  clientEmail: string | null;
+  clientPhone?: string | null; // NOUVEAU — remplace l'email sous le nom du CLIENT
+  clientEmail: string | null; // Conservé dans le type mais plus affiché sur le PDF
   clientAddress: string | null;
   items: LineItem[];
   subtotal: number;
-  discountRate?: number | null; // NOUVEAU — remise en %, appliquée avant la TVA
+  discountRate?: number | null; // Remise en %, appliquée avant la TVA
   taxRate: number;
   total: number;
-  amountPaid?: number | null; // NOUVEAU — acompte(s) déjà enregistré(s), affiché sous la Remise
+  amountPaid?: number | null; // Acompte(s) déjà enregistré(s), affiché sous la Remise
   currency: string;
   notes: string | null;
 };
