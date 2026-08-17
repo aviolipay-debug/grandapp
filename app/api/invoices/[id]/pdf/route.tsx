@@ -12,22 +12,28 @@ export async function GET(
   const { data: invoice } = await supabase
     .from("invoices")
     .select(
-      "*, clients(name, email, address), profiles:owner_id(company_name, company_address, company_logo_url, company_phone, invoice_template)"
+      "*, clients(name, email, address, phone), profiles:owner_id(company_name, company_address, company_logo_url, company_phone, company_contacts, invoice_template)"
     )
     .eq("id", params.id)
     .single();
-
   if (!invoice) {
     return new Response("Facture introuvable", { status: 404 });
   }
-
   const { data: items } = await supabase
     .from("invoice_items")
     .select("*")
     .eq("invoice_id", params.id)
     .order("sort_order");
-
   const kind = invoice.document_type === "bordereau" ? "Bordereau" : "Facture";
+
+  // Numéro affiché sous l'ÉMETTEUR = le "Contact primaire" saisi dans le
+  // profil (profiles.company_contacts[0]), pas l'ancien champ company_phone.
+  const primaryContact = Array.isArray(invoice.profiles?.company_contacts)
+    ? invoice.profiles.company_contacts[0]
+    : null;
+  const emitterPhone = primaryContact?.numero
+    ? `${primaryContact.indicatif ?? ""} ${primaryContact.numero}`.trim()
+    : invoice.profiles?.company_phone ?? null;
 
   const stream = await renderToStream(
     <DocumentPDF
@@ -41,8 +47,9 @@ export async function GET(
         companyName: invoice.profiles?.company_name ?? "Votre entreprise",
         companyAddress: invoice.profiles?.company_address ?? null,
         companyLogoUrl: invoice.profiles?.company_logo_url ?? null,
-        companyPhone: invoice.profiles?.company_phone ?? null,
+        companyPhone: emitterPhone,
         clientName: invoice.clients?.name ?? "Client",
+        clientPhone: invoice.clients?.phone ?? null,
         clientEmail: invoice.clients?.email ?? null,
         clientAddress: invoice.clients?.address ?? null,
         items: items ?? [],
@@ -56,12 +63,10 @@ export async function GET(
       }}
     />
   );
-
   const filename = slugifyFilename(
     invoice.objet,
     `${invoice.document_type}-${invoice.invoice_number}`
   );
-
   return new Response(stream as unknown as ReadableStream, {
     headers: {
       "Content-Type": "application/pdf",
