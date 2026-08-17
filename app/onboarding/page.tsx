@@ -441,15 +441,6 @@ export default function OnboardingPage() {
                   className={inputClass}
                 />
               </div>
-              <div>
-                <label className={labelClass}>Téléphone</label>
-                <input
-                  value={companyPhone}
-                  onChange={(e) => setCompanyPhone(e.target.value)}
-                  placeholder="Affiché sur vos documents"
-                  className={inputClass}
-                />
-              </div>
               {contacts.map((c, i) => (
                 <div key={i} className="flex gap-3">
                   <div className="w-24">
