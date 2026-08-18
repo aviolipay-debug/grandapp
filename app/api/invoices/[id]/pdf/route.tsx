@@ -24,11 +24,6 @@ export async function GET(
   if (!invoice) {
     return new Response("Facture introuvable", { status: 404 });
   }
-
-  // Débogage temporaire — visible dans Vercel → Logs. À retirer une fois
-  // le problème du numéro client manquant sur le PDF résolu.
-  console.log("DEBUG invoice.clients:", JSON.stringify(invoice.clients));
-  console.log("DEBUG invoice.client_id:", invoice.client_id);
   const { data: items } = await supabase
     .from("invoice_items")
     .select("*")
@@ -59,7 +54,7 @@ export async function GET(
         companyLogoUrl: invoice.profiles?.company_logo_url ?? null,
         companyPhone: emitterPhone,
         clientName: invoice.clients?.name ?? "Client",
-        clientPhone: invoice.clients?.phone ?? null,
+        clientPhone: invoice.clients?.phone ?? "[DEBUG: phone absent ou vide]",
         clientEmail: invoice.clients?.email ?? null,
         clientAddress: invoice.clients?.address ?? null,
         items: items ?? [],
