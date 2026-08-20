@@ -2,7 +2,8 @@ import { renderToStream } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateFR } from "@/lib/format-date";
 import DocumentPDF from "@/lib/pdf/document";
-
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 export async function GET(
   _req: Request,
   { params }: { params: { id: string } }
