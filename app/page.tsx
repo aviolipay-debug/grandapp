@@ -70,7 +70,7 @@ export default function LandingPage() {
           50% { transform: translateY(-14px) rotate(-6deg); }
         }
         .animate-float-card {
-          animation: float-card 4.5s ease-in-out infinite;
+          animation: float-card 3s ease-in-out infinite;
         }
         @media (prefers-reduced-motion: reduce) {
           .animate-float-card {
