@@ -15,11 +15,12 @@ const styles = StyleSheet.create({
   headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
   logoBox: {
     backgroundColor: YELLOW,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     maxWidth: 200,
     height: 54,
     justifyContent: "center",
+    alignItems: "center",
   },
   logoText: { fontSize: 16, fontWeight: 700, letterSpacing: 0.5 },
   docTypeRow: { flexDirection: "row", alignItems: "flex-end" },
@@ -89,7 +90,7 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
               {data.companyLogoUrl ? (
                 <Image
                   src={data.companyLogoUrl}
-                  style={{ width: "100%", height: "100%", maxWidth: 168, objectFit: "contain" }}
+                  style={{ width: "100%", height: "100%", maxWidth: 180, objectFit: "contain" }}
                 />
               ) : (
                 <Text style={styles.logoText}>{data.companyName}</Text>
