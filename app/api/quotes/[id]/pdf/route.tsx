@@ -1,7 +1,6 @@
 import { renderToStream } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateFR } from "@/lib/format-date";
-import { slugifyFilename } from "@/lib/slugify-filename";
 import DocumentPDF from "@/lib/pdf/document";
 
 export async function GET(
@@ -12,20 +11,27 @@ export async function GET(
   const { data: quote } = await supabase
     .from("quotes")
     .select(
-      "*, clients(name, email, address), profiles:owner_id(company_name, company_address, company_logo_url, company_phone, invoice_template)"
+      "*, clients(name, email, address, phone), profiles:owner_id(company_name, company_address, company_logo_url, company_phone, company_contacts, invoice_template)"
     )
     .eq("id", params.id)
     .single();
-
   if (!quote) {
     return new Response("Devis introuvable", { status: 404 });
   }
-
   const { data: items } = await supabase
     .from("quote_items")
     .select("*")
     .eq("quote_id", params.id)
     .order("sort_order");
+
+  // Numéro affiché sous l'ÉMETTEUR = le "Contact primaire" saisi dans le
+  // profil (profiles.company_contacts[0]), pas l'ancien champ company_phone.
+  const primaryContact = Array.isArray(quote.profiles?.company_contacts)
+    ? quote.profiles.company_contacts[0]
+    : null;
+  const emitterPhone = primaryContact?.numero
+    ? `${primaryContact.indicatif ?? ""} ${primaryContact.numero}`.trim()
+    : quote.profiles?.company_phone ?? null;
 
   const stream = await renderToStream(
     <DocumentPDF
@@ -39,8 +45,9 @@ export async function GET(
         companyName: quote.profiles?.company_name ?? "Votre entreprise",
         companyAddress: quote.profiles?.company_address ?? null,
         companyLogoUrl: quote.profiles?.company_logo_url ?? null,
-        companyPhone: quote.profiles?.company_phone ?? null,
+        companyPhone: emitterPhone,
         clientName: quote.clients?.name ?? "Client",
+        clientPhone: quote.clients?.phone ?? null,
         clientEmail: quote.clients?.email ?? null,
         clientAddress: quote.clients?.address ?? null,
         items: items ?? [],
@@ -54,12 +61,14 @@ export async function GET(
     />
   );
 
-  const filename = slugifyFilename(quote.objet, `devis-${quote.quote_number}`);
+  // Nom de fichier fixe : DEVIS_N°_{numero}.pdf (ne dépend plus de l'objet).
+  const filenameBase = `DEVIS_N°_${quote.quote_number}`;
+  const asciiFallback = `DEVIS_No_${quote.quote_number}`;
 
   return new Response(stream as unknown as ReadableStream, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="${filename}.pdf"`,
+      "Content-Disposition": `inline; filename="${asciiFallback}.pdf"; filename*=UTF-8''${encodeURIComponent(filenameBase)}.pdf`,
     },
   });
 }
