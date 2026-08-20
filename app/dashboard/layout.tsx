@@ -1,7 +1,6 @@
 // app/dashboard/layout.tsx
 import DashboardHeader from "./header";
 import BottomNav from "./bottom-nav";
-import BackButtonGuard from "./back-button-guard";
 
 export default function DashboardLayout({
   children,
@@ -10,7 +9,6 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col bg-[#F7F8FB] font-sans text-ink dark:bg-[#2F2F2F] dark:text-white">
-      <BackButtonGuard />
       <DashboardHeader />
       <main className="relative isolate flex-1 overflow-hidden px-[6vw] py-8 pb-24 md:py-10 md:pb-10">
         {/* Fond décoratif — taches de couleur floutées, appliqué à toutes les pages du dashboard */}
