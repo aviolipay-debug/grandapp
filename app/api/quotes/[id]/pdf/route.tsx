@@ -2,13 +2,12 @@ import { renderToStream } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateFR } from "@/lib/format-date";
 import DocumentPDF from "@/lib/pdf/document";
+
+// Le PDF doit toujours refléter les données les plus récentes (client,
+// paiements, profil) — on désactive tout cache Next.js sur cette route.
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-headers: {
-  "Content-Type": "application/pdf",
-  "Content-Disposition": `inline; filename="${asciiFallback}.pdf"; filename*=UTF-8''${encodeURIComponent(filenameBase)}.pdf`,
-  "Cache-Control": "no-store, max-age=0",
-},
+
 export async function GET(
   _req: Request,
   { params }: { params: { id: string } }
@@ -75,6 +74,7 @@ export async function GET(
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `inline; filename="${asciiFallback}.pdf"; filename*=UTF-8''${encodeURIComponent(filenameBase)}.pdf`,
+      "Cache-Control": "no-store, max-age=0",
     },
   });
 }
