@@ -1,7 +1,6 @@
 import { renderToStream } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateFR } from "@/lib/format-date";
-import { slugifyFilename } from "@/lib/slugify-filename";
 import DocumentPDF from "@/lib/pdf/document";
 
 // Le PDF doit toujours refléter les données les plus récentes (client,
@@ -29,6 +28,7 @@ export async function GET(
     .select("*")
     .eq("invoice_id", params.id)
     .order("sort_order");
+
   const kind = invoice.document_type === "bordereau" ? "Bordereau" : "Facture";
 
   // Numéro affiché sous l'ÉMETTEUR = le "Contact primaire" saisi dans le
@@ -54,7 +54,7 @@ export async function GET(
         companyLogoUrl: invoice.profiles?.company_logo_url ?? null,
         companyPhone: emitterPhone,
         clientName: invoice.clients?.name ?? "Client",
-        clientPhone: invoice.clients?.phone ?? "[DEBUG: phone absent ou vide]",
+        clientPhone: invoice.clients?.phone ?? null,
         clientEmail: invoice.clients?.email ?? null,
         clientAddress: invoice.clients?.address ?? null,
         items: items ?? [],
@@ -68,14 +68,16 @@ export async function GET(
       }}
     />
   );
-  const filename = slugifyFilename(
-    invoice.objet,
-    `${invoice.document_type}-${invoice.invoice_number}`
-  );
+
+  // Nom de fichier fixe : FACTURE_N°_{numero}.pdf ou BORDEREAU_N°_{numero}.pdf
+  // (ne dépend plus de l'objet).
+  const filenameBase = `${kind.toUpperCase()}_N°_${invoice.invoice_number}`;
+  const asciiFallback = `${kind.toUpperCase()}_No_${invoice.invoice_number}`;
+
   return new Response(stream as unknown as ReadableStream, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="${filename}.pdf"`,
+      "Content-Disposition": `inline; filename="${asciiFallback}.pdf"; filename*=UTF-8''${encodeURIComponent(filenameBase)}.pdf`,
       "Cache-Control": "no-store, max-age=0",
     },
   });
