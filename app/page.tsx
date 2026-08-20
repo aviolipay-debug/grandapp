@@ -1,6 +1,7 @@
 import Link from "next/link";
 import MobileMenu from "./mobile-menu";
 import ThemeToggle from "./theme-toggle";
+import BackButtonGuard from "./back-button-guard";
 
 const features = [
   {
@@ -63,6 +64,7 @@ const faqs = [
 export default function LandingPage() {
   return (
     <main id="top">
+      <BackButtonGuard />
       {/* Animation "flottement" de la carte facture dans le hero */}
       <style>{`
         @keyframes float-card {
