@@ -13,7 +13,14 @@ const styles = StyleSheet.create({
   sideBar: { position: "absolute", left: 0, top: 90, width: 10, height: 130, backgroundColor: YELLOW },
 
   headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
-  logoBox: { backgroundColor: YELLOW, paddingHorizontal: 16, paddingVertical: 14, maxWidth: 200 },
+  logoBox: {
+    backgroundColor: YELLOW,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    maxWidth: 200,
+    height: 54,
+    justifyContent: "center",
+  },
   logoText: { fontSize: 16, fontWeight: 700, letterSpacing: 0.5 },
   docTypeRow: { flexDirection: "row", alignItems: "flex-end" },
   docType: { fontSize: 40, fontWeight: 700, letterSpacing: 1 },
@@ -80,7 +87,10 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
           <View style={styles.headerRow}>
             <View style={styles.logoBox}>
               {data.companyLogoUrl ? (
-                <Image src={data.companyLogoUrl} style={{ height: 26, maxWidth: 130, objectFit: "contain" }} />
+                <Image
+                  src={data.companyLogoUrl}
+                  style={{ width: "100%", height: "100%", maxWidth: 168, objectFit: "contain" }}
+                />
               ) : (
                 <Text style={styles.logoText}>{data.companyName}</Text>
               )}
