@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import BackButtonGuard from "./back-button-guard";
 
 export const metadata: Metadata = {
   title: "OliPay — Devis, factures et comptes, tenus au propre",
@@ -28,7 +27,6 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body bg-paper text-ink transition-colors dark:bg-[#2F2F2F] dark:text-white">
-        <BackButtonGuard />
         {children}
       </body>
     </html>
