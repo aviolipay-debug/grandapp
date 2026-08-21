@@ -5,6 +5,7 @@ export type LineItem = {
   unit_price: number;
   line_total: number;
 };
+
 export type DocumentData = {
   kind: "Devis" | "Facture" | "Bordereau";
   number: string;
@@ -27,4 +28,23 @@ export type DocumentData = {
   amountPaid?: number | null; // Acompte(s) déjà enregistré(s), affiché sous la Remise
   currency: string;
   notes: string | null;
+};
+
+// Reçu de paiement — document distinct de Devis/Facture/Bordereau, rendu avec
+// un template minimaliste dédié (voir templates/template-recu.tsx), sans
+// passer par le dispatch DocumentPDF/getTemplateComponent.
+export type ReceiptData = {
+  receiptNumber: string;
+  paymentDate: string;
+  amount: number;
+  currency: string;
+  methodLabel: string; // libellé déjà traduit (ex. "Mobile Money")
+  companyName: string;
+  companyLogoUrl: string | null;
+  companyPhone: string | null;
+  companyAddress: string | null;
+  clientName: string;
+  clientPhone: string | null;
+  invoiceNumber: string; // référence de la Facture concernée
+  objet?: string | null;
 };
