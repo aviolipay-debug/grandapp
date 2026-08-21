@@ -197,7 +197,7 @@ export default function ProjectStatusButtons({
                   }
                   className="w-full rounded-lg border border-paperline bg-white px-3 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
                 />
-                {modalStatus === "termine" && remainingDue !== null && (
+                {remainingDue !== null && (
                   <p className="mt-1 text-xs text-[#6B7280] dark:text-white/40">
                     Restant dû actuellement : {remainingDue.toLocaleString("fr-FR")} {currency}
                   </p>
