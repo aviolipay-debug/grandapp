@@ -16,14 +16,17 @@ export default function ProjectStatusButtons({
   currentStatus,
   remainingDue,
   currency,
+  hasQuote,
 }: {
   projectId: string;
   clientId: string;
   currentStatus: string;
   remainingDue: number | null;
   currency: string;
+  hasQuote: boolean;
 }) {
   const [modalStatus, setModalStatus] = useState<"en_cours" | "termine" | null>(null);
+  const [showNoQuoteAlert, setShowNoQuoteAlert] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   function handleClick(value: "en_cours" | "attente" | "termine") {
@@ -33,11 +36,21 @@ export default function ProjectStatusButtons({
       });
       return;
     }
+
+    if (!hasQuote) {
+      setShowNoQuoteAlert(true);
+      return;
+    }
+
     setModalStatus(value);
   }
 
   function closeModal() {
     setModalStatus(null);
+  }
+
+  function closeNoQuoteAlert() {
+    setShowNoQuoteAlert(false);
   }
 
   async function handleSubmit(formData: FormData) {
@@ -65,6 +78,23 @@ export default function ProjectStatusButtons({
           </button>
         ))}
       </div>
+
+      {showNoQuoteAlert && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center dark:bg-[#262626]">
+            <h2 className="font-display text-lg font-semibold text-ink dark:text-white">
+              Aucun Devis rattaché
+            </h2>
+            <button
+              type="button"
+              onClick={closeNoQuoteAlert}
+              className="mt-5 w-full rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      )}
 
       {modalStatus && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
