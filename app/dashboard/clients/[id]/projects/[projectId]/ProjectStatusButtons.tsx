@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { HelpCircle } from "lucide-react";
 import { updateProjectStatus, updateProjectStatusWithPayment } from "./actions";
 
 const projectStatusOptions: { value: "en_cours" | "attente" | "termine"; label: string }[] = [
@@ -27,6 +28,7 @@ export default function ProjectStatusButtons({
 }) {
   const [modalStatus, setModalStatus] = useState<"en_cours" | "termine" | null>(null);
   const [showNoQuoteAlert, setShowNoQuoteAlert] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   function handleClick(value: "en_cours" | "attente" | "termine") {
@@ -77,7 +79,42 @@ export default function ProjectStatusButtons({
             {opt.label}
           </button>
         ))}
+
+        <button
+          type="button"
+          onClick={() => setShowHelp(true)}
+          aria-label="Comment fonctionnent les statuts de projet"
+          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-paperline text-[#6B7280] hover:border-[#00A6AC] hover:text-[#00A6AC] dark:border-white/15 dark:text-white/40"
+        >
+          <HelpCircle size={13} strokeWidth={2} />
+        </button>
       </div>
+
+      {showHelp && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 dark:bg-[#262626]">
+            <h2 className="font-display text-lg font-semibold text-ink dark:text-white">
+              Comment fonctionnent les statuts
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-[#4B5563] dark:text-white/70">
+              <strong className="text-ink dark:text-white">En attente</strong> : le devis a été
+              envoyé au client, aucun paiement n&apos;a encore été reçu.{" "}
+              <strong className="text-ink dark:text-white">En cours</strong> : un acompte a été
+              reçu et le projet démarre — la Facture et le Bordereau de livraison sont générés
+              automatiquement.{" "}
+              <strong className="text-ink dark:text-white">Terminé</strong> : le solde a été reçu
+              et le projet est clôturé.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowHelp(false)}
+              className="mt-5 w-full rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
+            >
+              Compris
+            </button>
+          </div>
+        </div>
+      )}
 
       {showNoQuoteAlert && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
