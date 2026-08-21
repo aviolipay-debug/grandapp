@@ -4,6 +4,7 @@ import { FileText, Users, FolderKanban, Clock, Folder, FolderPlus } from "lucide
 import { createClient } from "@/lib/supabase/server"; // adapte le chemin si besoin
 import { poppins } from "@/lib/fonts";
 import ProjetsRecentsSection from "./projets-recents";
+import DashboardExitGuard from "./dashboard-exit-guard";
 
 export default async function DashboardPage() {
   const supabase = createClient();
@@ -76,6 +77,8 @@ export default async function DashboardPage() {
 
   return (
     <>
+      <DashboardExitGuard />
+
       {/* ---------- MOBILE (inchangé) ---------- */}
       <div className="lg:hidden flex flex-col gap-8 max-w-6xl">
         {/* En-tête — le bouton disparaît une fois le compte configuré */}
