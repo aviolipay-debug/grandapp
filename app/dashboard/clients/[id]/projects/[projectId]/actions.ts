@@ -60,12 +60,15 @@ export async function updateProjectStatus(
 // À chaque utilisation, la Facture et le Bordereau sont d'abord resynchronisés
 // avec le devis actuel (montants, lignes, remise, TVA) pour rester cohérents
 // même si le devis a été modifié après leur première génération.
+//
+// Retourne l'id du paiement enregistré sur la Facture (pas le Bordereau), pour
+// permettre d'afficher immédiatement un lien "Télécharger le reçu" côté client.
 export async function updateProjectStatusWithPayment(
   projectId: string,
   clientId: string,
   status: "en_cours" | "termine",
   formData: FormData
-) {
+): Promise<{ paymentId: string | null }> {
   const supabase = createClient();
   const amount = Number(formData.get("amount"));
   const method = String(formData.get("method"));
@@ -81,31 +84,41 @@ export async function updateProjectStatusWithPayment(
     .limit(1)
     .maybeSingle();
 
-  if (!quote) return;
+  if (!quote) return { paymentId: null };
 
   // 3. Resynchronise Facture + Bordereau avec le devis actuel.
   await syncInvoicesFromQuote(quote.id);
 
   const { data: invoices } = await supabase
     .from("invoices")
-    .select("id, amount_paid")
+    .select("id, amount_paid, document_type")
     .eq("quote_id", quote.id);
 
-  if (!invoices || invoices.length === 0) return;
+  if (!invoices || invoices.length === 0) return { paymentId: null };
 
   if (!amount || amount <= 0) {
     revalidatePath(`/dashboard/clients/${clientId}/projects/${projectId}`);
     revalidatePath("/dashboard/invoices");
-    return;
+    return { paymentId: null };
   }
 
   // 4. Enregistre le même paiement sur chacun des deux documents (Facture + Bordereau).
+  let facturePaymentId: string | null = null;
+
   for (const inv of invoices) {
-    await supabase.from("payments").insert({
-      invoice_id: inv.id,
-      amount,
-      method,
-    });
+    const { data: insertedPayment } = await supabase
+      .from("payments")
+      .insert({
+        invoice_id: inv.id,
+        amount,
+        method,
+      })
+      .select("id")
+      .single();
+
+    if (inv.document_type === "facture" && insertedPayment) {
+      facturePaymentId = insertedPayment.id;
+    }
 
     const newAmountPaid = Number(inv.amount_paid) + amount;
     const newStatus = newAmountPaid >= Number(quote.total) ? "paid" : "partially_paid";
@@ -118,6 +131,8 @@ export async function updateProjectStatusWithPayment(
 
   revalidatePath(`/dashboard/clients/${clientId}/projects/${projectId}`);
   revalidatePath("/dashboard/invoices");
+
+  return { paymentId: facturePaymentId };
 }
 
 async function generateInvoicesForProject(projectId: string) {
