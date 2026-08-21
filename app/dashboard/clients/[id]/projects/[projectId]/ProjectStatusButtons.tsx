@@ -29,6 +29,7 @@ export default function ProjectStatusButtons({
   const [modalStatus, setModalStatus] = useState<"en_cours" | "termine" | null>(null);
   const [showNoQuoteAlert, setShowNoQuoteAlert] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [submittedPaymentId, setSubmittedPaymentId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function handleClick(value: "en_cours" | "attente" | "termine") {
@@ -57,8 +58,15 @@ export default function ProjectStatusButtons({
 
   async function handleSubmit(formData: FormData) {
     if (!modalStatus) return;
-    await updateProjectStatusWithPayment(projectId, clientId, modalStatus, formData);
+    const result = await updateProjectStatusWithPayment(projectId, clientId, modalStatus, formData);
     setModalStatus(null);
+    if (result?.paymentId) {
+      setSubmittedPaymentId(result.paymentId);
+    }
+  }
+
+  function closeReceiptConfirmation() {
+    setSubmittedPaymentId(null);
   }
 
   return (
@@ -111,6 +119,34 @@ export default function ProjectStatusButtons({
               className="mt-5 w-full rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
             >
               Compris
+            </button>
+          </div>
+        </div>
+      )}
+
+      {submittedPaymentId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center dark:bg-[#262626]">
+            <h2 className="font-display text-lg font-semibold text-ink dark:text-white">
+              Paiement enregistré
+            </h2>
+            <p className="mt-1 text-sm text-[#6B7280] dark:text-white/50">
+              Un reçu a été généré pour ce paiement.
+            </p>
+            <a
+              href={`/api/payments/${submittedPaymentId}/pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 block w-full rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
+            >
+              Télécharger le reçu
+            </a>
+            <button
+              type="button"
+              onClick={closeReceiptConfirmation}
+              className="mt-3 w-full rounded-lg border border-paperline px-4 py-2.5 text-sm font-semibold text-[#4B5563] dark:border-white/15 dark:text-white/60"
+            >
+              Fermer
             </button>
           </div>
         </div>
