@@ -95,7 +95,8 @@ export default async function ProjectDetailPage({
         )}
       </div>
 
-      {/* Statut du projet — "En cours" et "Terminé" ouvrent une popup de paiement */}
+      {/* Statut du projet — "En cours" et "Terminé" ouvrent une popup de paiement,
+          ou une alerte "Aucun Devis rattaché" si aucun devis n'existe encore. */}
       <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-[#6B7280] dark:text-white/40">
         Statut du projet
       </p>
@@ -105,6 +106,7 @@ export default async function ProjectDetailPage({
         currentStatus={project.status}
         remainingDue={remainingDue}
         currency={facture?.currency ?? "FCFA"}
+        hasQuote={!!quotes && quotes.length > 0}
       />
 
       <div className="mt-6 overflow-hidden rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626]">
