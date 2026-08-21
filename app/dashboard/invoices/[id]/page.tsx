@@ -1,6 +1,6 @@
 // app/dashboard/invoices/[id]/page.tsx
 import Link from "next/link";
-import { ArrowLeft, Receipt } from "lucide-react";
+import { ArrowLeft, Receipt, Download } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateFR } from "@/lib/format-date";
 
@@ -141,18 +141,29 @@ export default async function InvoiceDetailPage({
           {payments.length > 0 ? (
             <div className="divide-y divide-paperline rounded-xl border border-paperline dark:divide-white/10 dark:border-white/10">
               {payments.map((p) => (
-                <div key={p.id} className="flex flex-col gap-1 px-4 py-3">
-                  <p className="text-xs text-[#6B7280] dark:text-white/50">
-                    {p.created_at ? formatDateFR(p.created_at) : "—"}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-sm font-semibold text-ink dark:text-white">
-                      {Number(p.amount).toLocaleString("fr-FR")} {currency}
-                    </span>
-                    <span className="text-xs font-medium text-[#6B7280] dark:text-white/50">
-                      {paymentMethodLabels[p.method ?? ""] ?? "Autre"}
-                    </span>
+                <div key={p.id} className="flex items-center justify-between gap-3 px-4 py-3">
+                  <div className="flex min-w-0 flex-col gap-1">
+                    <p className="text-xs text-[#6B7280] dark:text-white/50">
+                      {p.created_at ? formatDateFR(p.created_at) : "—"}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-sm font-semibold text-ink dark:text-white">
+                        {Number(p.amount).toLocaleString("fr-FR")} {currency}
+                      </span>
+                      <span className="text-xs font-medium text-[#6B7280] dark:text-white/50">
+                        {paymentMethodLabels[p.method ?? ""] ?? "Autre"}
+                      </span>
+                    </div>
                   </div>
+                  <a
+                    href={`/api/payments/${p.id}/pdf`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex shrink-0 items-center gap-1.5 rounded-lg border border-paperline px-3 py-1.5 text-xs font-semibold text-[#4B5563] hover:border-[#00A6AC] hover:text-[#00A6AC] dark:border-white/15 dark:text-white/60"
+                  >
+                    <Download size={13} />
+                    Reçu
+                  </a>
                 </div>
               ))}
             </div>
