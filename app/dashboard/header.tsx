@@ -7,6 +7,7 @@ import { LogOut, ChevronDown } from "lucide-react";
 import ThemeToggle from "../theme-toggle";
 import SignOutButton from "./sign-out-button";
 import { createClient } from "@/lib/supabase/client"; // adapte le chemin si besoin
+import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
 
 export default function DashboardHeader() {
   const pathname = usePathname();
@@ -35,7 +36,7 @@ export default function DashboardHeader() {
         </div>
         <Link
           href="/dashboard"
-          className="font-display justify-self-center text-2xl font-semibold text-ink dark:text-white"
+          className={`${vastron.className} justify-self-center text-2xl font-semibold text-ink dark:text-white`}
         >
           OliPay<span className="text-stamp">.</span>
         </Link>
@@ -54,7 +55,7 @@ export default function DashboardHeader() {
       <header className="sticky top-0 z-50 hidden items-center justify-between border-b border-paperline bg-paper px-[6vw] py-8 dark:border-white/10 dark:bg-[#2F2F2F] md:flex">
         <Link
           href="/dashboard"
-          className="font-display text-2xl font-semibold text-ink dark:text-white"
+          className={`${vastron.className} text-2xl font-semibold text-ink dark:text-white`}
         >
           OliPay<span className="text-stamp">.</span>
         </Link>
