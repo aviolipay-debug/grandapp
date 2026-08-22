@@ -1,6 +1,7 @@
 import Link from "next/link";
 import MobileMenu from "./mobile-menu";
 import ThemeToggle from "./theme-toggle";
+import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
 
 const features = [
   {
@@ -83,7 +84,7 @@ export default function LandingPage() {
         <div className="flex items-center">
           <ThemeToggle />
         </div>
-        <div className="font-display justify-self-center text-2xl font-semibold text-ink dark:text-white">
+        <div className={`${vastron.className} justify-self-center text-2xl font-semibold text-ink dark:text-white`}>
           OliPay<span className="text-stamp">.</span>
         </div>
         <div className="flex items-center justify-end">
@@ -93,7 +94,7 @@ export default function LandingPage() {
 
       {/* Header desktop : version précédente restaurée (fond clair, logo à gauche, nav au centre, CTA à droite) */}
       <header className="sticky top-0 z-50 hidden items-center justify-between border-b border-paperline bg-paper px-[6vw] py-7 dark:border-white/10 dark:bg-[#2F2F2F] md:flex">
-        <div className="font-display text-2xl font-semibold text-ink dark:text-white">
+        <div className={`${vastron.className} text-2xl font-semibold text-ink dark:text-white`}>
           OliPay<span className="text-stamp">.</span>
         </div>
         <nav className="hidden gap-8 md:flex">
