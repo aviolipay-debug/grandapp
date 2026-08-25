@@ -226,42 +226,42 @@ export default function LandingPage() {
               reçu tamponné au premier plan — la promesse du produit rendue visible. */}
           <div className="relative h-[300px] w-[300px] md:h-[340px]">
             <div
-              className="animate-doc-loop-a absolute inset-x-0 top-9 mx-auto w-[260px] rounded-[18px] border border-paperline bg-white/80 px-6 py-6 text-ink/50 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-white/40"
+              className="animate-doc-loop-a absolute inset-x-0 top-9 mx-auto w-[300px] rounded-[20px] border border-paperline bg-white/80 px-6 py-[30px] text-sm text-ink/50 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-white/40"
               style={{ ["--doc-rotate" as string]: "-15deg" }}
             >
-              <div className="mb-3 text-[11px] font-bold uppercase tracking-wide">
-                Devis N˚ 0140
+              <div className="mb-[18px] inline-block rounded-full bg-stamp px-3 py-1 text-[11px] font-bold tracking-wide text-white opacity-90">
+                DEVIS N˚ 0140
               </div>
-              <div className="flex justify-between border-b border-current/20 py-1.5 text-[0.82rem] opacity-80">
+              <div className="flex justify-between border-b border-current/20 py-[7px] text-[0.88rem] opacity-80">
                 <span>Peinture façade</span>
                 <span>140 000</span>
               </div>
-              <div className="flex justify-between border-b border-current/20 py-1.5 text-[0.82rem] opacity-80">
+              <div className="flex justify-between border-b border-current/20 py-[7px] text-[0.88rem] opacity-80">
                 <span>Fournitures</span>
                 <span>35 000</span>
               </div>
-              <div className="mt-2.5 flex justify-between text-[0.85rem] font-bold opacity-90">
+              <div className="mt-3.5 flex justify-between text-base font-bold opacity-90">
                 <span>TOTAL CFA</span>
                 <span>175 000</span>
               </div>
             </div>
 
             <div
-              className="animate-doc-loop-b absolute inset-x-0 top-4 mx-auto w-[280px] rounded-[18px] border border-paperline bg-white px-6 py-6 text-ink shadow-md dark:border-white/10 dark:bg-[#3a3a3a] dark:text-white"
+              className="animate-doc-loop-b absolute inset-x-0 top-4 mx-auto w-[300px] rounded-[20px] border border-paperline bg-white px-6 py-[30px] text-sm text-ink shadow-md dark:border-white/10 dark:bg-[#3a3a3a] dark:text-white"
               style={{ ["--doc-rotate" as string]: "-9deg" }}
             >
-              <div className="mb-3 inline-block rounded-full bg-gold px-3 py-1 text-[11px] font-bold tracking-wide text-white">
+              <div className="mb-[18px] inline-block rounded-full bg-gradient-to-r from-ledger to-ledger-deep px-3 py-1 text-[11px] font-bold tracking-wide text-white">
                 FACTURE N˚ 0141
               </div>
-              <div className="flex justify-between border-b border-paperline py-1.5 text-[0.85rem] opacity-90 dark:border-white/10">
+              <div className="flex justify-between border-b border-paperline py-[7px] text-[0.88rem] dark:border-white/10">
                 <span>Installation électrique</span>
                 <span>160 000</span>
               </div>
-              <div className="flex justify-between border-b border-paperline py-1.5 text-[0.85rem] opacity-90 dark:border-white/10">
+              <div className="flex justify-between border-b border-paperline py-[7px] text-[0.88rem] dark:border-white/10">
                 <span>Main d&apos;œuvre</span>
                 <span>45 000</span>
               </div>
-              <div className="mt-2.5 flex justify-between text-[0.9rem] font-bold">
+              <div className="mt-3.5 flex justify-between text-base font-bold">
                 <span>TOTAL CFA</span>
                 <span>205 000</span>
               </div>
