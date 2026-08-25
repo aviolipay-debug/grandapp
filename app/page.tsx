@@ -232,8 +232,18 @@ export default function LandingPage() {
               <div className="mb-3 text-[11px] font-bold uppercase tracking-wide">
                 Devis N˚ 0140
               </div>
-              <div className="mb-2 h-2 w-3/4 rounded bg-current opacity-30" />
-              <div className="h-2 w-1/2 rounded bg-current opacity-30" />
+              <div className="flex justify-between border-b border-current/20 py-1.5 text-[0.82rem] opacity-80">
+                <span>Peinture façade</span>
+                <span>140 000</span>
+              </div>
+              <div className="flex justify-between border-b border-current/20 py-1.5 text-[0.82rem] opacity-80">
+                <span>Fournitures</span>
+                <span>35 000</span>
+              </div>
+              <div className="mt-2.5 flex justify-between text-[0.85rem] font-bold opacity-90">
+                <span>TOTAL CFA</span>
+                <span>175 000</span>
+              </div>
             </div>
 
             <div
@@ -243,8 +253,18 @@ export default function LandingPage() {
               <div className="mb-3 inline-block rounded-full bg-gold px-3 py-1 text-[11px] font-bold tracking-wide text-white">
                 FACTURE N˚ 0141
               </div>
-              <div className="mb-2 h-2 w-2/3 rounded bg-current opacity-20" />
-              <div className="h-2 w-1/3 rounded bg-current opacity-20" />
+              <div className="flex justify-between border-b border-paperline py-1.5 text-[0.85rem] opacity-90 dark:border-white/10">
+                <span>Installation électrique</span>
+                <span>160 000</span>
+              </div>
+              <div className="flex justify-between border-b border-paperline py-1.5 text-[0.85rem] opacity-90 dark:border-white/10">
+                <span>Main d&apos;œuvre</span>
+                <span>45 000</span>
+              </div>
+              <div className="mt-2.5 flex justify-between text-[0.9rem] font-bold">
+                <span>TOTAL CFA</span>
+                <span>205 000</span>
+              </div>
             </div>
 
             <div
