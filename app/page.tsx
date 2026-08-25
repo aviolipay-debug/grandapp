@@ -66,9 +66,8 @@ const faqs = [
 export default function LandingPage() {
   return (
     <main id="top">
-      {/* Animations du hero : flottement de la carte du dessus, entrée en éventail
-          des 3 documents (devis → facture → reçu), et le tampon "PAYÉ" qui s'abat
-          une fois la pile installée. */}
+      {/* Animations du hero : cycle infini de 12s qui rejoue en boucle la scène
+          devis → facture → facture payée + tampon, puis se réinitialise. */}
       <style>{`
         @keyframes float-card {
           0%, 100% { transform: translateY(0) rotate(-6deg); }
@@ -77,28 +76,41 @@ export default function LandingPage() {
         .animate-float-card {
           animation: float-card 3s ease-in-out infinite;
         }
-        @keyframes doc-in {
+        @keyframes doc-loop-a {
           0% { opacity: 0; transform: translateY(24px) rotate(0deg) scale(0.94); }
-          100% { opacity: 1; transform: translateY(0) rotate(var(--doc-rotate, 0deg)) scale(1); }
+          5% { opacity: 1; transform: translateY(0) rotate(var(--doc-rotate, 0deg)) scale(1); }
+          92% { opacity: 1; transform: translateY(0) rotate(var(--doc-rotate, 0deg)) scale(1); }
+          100% { opacity: 0; transform: translateY(24px) rotate(0deg) scale(0.94); }
         }
-        .animate-doc-in {
-          opacity: 0;
-          animation: doc-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        @keyframes doc-loop-b {
+          0%, 25% { opacity: 0; transform: translateY(24px) rotate(0deg) scale(0.94); }
+          30% { opacity: 1; transform: translateY(0) rotate(var(--doc-rotate, 0deg)) scale(1); }
+          92% { opacity: 1; transform: translateY(0) rotate(var(--doc-rotate, 0deg)) scale(1); }
+          100% { opacity: 0; transform: translateY(24px) rotate(0deg) scale(0.94); }
         }
-        @keyframes stamp-drop {
-          0% { opacity: 0; transform: scale(2.2) rotate(10deg); }
-          60% { opacity: 1; transform: scale(0.9) rotate(10deg); }
-          80% { transform: scale(1.08) rotate(10deg); }
-          100% { opacity: 1; transform: scale(1) rotate(10deg); }
+        @keyframes doc-loop-c {
+          0%, 50% { opacity: 0; transform: translateY(24px) rotate(0deg) scale(0.94); }
+          55% { opacity: 1; transform: translateY(0) rotate(var(--doc-rotate, 0deg)) scale(1); }
+          92% { opacity: 1; transform: translateY(0) rotate(var(--doc-rotate, 0deg)) scale(1); }
+          100% { opacity: 0; transform: translateY(24px) rotate(0deg) scale(0.94); }
         }
-        .animate-stamp-drop {
-          opacity: 0;
-          animation: stamp-drop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        @keyframes stamp-loop {
+          0%, 75% { opacity: 0; transform: scale(2.2) rotate(10deg); }
+          81% { opacity: 1; transform: scale(0.9) rotate(10deg); }
+          84% { transform: scale(1.08) rotate(10deg); }
+          88%, 92% { opacity: 1; transform: scale(1) rotate(10deg); }
+          100% { opacity: 0; transform: scale(2.2) rotate(10deg); }
         }
+        .animate-doc-loop-a { opacity: 0; animation: doc-loop-a 12s ease-in-out infinite; }
+        .animate-doc-loop-b { opacity: 0; animation: doc-loop-b 12s ease-in-out infinite; }
+        .animate-doc-loop-c { opacity: 0; animation: doc-loop-c 12s ease-in-out infinite; }
+        .animate-stamp-loop { opacity: 0; animation: stamp-loop 12s ease-in-out infinite; }
         @media (prefers-reduced-motion: reduce) {
           .animate-float-card,
-          .animate-doc-in,
-          .animate-stamp-drop {
+          .animate-doc-loop-a,
+          .animate-doc-loop-b,
+          .animate-doc-loop-c,
+          .animate-stamp-loop {
             animation: none;
             opacity: 1;
             transform: none;
@@ -207,15 +219,15 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className="relative order-last flex justify-center md:order-none">
+        <div className="relative order-last mt-10 flex justify-center md:order-none md:mt-0">
           <div className="absolute h-[260px] w-[260px] rounded-full bg-gradient-to-br from-ledger-deep to-ledger opacity-40 blur-3xl" />
 
           {/* Le parcours du document : devis en retrait, facture au milieu,
               reçu tamponné au premier plan — la promesse du produit rendue visible. */}
           <div className="relative h-[300px] w-[300px] md:h-[340px]">
             <div
-              className="animate-doc-in absolute inset-x-0 top-9 mx-auto w-[260px] rounded-[18px] border border-paperline bg-white/80 px-6 py-6 text-ink/50 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-white/40"
-              style={{ ["--doc-rotate" as string]: "-15deg", animationDelay: "0ms" }}
+              className="animate-doc-loop-a absolute inset-x-0 top-9 mx-auto w-[260px] rounded-[18px] border border-paperline bg-white/80 px-6 py-6 text-ink/50 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-white/40"
+              style={{ ["--doc-rotate" as string]: "-15deg" }}
             >
               <div className="mb-3 text-[11px] font-bold uppercase tracking-wide">
                 Devis N˚ 0140
@@ -225,8 +237,8 @@ export default function LandingPage() {
             </div>
 
             <div
-              className="animate-doc-in absolute inset-x-0 top-4 mx-auto w-[280px] rounded-[18px] border border-paperline bg-white px-6 py-6 text-ink shadow-md dark:border-white/10 dark:bg-[#3a3a3a] dark:text-white"
-              style={{ ["--doc-rotate" as string]: "-9deg", animationDelay: "3000ms" }}
+              className="animate-doc-loop-b absolute inset-x-0 top-4 mx-auto w-[280px] rounded-[18px] border border-paperline bg-white px-6 py-6 text-ink shadow-md dark:border-white/10 dark:bg-[#3a3a3a] dark:text-white"
+              style={{ ["--doc-rotate" as string]: "-9deg" }}
             >
               <div className="mb-3 inline-block rounded-full bg-gold px-3 py-1 text-[11px] font-bold tracking-wide text-white">
                 FACTURE N˚ 0141
@@ -236,8 +248,8 @@ export default function LandingPage() {
             </div>
 
             <div
-              className="animate-doc-in absolute inset-x-0 top-0 mx-auto"
-              style={{ ["--doc-rotate" as string]: "-6deg", animationDelay: "6000ms" }}
+              className="animate-doc-loop-c absolute inset-x-0 top-0 mx-auto"
+              style={{ ["--doc-rotate" as string]: "-6deg" }}
             >
               <div className="relative w-[300px] rounded-[20px] bg-white px-6 py-[30px] text-sm text-ink shadow-[0_24px_60px_-20px_rgba(125,42,231,0.35)] animate-float-card">
                 <div className="mb-[18px] inline-block rounded-full bg-gradient-to-r from-ledger to-ledger-deep px-3 py-1 text-[11px] font-bold tracking-wide text-white">
@@ -259,10 +271,7 @@ export default function LandingPage() {
                   <span>TOTAL CFA</span>
                   <span>330 000</span>
                 </div>
-                <div
-                  className="animate-stamp-drop absolute -right-3.5 -top-3.5 flex h-[62px] w-[62px] rotate-[10deg] items-center justify-center rounded-full bg-stamp text-center text-[11px] font-bold tracking-wide text-white shadow-[0_8px_20px_-6px_rgba(254,111,97,0.6)]"
-                  style={{ animationDelay: "9000ms" }}
-                >
+                <div className="animate-stamp-loop absolute -right-3.5 -top-3.5 flex h-[62px] w-[62px] rotate-[10deg] items-center justify-center rounded-full bg-stamp text-center text-[11px] font-bold tracking-wide text-white shadow-[0_8px_20px_-6px_rgba(254,111,97,0.6)]">
                   PAYÉ ✓
                 </div>
               </div>
