@@ -226,7 +226,7 @@ export default function LandingPage() {
 
             <div
               className="animate-doc-in absolute inset-x-0 top-4 mx-auto w-[280px] rounded-[18px] border border-paperline bg-white px-6 py-6 text-ink shadow-md dark:border-white/10 dark:bg-[#3a3a3a] dark:text-white"
-              style={{ ["--doc-rotate" as string]: "-9deg", animationDelay: "140ms" }}
+              style={{ ["--doc-rotate" as string]: "-9deg", animationDelay: "3000ms" }}
             >
               <div className="mb-3 inline-block rounded-full bg-gold px-3 py-1 text-[11px] font-bold tracking-wide text-white">
                 FACTURE N˚ 0141
@@ -237,7 +237,7 @@ export default function LandingPage() {
 
             <div
               className="animate-doc-in absolute inset-x-0 top-0 mx-auto"
-              style={{ ["--doc-rotate" as string]: "-6deg", animationDelay: "280ms" }}
+              style={{ ["--doc-rotate" as string]: "-6deg", animationDelay: "6000ms" }}
             >
               <div className="relative w-[300px] rounded-[20px] bg-white px-6 py-[30px] text-sm text-ink shadow-[0_24px_60px_-20px_rgba(125,42,231,0.35)] animate-float-card">
                 <div className="mb-[18px] inline-block rounded-full bg-gradient-to-r from-ledger to-ledger-deep px-3 py-1 text-[11px] font-bold tracking-wide text-white">
@@ -261,7 +261,7 @@ export default function LandingPage() {
                 </div>
                 <div
                   className="animate-stamp-drop absolute -right-3.5 -top-3.5 flex h-[62px] w-[62px] rotate-[10deg] items-center justify-center rounded-full bg-stamp text-center text-[11px] font-bold tracking-wide text-white shadow-[0_8px_20px_-6px_rgba(254,111,97,0.6)]"
-                  style={{ animationDelay: "650ms" }}
+                  style={{ animationDelay: "9000ms" }}
                 >
                   PAYÉ ✓
                 </div>
