@@ -1,6 +1,7 @@
 // app/dashboard/header.tsx
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, ChevronDown } from "lucide-react";
@@ -8,11 +9,20 @@ import ThemeToggle from "../theme-toggle";
 import SignOutButton from "./sign-out-button";
 import { createClient } from "@/lib/supabase/client"; // adapte le chemin si besoin
 import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
+import LoadingOverlay from "../components/loading-overlay";
 
 export default function DashboardHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const [profileLoading, setProfileLoading] = useState(false);
+
+  // Dès que la navigation aboutit sur /dashboard/profile, on referme l'overlay.
+  useEffect(() => {
+    if (pathname === "/dashboard/profile") {
+      setProfileLoading(false);
+    }
+  }, [pathname]);
 
   const isActive = (href: string) =>
     href === "/dashboard" ? pathname === href : pathname?.startsWith(href);
@@ -29,6 +39,8 @@ export default function DashboardHeader() {
 
   return (
     <>
+      <LoadingOverlay show={profileLoading} message="Chargement du profil…" />
+
       {/* Header mobile : toggle / logo centré / icône déconnexion (la nav vit dans la bottom-nav) */}
       <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center border-b border-paperline bg-white px-[6vw] py-4 dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
         <div className="flex items-center">
@@ -120,6 +132,7 @@ export default function DashboardHeader() {
 
           <Link
             href="/dashboard/profile"
+            onClick={() => setProfileLoading(true)}
             className={`text-lg font-bold hover:text-ledger-deep dark:hover:text-ledger ${
               isActive("/dashboard/profile")
                 ? "text-ledger-deep dark:text-ledger"
