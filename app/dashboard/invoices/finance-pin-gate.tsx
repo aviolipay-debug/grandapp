@@ -95,7 +95,10 @@ export default function FinancePinGate({ children }: { children: React.ReactNode
           Entrez votre code PIN pour accéder à vos finances.
         </p>
 
-        <div className="mt-6 flex justify-center gap-3">
+        <div
+          className="mt-6 flex cursor-text justify-center gap-3"
+          onClick={() => inputRef.current?.focus()}
+        >
           {[0, 1, 2, 3].map((i) => (
             <div
               key={i}
@@ -120,7 +123,7 @@ export default function FinancePinGate({ children }: { children: React.ReactNode
           value={digits}
           disabled={verifying}
           onChange={(e) => setDigits(e.target.value.replace(/\D/g, "").slice(0, 4))}
-          className="mt-5 h-0 w-0 opacity-0"
+          className="h-px w-px opacity-0"
           aria-label="Code PIN"
         />
 
