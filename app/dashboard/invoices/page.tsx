@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDateFR } from "@/lib/format-date";
 import { poppins } from "@/lib/fonts";
 import PaymentHistoryChart from "./payment-history-chart";
+import FinancePinGate from "./finance-pin-gate";
 
 const statusLabels: Record<string, string> = {
   draft: "Brouillon",
@@ -103,108 +104,110 @@ export default async function InvoicesPage() {
   };
 
   return (
-    <div className={poppins.className}>
-      <h1 className="hidden font-display text-2xl font-bold text-ink dark:text-white sm:block">Finances</h1>
-      <p className="mt-1 hidden text-sm text-[#6B7280] dark:text-white/50 sm:block">
-        Vue d&apos;ensemble de vos encaissements et factures.
-      </p>
+    <FinancePinGate>
+      <div className={poppins.className}>
+        <h1 className="hidden font-display text-2xl font-bold text-ink dark:text-white sm:block">Finances</h1>
+        <p className="mt-1 hidden text-sm text-[#6B7280] dark:text-white/50 sm:block">
+          Vue d&apos;ensemble de vos encaissements et factures.
+        </p>
 
-      {/* Vue d'ensemble */}
-      <div className="mt-3 grid grid-cols-2 gap-4 sm:mt-6 lg:grid-cols-4">
-        <StatCard
-          label="Encaissé"
-          value={stats.encaisse.toLocaleString("fr-FR")}
-          subtitle={currency}
-          accent="#00C4CC"
-          icon={<Wallet size={18} />}
-        />
-        <StatCard
-          label="Factures"
-          value={stats.total}
-          subtitle="émises"
-          accent="#7D2AE7"
-          icon={<FileStack size={18} />}
-        />
-        <StatCard
-          label="Factures"
-          value={stats.enRetard}
-          subtitle="en retard"
-          accent="#E5533F"
-          icon={<AlertTriangle size={18} />}
-        />
-        <StatCard
-          label="Restant dû"
-          value={stats.restantDu.toLocaleString("fr-FR")}
-          subtitle={currency}
-          accent="#2A89DA"
-          icon={<Clock size={18} />}
-        />
-      </div>
+        {/* Vue d'ensemble */}
+        <div className="mt-3 grid grid-cols-2 gap-4 sm:mt-6 lg:grid-cols-4">
+          <StatCard
+            label="Encaissé"
+            value={stats.encaisse.toLocaleString("fr-FR")}
+            subtitle={currency}
+            accent="#00C4CC"
+            icon={<Wallet size={18} />}
+          />
+          <StatCard
+            label="Factures"
+            value={stats.total}
+            subtitle="émises"
+            accent="#7D2AE7"
+            icon={<FileStack size={18} />}
+          />
+          <StatCard
+            label="Factures"
+            value={stats.enRetard}
+            subtitle="en retard"
+            accent="#E5533F"
+            icon={<AlertTriangle size={18} />}
+          />
+          <StatCard
+            label="Restant dû"
+            value={stats.restantDu.toLocaleString("fr-FR")}
+            subtitle={currency}
+            accent="#2A89DA"
+            icon={<Clock size={18} />}
+          />
+        </div>
 
-      {/* Historique des paiements */}
-      <div className="mt-6">
-        <PaymentHistoryChart
-          data={monthlyPayments}
-          currency={currency}
-          currentMonthTotal={currentMonthTotal}
-          periodTotal={periodTotal}
-        />
-      </div>
+        {/* Historique des paiements */}
+        <div className="mt-6">
+          <PaymentHistoryChart
+            data={monthlyPayments}
+            currency={currency}
+            currentMonthTotal={currentMonthTotal}
+            periodTotal={periodTotal}
+          />
+        </div>
 
-      {/* Liste des factures */}
-      <div className="mt-8 overflow-hidden rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626]">
-        {invoices.length === 0 ? (
-          <p className="p-10 text-center text-sm text-[#6B7280] dark:text-white/50">
-            Aucune facture pour l&apos;instant. Elles sont générées automatiquement quand un
-            projet passe "En cours".
-          </p>
-        ) : (
-          <div className="divide-y divide-paperline dark:divide-white/10">
-            {invoices.slice(0, 5).map((inv) => {
-              const remaining = Number(inv.total) - Number(inv.amount_paid);
-              const effectiveStatus = getEffectiveStatus(inv);
-              return (
-                <Link
-                  key={inv.id}
-                  href={`/dashboard/invoices/${inv.id}`}
-                  className="flex items-center gap-3 px-3 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
-                >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7FAF9] text-[#00A6AC] dark:bg-white/10">
-                    <Receipt size={18} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="truncate font-medium text-ink dark:text-white">
-                        {inv.invoice_number}
-                      </p>
-                      <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
-                        {remaining > 0
-                          ? `${remaining.toLocaleString("fr-FR")} ${inv.currency}`
-                          : "Payée"}
-                      </p>
+        {/* Liste des factures */}
+        <div className="mt-8 overflow-hidden rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626]">
+          {invoices.length === 0 ? (
+            <p className="p-10 text-center text-sm text-[#6B7280] dark:text-white/50">
+              Aucune facture pour l&apos;instant. Elles sont générées automatiquement quand un
+              projet passe "En cours".
+            </p>
+          ) : (
+            <div className="divide-y divide-paperline dark:divide-white/10">
+              {invoices.slice(0, 5).map((inv) => {
+                const remaining = Number(inv.total) - Number(inv.amount_paid);
+                const effectiveStatus = getEffectiveStatus(inv);
+                return (
+                  <Link
+                    key={inv.id}
+                    href={`/dashboard/invoices/${inv.id}`}
+                    className="flex items-center gap-3 px-3 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7FAF9] text-[#00A6AC] dark:bg-white/10">
+                      <Receipt size={18} />
                     </div>
-                    <div className="mt-1 flex items-center justify-between gap-2">
-                      <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
-                        {inv.clients?.name ?? "—"}
-                        {inv.due_date ? ` · Échéance ${formatDateFR(inv.due_date)}` : ""}
-                      </p>
-                      <span
-                        className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                          statusStyles[effectiveStatus] ?? "bg-[#F3F4F6] text-[#6B7280]"
-                        }`}
-                      >
-                        {statusLabels[effectiveStatus] ?? effectiveStatus}
-                      </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="truncate font-medium text-ink dark:text-white">
+                          {inv.invoice_number}
+                        </p>
+                        <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
+                          {remaining > 0
+                            ? `${remaining.toLocaleString("fr-FR")} ${inv.currency}`
+                            : "Payée"}
+                        </p>
+                      </div>
+                      <div className="mt-1 flex items-center justify-between gap-2">
+                        <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
+                          {inv.clients?.name ?? "—"}
+                          {inv.due_date ? ` · Échéance ${formatDateFR(inv.due_date)}` : ""}
+                        </p>
+                        <span
+                          className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                            statusStyles[effectiveStatus] ?? "bg-[#F3F4F6] text-[#6B7280]"
+                          }`}
+                        >
+                          {statusLabels[effectiveStatus] ?? effectiveStatus}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
-                </Link>
-              );
-            })}
-          </div>
-        )}
+                    <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </FinancePinGate>
   );
 }
 

@@ -4,8 +4,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, User, Phone, Building2, Lock } from "lucide-react";
+import { Mail, User, Phone, Building2, Lock, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { hashPin, isValidPin } from "@/lib/pin";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -19,6 +20,14 @@ export default function ProfilePage() {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+
+  // Code PIN de la page Finances.
+  const [hasPin, setHasPin] = useState(false);
+  const [pin, setPin] = useState("");
+  const [pinConfirm, setPinConfirm] = useState("");
+  const [pinSaving, setPinSaving] = useState(false);
+  const [pinSaved, setPinSaved] = useState(false);
+  const [pinError, setPinError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadProfile() {
@@ -36,11 +45,12 @@ export default function ProfilePage() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("whatsapp_number")
+        .select("whatsapp_number, finance_pin_hash")
         .eq("id", user.id)
         .single();
 
       setWhatsapp(profile?.whatsapp_number ?? "");
+      setHasPin(!!profile?.finance_pin_hash);
       setLoading(false);
     }
     loadProfile();
@@ -81,6 +91,52 @@ export default function ProfilePage() {
 
     setSaved(true);
     router.refresh();
+  }
+
+  async function handleSavePin(e: React.FormEvent) {
+    e.preventDefault();
+    setPinError(null);
+    setPinSaved(false);
+
+    if (!isValidPin(pin)) {
+      setPinError("Le code doit contenir exactement 4 chiffres.");
+      return;
+    }
+    if (pin !== pinConfirm) {
+      setPinError("Les deux codes ne correspondent pas.");
+      return;
+    }
+
+    setPinSaving(true);
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      setPinError("Session expirée, reconnectez-vous.");
+      setPinSaving(false);
+      return;
+    }
+
+    const finance_pin_hash = await hashPin(pin);
+
+    const { error: pinUpdateError } = await supabase
+      .from("profiles")
+      .update({ finance_pin_hash })
+      .eq("id", user.id);
+
+    setPinSaving(false);
+
+    if (pinUpdateError) {
+      setPinError(pinUpdateError.message);
+      return;
+    }
+
+    setHasPin(true);
+    setPin("");
+    setPinConfirm("");
+    setPinSaved(true);
   }
 
   const initial = (fullName || email || "?").trim().charAt(0).toUpperCase();
@@ -184,6 +240,71 @@ export default function ProfilePage() {
             className="mt-1 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
           >
             {saving ? "Enregistrement…" : "Enregistrer les modifications"}
+          </button>
+        </div>
+      </form>
+
+      {/* Code PIN de la page Finances */}
+      <form
+        onSubmit={handleSavePin}
+        className="rounded-2xl border border-paperline bg-white p-5 dark:border-white/10 dark:bg-[#262626] sm:p-6"
+      >
+        <h2 className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#6B7280] dark:text-white/50">
+          <ShieldCheck size={14} />
+          Sécurité — Finances
+        </h2>
+        <p className="mb-5 text-sm text-[#6B7280] dark:text-white/50">
+          {hasPin
+            ? "Un code PIN protège déjà l'accès à la page Finances. Vous pouvez le modifier ci-dessous."
+            : "Définissez un code à 4 chiffres demandé à chaque ouverture de la page Finances."}
+        </p>
+
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className={labelClass}>
+              {hasPin ? "Nouveau code PIN" : "Code PIN"}
+            </label>
+            <input
+              type="password"
+              inputMode="numeric"
+              pattern="\d{4}"
+              maxLength={4}
+              value={pin}
+              onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+              placeholder="••••"
+              className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+            />
+          </div>
+
+          <div>
+            <label className={labelClass}>Confirmer le code</label>
+            <input
+              type="password"
+              inputMode="numeric"
+              pattern="\d{4}"
+              maxLength={4}
+              value={pinConfirm}
+              onChange={(e) => setPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))}
+              placeholder="••••"
+              className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+            />
+          </div>
+
+          {pinError && (
+            <p className="rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">{pinError}</p>
+          )}
+          {pinSaved && !pinError && (
+            <p className="rounded-xl bg-[#E7FAF9] px-4 py-2.5 text-sm font-semibold text-[#00A6AC] dark:bg-white/5">
+              Code PIN enregistré.
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={pinSaving}
+            className="mt-1 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
+          >
+            {pinSaving ? "Enregistrement…" : hasPin ? "Modifier le code PIN" : "Définir le code PIN"}
           </button>
         </div>
       </form>
