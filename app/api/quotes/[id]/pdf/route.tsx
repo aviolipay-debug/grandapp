@@ -13,6 +13,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const supabase = createClient();
+
   const { data: quote } = await supabase
     .from("quotes")
     .select(
@@ -20,9 +21,11 @@ export async function GET(
     )
     .eq("id", params.id)
     .single();
+
   if (!quote) {
     return new Response("Devis introuvable", { status: 404 });
   }
+
   const { data: items } = await supabase
     .from("quote_items")
     .select("*")
@@ -74,7 +77,15 @@ export async function GET(
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `inline; filename="${asciiFallback}.pdf"; filename*=UTF-8''${encodeURIComponent(filenameBase)}.pdf`,
-      "Cache-Control": "no-store, max-age=0",
+      // En-têtes renforcés : Cache-Control seul est souvent ignoré par les
+      // lecteurs PDF intégrés des navigateurs mobiles (Safari iOS, WebView
+      // Android) une fois le PDF ouvert "inline" — Pragma/Expires/Surrogate-
+      // Control couvrent les cas où ces navigateurs se rabattent sur un
+      // comportement de cache plus ancien.
+      "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+      "Pragma": "no-cache",
+      "Expires": "0",
+      "Surrogate-Control": "no-store",
     },
   });
 }

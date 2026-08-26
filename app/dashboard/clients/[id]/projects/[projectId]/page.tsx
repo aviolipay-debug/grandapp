@@ -60,6 +60,12 @@ export default async function ProjectDetailPage({
     ? Number(facture.total) - Number(facture.amount_paid)
     : null;
 
+  // Paramètre anti-cache : change à chaque affichage de la page, pour que les
+  // navigateurs mobiles (qui accrochent leur lecteur PDF intégré à l'URL et
+  // ignorent souvent les en-têtes Cache-Control une fois le PDF ouvert)
+  // traitent chaque lien comme une URL neuve et redemandent le PDF au serveur.
+  const cacheBust = Date.now();
+
   if (!project) {
     return <p className="text-sm text-[#6B7280] dark:text-white/50">Projet introuvable.</p>;
   }
@@ -119,7 +125,7 @@ export default async function ProjectDetailPage({
             {quotes.map((q) => (
               <DocumentPreviewRow
                 key={q.id}
-                href={`/api/quotes/${q.id}/pdf`}
+                href={`/api/quotes/${q.id}/pdf?v=${cacheBust}`}
                 filename={`devis-${q.quote_number}.pdf`}
                 iconBg="#F3EEFC"
                 iconColor="#5B21B6"
@@ -131,7 +137,7 @@ export default async function ProjectDetailPage({
 
             {facture && (
               <DocumentPreviewRow
-                href={`/api/invoices/${facture.id}/pdf`}
+                href={`/api/invoices/${facture.id}/pdf?v=${cacheBust}`}
                 filename={`facture-${facture.invoice_number}.pdf`}
                 iconBg="#E7FAF9"
                 iconColor="#00A6AC"
@@ -143,7 +149,7 @@ export default async function ProjectDetailPage({
 
             {bordereau && (
               <DocumentPreviewRow
-                href={`/api/invoices/${bordereau.id}/pdf`}
+                href={`/api/invoices/${bordereau.id}/pdf?v=${cacheBust}`}
                 filename={`bordereau-${bordereau.invoice_number}.pdf`}
                 iconBg="#EAF3FC"
                 iconColor="#2A89DA"
