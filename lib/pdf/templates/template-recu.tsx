@@ -15,12 +15,10 @@ const styles = StyleSheet.create({
     color: INK,
     padding: 48,
   },
-  logo: { height: 30, maxWidth: 140, objectFit: "contain", marginBottom: 24 },
+  logo: { width: 70, height: 70, borderRadius: 35, objectFit: "cover", marginBottom: 24 },
   companyName: { fontSize: 13, fontWeight: 700, marginBottom: 24 },
-
   title: { fontSize: 20, fontWeight: 700, marginBottom: 4 },
   subtitle: { fontSize: 9.5, color: MUTED, marginBottom: 28 },
-
   amountBlock: {
     alignItems: "center",
     borderTop: `1px solid ${LINE}`,
@@ -30,13 +28,10 @@ const styles = StyleSheet.create({
   },
   amountLabel: { fontSize: 9, color: MUTED, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 },
   amountValue: { fontSize: 30, fontWeight: 700, color: ACCENT },
-
   row: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 7 },
   rowLabel: { fontSize: 9.5, color: MUTED },
   rowValue: { fontSize: 9.5, fontWeight: 700, textAlign: "right" },
-
   amountWords: { fontSize: 8.5, color: MUTED, textAlign: "center", marginTop: 26 },
-
   footer: { fontSize: 7.5, color: MUTED, textAlign: "center", marginTop: 40 },
 });
 
@@ -51,19 +46,16 @@ export default function TemplateRecu({ data }: { data: ReceiptData }) {
         ) : (
           <Text style={styles.companyName}>{data.companyName}</Text>
         )}
-
         <Text style={styles.title}>Reçu de paiement</Text>
         <Text style={styles.subtitle}>
           {data.receiptNumber} · {data.paymentDate}
         </Text>
-
         <View style={styles.amountBlock}>
           <Text style={styles.amountLabel}>Montant reçu</Text>
           <Text style={styles.amountValue}>
             {fmt(data.amount)} {data.currency}
           </Text>
         </View>
-
         <View>
           <View style={styles.row}>
             <Text style={styles.rowLabel}>Reçu de</Text>
@@ -90,11 +82,9 @@ export default function TemplateRecu({ data }: { data: ReceiptData }) {
             </View>
           )}
         </View>
-
         <Text style={styles.amountWords}>
           Reçu la somme de {amountWords}
         </Text>
-
         <Text style={styles.footer}>
           {data.companyName}
           {data.companyPhone ? ` · ${data.companyPhone}` : ""}
