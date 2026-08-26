@@ -1,7 +1,7 @@
 // app/dashboard/header.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, ChevronDown } from "lucide-react";
@@ -15,14 +15,17 @@ export default function DashboardHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
-  const [profileLoading, setProfileLoading] = useState(false);
+  const [isProfileNavPending, startProfileNav] = useTransition();
 
-  // Dès que la navigation aboutit sur /dashboard/profile, on referme l'overlay.
-  useEffect(() => {
-    if (pathname === "/dashboard/profile") {
-      setProfileLoading(false);
-    }
-  }, [pathname]);
+  // isProfileNavPending reste vrai jusqu'à ce que React ait fini de préparer
+  // la page /dashboard/profile — contrairement à usePathname, qui change dès
+  // le début de la navigation, avant que la nouvelle page soit prête.
+  function handleProfileClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    e.preventDefault();
+    startProfileNav(() => {
+      router.push("/dashboard/profile");
+    });
+  }
 
   const isActive = (href: string) =>
     href === "/dashboard" ? pathname === href : pathname?.startsWith(href);
@@ -39,7 +42,7 @@ export default function DashboardHeader() {
 
   return (
     <>
-      <LoadingOverlay show={profileLoading} message="Chargement du profil…" />
+      <LoadingOverlay show={isProfileNavPending} message="Chargement du profil…" />
 
       {/* Header mobile : toggle / logo centré / icône déconnexion (la nav vit dans la bottom-nav) */}
       <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center border-b border-paperline bg-white px-[6vw] py-4 dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
@@ -132,7 +135,7 @@ export default function DashboardHeader() {
 
           <Link
             href="/dashboard/profile"
-            onClick={() => setProfileLoading(true)}
+            onClick={handleProfileClick}
             className={`text-lg font-bold hover:text-ledger-deep dark:hover:text-ledger ${
               isActive("/dashboard/profile")
                 ? "text-ledger-deep dark:text-ledger"
