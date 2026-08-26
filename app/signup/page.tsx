@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import LoadingOverlay from "../components/loading-overlay";
+import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
 
 export default function SignupPage() {
   const supabase = createClient();
@@ -76,7 +77,7 @@ export default function SignupPage() {
       <div className="w-full max-w-sm rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8">
         <Link
           href="/"
-          className="font-display mb-6 block text-center text-3xl font-semibold text-ink dark:text-white sm:mb-10"
+          className={`${vastron.className} mb-6 block text-center text-3xl font-semibold text-ink dark:text-white sm:mb-10`}
         >
           OliPay<span className="text-stamp">.</span>
         </Link>
