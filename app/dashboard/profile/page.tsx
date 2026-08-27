@@ -23,18 +23,23 @@ export default function ProfilePage() {
 
   // Code PIN de la page Finances.
   const [hasPin, setHasPin] = useState(false);
-  const [pin, setPin] = useState("");
-  const [pinConfirm, setPinConfirm] = useState("");
+  const [currentPinHash, setCurrentPinHash] = useState<string | null>(null);
+  const [oldPin, setOldPin] = useState("");
+  const [newPin, setNewPin] = useState("");
   const [pinSaving, setPinSaving] = useState(false);
   const [pinSaved, setPinSaved] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
+
+  // Code de secours utilisable à la place de l'ancien PIN si l'utilisateur
+  // l'a oublié.
+  const DEFAULT_PIN = "8080";
 
   // Popup de code PIN — masqué par défaut, ouvert via le bouton.
   const [showPinModal, setShowPinModal] = useState(false);
 
   function openPinModal() {
-    setPin("");
-    setPinConfirm("");
+    setOldPin("");
+    setNewPin("");
     setPinError(null);
     setPinSaved(false);
     setShowPinModal(true);
@@ -61,6 +66,7 @@ export default function ProfilePage() {
         .single();
 
       setWhatsapp(profile?.whatsapp_number ?? "");
+      setCurrentPinHash(profile?.finance_pin_hash ?? null);
       setHasPin(!!profile?.finance_pin_hash);
       setLoading(false);
     }
@@ -109,12 +115,24 @@ export default function ProfilePage() {
     setPinError(null);
     setPinSaved(false);
 
-    if (!isValidPin(pin)) {
-      setPinError("Le code doit contenir exactement 4 chiffres.");
-      return;
+    // Si un code existe déjà, il faut d'abord prouver qu'on le connaît —
+    // soit l'ancien code exact, soit le code de secours par défaut.
+    if (hasPin) {
+      if (!isValidPin(oldPin)) {
+        setPinError("Entrez votre ancien code (4 chiffres).");
+        return;
+      }
+      const oldPinMatches =
+        oldPin === DEFAULT_PIN ||
+        (currentPinHash && (await hashPin(oldPin)) === currentPinHash);
+      if (!oldPinMatches) {
+        setPinError("Ancien code incorrect.");
+        return;
+      }
     }
-    if (pin !== pinConfirm) {
-      setPinError("Les deux codes ne correspondent pas.");
+
+    if (!isValidPin(newPin)) {
+      setPinError("Le nouveau code doit contenir exactement 4 chiffres.");
       return;
     }
 
@@ -130,7 +148,7 @@ export default function ProfilePage() {
       return;
     }
 
-    const finance_pin_hash = await hashPin(pin);
+    const finance_pin_hash = await hashPin(newPin);
 
     const { error: pinUpdateError } = await supabase
       .from("profiles")
@@ -145,8 +163,9 @@ export default function ProfilePage() {
     }
 
     setHasPin(true);
-    setPin("");
-    setPinConfirm("");
+    setCurrentPinHash(finance_pin_hash);
+    setOldPin("");
+    setNewPin("");
     setPinSaved(true);
   }
 
@@ -314,37 +333,38 @@ export default function ProfilePage() {
             </h2>
             <p className="mb-5 text-sm text-[#6B7280] dark:text-white/50">
               {hasPin
-                ? "Choisissez un nouveau code à 4 chiffres."
+                ? "Entrez votre ancien code, puis choisissez-en un nouveau."
                 : "Définissez un code à 4 chiffres demandé à chaque ouverture de la page Finances."}
             </p>
 
             <div className="flex flex-col gap-4">
-              <div>
-                <label className={labelClass}>
-                  {hasPin ? "Nouveau code PIN" : "Code PIN"}
-                </label>
-                <input
-                  type="password"
-                  inputMode="numeric"
-                  pattern="\d{4}"
-                  maxLength={4}
-                  autoFocus
-                  value={pin}
-                  onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                  placeholder="••••"
-                  className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-                />
-              </div>
+              {hasPin && (
+                <div>
+                  <label className={labelClass}>Ancien code PIN</label>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    pattern="\d{4}"
+                    maxLength={4}
+                    autoFocus
+                    value={oldPin}
+                    onChange={(e) => setOldPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                    placeholder="••••"
+                    className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+                  />
+                </div>
+              )}
 
               <div>
-                <label className={labelClass}>Confirmer le code</label>
+                <label className={labelClass}>{hasPin ? "Nouveau code PIN" : "Code PIN"}</label>
                 <input
                   type="password"
                   inputMode="numeric"
                   pattern="\d{4}"
                   maxLength={4}
-                  value={pinConfirm}
-                  onChange={(e) => setPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                  autoFocus={!hasPin}
+                  value={newPin}
+                  onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
                   placeholder="••••"
                   className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
                 />
