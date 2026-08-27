@@ -160,6 +160,19 @@ export default function ProfilePage() {
       return;
     }
 
+    // Le code PIN est aussi effacé — un nouveau devra être défini.
+    const { error: pinResetError } = await supabase
+      .from("profiles")
+      .update({ finance_pin_hash: null })
+      .eq("id", user.id);
+    if (pinResetError) {
+      setResetError(`Étape code PIN : ${pinResetError.message}`);
+      setResetLoading(false);
+      return;
+    }
+    setHasPin(false);
+    setCurrentPinHash(null);
+
     setResetLoading(false);
     setShowResetModal(false);
     router.push("/dashboard");
@@ -436,26 +449,14 @@ export default function ProfilePage() {
       </Link>
 
       {/* Zone dangereuse */}
-      <div className="flex items-center justify-between rounded-2xl border border-stamp/30 bg-stamp/5 p-5 dark:border-stamp/20 sm:p-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-stamp/15 text-stamp">
-            <AlertTriangle size={18} />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-ink dark:text-white">Réinitialiser mon compte</p>
-            <p className="text-xs text-[#6B7280] dark:text-white/50">
-              Efface clients, projets, devis, factures et paiements. Irréversible.
-            </p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={openResetModal}
-          className="shrink-0 rounded-lg border-[1.5px] border-stamp px-3.5 py-2 text-sm font-semibold text-stamp hover:bg-stamp hover:text-white"
-        >
-          Réinitialiser
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={openResetModal}
+        className="flex items-center justify-center gap-2 rounded-xl border-[1.5px] border-stamp bg-stamp/5 py-3.5 text-sm font-bold text-stamp transition-colors hover:bg-stamp hover:text-white"
+      >
+        <AlertTriangle size={16} />
+        Réinitialiser mon compte
+      </button>
 
       {/* Popup de saisie du code PIN */}
       {showPinModal && (
@@ -561,9 +562,9 @@ export default function ProfilePage() {
             </h2>
             <p className="mt-2 text-center text-sm text-[#6B7280] dark:text-white/50">
               Tous vos clients, projets, devis, factures et paiements seront{" "}
-              <span className="font-semibold text-stamp">définitivement supprimés</span>. Votre
-              profil, votre entreprise et votre code PIN resteront intacts. Cette action est
-              irréversible.
+              <span className="font-semibold text-stamp">définitivement supprimés</span>, ainsi
+              que votre code PIN (à redéfinir ensuite). Votre profil et votre entreprise
+              resteront intacts. Cette action est irréversible.
             </p>
 
             <div className="mt-5">
