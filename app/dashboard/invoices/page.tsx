@@ -47,13 +47,33 @@ function getEffectiveStatus(inv: {
 export default async function InvoicesPage() {
   const supabase = createClient();
 
-  // On ne récupère que les Factures — les Bordereaux de livraison ne
-  // représentent pas un encaissement et fausseraient les totaux financiers.
-  const { data: invoicesData } = await supabase
-    .from("invoices")
-    .select("id, invoice_number, status, total, amount_paid, currency, due_date, created_at, clients(name)")
-    .eq("document_type", "facture")
-    .order("created_at", { ascending: false });
+  // Le PIN de la page Finances est chargé côté serveur, en parallèle avec les
+  // factures, pour éviter un flash "Chargement..." côté navigateur.
+  const [
+    {
+      data: { user },
+    },
+    { data: invoicesData },
+  ] = await Promise.all([
+    supabase.auth.getUser(),
+    // On ne récupère que les Factures — les Bordereaux de livraison ne
+    // représentent pas un encaissement et fausseraient les totaux financiers.
+    supabase
+      .from("invoices")
+      .select("id, invoice_number, status, total, amount_paid, currency, due_date, created_at, clients(name)")
+      .eq("document_type", "facture")
+      .order("created_at", { ascending: false }),
+  ]);
+
+  const { data: profileForPin } = user
+    ? await supabase
+        .from("profiles")
+        .select("finance_pin_hash")
+        .eq("id", user.id)
+        .single()
+    : { data: null };
+
+  const pinHash = profileForPin?.finance_pin_hash ?? null;
 
   const invoices = (invoicesData ?? []) as any[];
   const currency = invoices[0]?.currency ?? "FCFA";
@@ -104,7 +124,7 @@ export default async function InvoicesPage() {
   };
 
   return (
-    <FinancePinGate>
+    <FinancePinGate pinHash={pinHash}>
       <div className={poppins.className}>
         <h1 className="hidden font-display text-2xl font-bold text-ink dark:text-white sm:block">Finances</h1>
         <p className="mt-1 hidden text-sm text-[#6B7280] dark:text-white/50 sm:block">
