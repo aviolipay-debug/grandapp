@@ -3,65 +3,40 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ShieldCheck } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { hashPin } from "@/lib/pin";
 
 // Écran de verrouillage : demandé à chaque ouverture de la page Finances.
-// Si aucun code PIN n'a été défini dans le profil, l'accès reste libre.
-export default function FinancePinGate({ children }: { children: React.ReactNode }) {
-  const supabase = createClient();
+// Le hash du PIN est fourni par le parent (Server Component) — plus besoin
+// de le recharger côté navigateur, ce qui évite un flash "Chargement...".
+export default function FinancePinGate({
+  pinHash,
+  children,
+}: {
+  pinHash: string | null;
+  children: React.ReactNode;
+}) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [checking, setChecking] = useState(true);
-  const [storedHash, setStoredHash] = useState<string | null>(null);
-  const [unlocked, setUnlocked] = useState(false);
+  const [unlocked, setUnlocked] = useState(!pinHash);
   const [digits, setDigits] = useState("");
   const [error, setError] = useState(false);
   const [verifying, setVerifying] = useState(false);
 
   useEffect(() => {
-    async function loadPin() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        setChecking(false);
-        return;
-      }
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("finance_pin_hash")
-        .eq("id", user.id)
-        .single();
-
-      if (!profile?.finance_pin_hash) {
-        // Aucun PIN configuré : pas de verrouillage.
-        setUnlocked(true);
-      } else {
-        setStoredHash(profile.finance_pin_hash);
-      }
-      setChecking(false);
-    }
-    loadPin();
-  }, [supabase]);
-
-  useEffect(() => {
-    if (!checking && !unlocked) {
+    if (!unlocked) {
       inputRef.current?.focus();
     }
-  }, [checking, unlocked]);
+  }, [unlocked]);
 
   useEffect(() => {
     async function verify() {
-      if (digits.length !== 4 || !storedHash) return;
+      if (digits.length !== 4 || !pinHash) return;
       setVerifying(true);
       setError(false);
 
       const entered = await hashPin(digits);
 
-      if (entered === storedHash) {
+      if (entered === pinHash) {
         setUnlocked(true);
       } else {
         setError(true);
@@ -70,15 +45,7 @@ export default function FinancePinGate({ children }: { children: React.ReactNode
       setVerifying(false);
     }
     verify();
-  }, [digits, storedHash]);
-
-  if (checking) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <p className="text-sm text-[#6B7280] dark:text-white/50">Chargement...</p>
-      </div>
-    );
-  }
+  }, [digits, pinHash]);
 
   if (unlocked) {
     return <>{children}</>;
