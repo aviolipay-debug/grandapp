@@ -4,7 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, User, Phone, Building2, Lock, ShieldCheck, AlertTriangle } from "lucide-react";
+import { Mail, User, Phone, Building2, Lock, ShieldCheck, AlertTriangle, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { hashPin, isValidPin } from "@/lib/pin";
 
@@ -57,6 +57,54 @@ export default function ProfileForm({
     setShowPinModal(true);
   }
 
+  // Changement de mot de passe.
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordSaved, setPasswordSaved] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  function openPasswordModal() {
+    setNewPassword("");
+    setConfirmPassword("");
+    setPasswordError(null);
+    setPasswordSaved(false);
+    setShowPasswordModal(true);
+  }
+
+  async function handleChangePassword(e: React.FormEvent) {
+    e.preventDefault();
+    setPasswordError(null);
+    setPasswordSaved(false);
+
+    if (newPassword.length < 6) {
+      setPasswordError("Le mot de passe doit contenir au moins 6 caractères.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError("Les deux mots de passe ne correspondent pas.");
+      return;
+    }
+
+    setPasswordSaving(true);
+
+    const { error: passwordUpdateError } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    setPasswordSaving(false);
+
+    if (passwordUpdateError) {
+      setPasswordError(passwordUpdateError.message);
+      return;
+    }
+
+    setNewPassword("");
+    setConfirmPassword("");
+    setPasswordSaved(true);
+  }
+
   // Réinitialisation du compte — supprime toutes les données métier
   // (clients, projets, devis, factures, paiements) mais garde la
   // configuration du compte (profil, entreprise, PIN).
@@ -69,6 +117,12 @@ export default function ProfileForm({
     setResetConfirmText("");
     setResetError(null);
     setShowResetModal(true);
+  }
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
   }
 
   async function handleResetAccount() {
@@ -404,6 +458,28 @@ export default function ProfileForm({
         </button>
       </div>
 
+      {/* Mot de passe */}
+      <div className="flex items-center justify-between rounded-2xl border border-paperline bg-white p-5 dark:border-white/10 dark:bg-[#262626] sm:p-6">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
+            <Lock size={18} />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-ink dark:text-white">Mot de passe</p>
+            <p className="text-xs text-[#6B7280] dark:text-white/50">
+              Dernière modification non affichée
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={openPasswordModal}
+          className="shrink-0 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-white hover:bg-stamp"
+        >
+          Changer le mot de passe
+        </button>
+      </div>
+
       {/* Lien vers le profil entreprise (assistant existant) */}
       <Link
         href="/onboarding"
@@ -422,6 +498,16 @@ export default function ProfileForm({
         </div>
       </Link>
 
+      {/* Déconnexion */}
+      <button
+        type="button"
+        onClick={handleSignOut}
+        className="flex items-center justify-center gap-2 rounded-xl border border-paperline py-3.5 text-sm font-semibold text-ink transition-colors hover:bg-[#F7F7FB] dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+      >
+        <LogOut size={16} />
+        Se déconnecter
+      </button>
+
       {/* Zone dangereuse */}
       <button
         type="button"
@@ -431,6 +517,83 @@ export default function ProfileForm({
         <AlertTriangle size={16} />
         Réinitialiser mon compte
       </button>
+
+      {/* Popup de changement de mot de passe */}
+      {showPasswordModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+          onClick={() => setShowPasswordModal(false)}
+        >
+          <form
+            onSubmit={handleChangePassword}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm rounded-2xl border border-paperline bg-white p-6 dark:border-white/10 dark:bg-[#262626] sm:p-7"
+          >
+            <h2 className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#6B7280] dark:text-white/50">
+              <Lock size={14} />
+              Mot de passe
+            </h2>
+            <p className="mb-5 text-sm text-[#6B7280] dark:text-white/50">
+              Choisissez un nouveau mot de passe (6 caractères minimum).
+            </p>
+
+            <div className="flex flex-col gap-4">
+              <div>
+                <label className={labelClass}>Nouveau mot de passe</label>
+                <input
+                  type="password"
+                  minLength={6}
+                  autoFocus
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className={labelClass}>Confirmer le mot de passe</label>
+                <input
+                  type="password"
+                  minLength={6}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+                />
+              </div>
+
+              {passwordError && (
+                <p className="rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">
+                  {passwordError}
+                </p>
+              )}
+              {passwordSaved && !passwordError && (
+                <p className="rounded-xl bg-[#E7FAF9] px-4 py-2.5 text-sm font-semibold text-[#00A6AC] dark:bg-white/5">
+                  Mot de passe mis à jour.
+                </p>
+              )}
+
+              <div className="mt-1 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordModal(false)}
+                  className="flex-1 rounded-xl border border-paperline py-3 text-sm font-semibold text-ink hover:bg-[#F7F7FB] dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={passwordSaving}
+                  className="flex-1 rounded-xl bg-ledger-deep py-3 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
+                >
+                  {passwordSaving ? "Enregistrement…" : "Enregistrer"}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* Popup de saisie du code PIN */}
       {showPinModal && (
