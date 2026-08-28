@@ -1,7 +1,7 @@
 // app/dashboard/header.tsx
 "use client";
 
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, ChevronDown } from "lucide-react";
@@ -11,11 +11,29 @@ import { createClient } from "@/lib/supabase/client"; // adapte le chemin si bes
 import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
 import LoadingOverlay from "../components/loading-overlay";
 
+// Pages principales du compte — préchargées dès l'arrivée sur le dashboard
+// (connexion, inscription, ou retour de Google) pour que la navigation entre
+// elles soit quasi instantanée ensuite.
+const MAIN_ROUTES = [
+  "/dashboard",
+  "/dashboard/invoices",
+  "/dashboard/clients",
+  "/dashboard/quotes",
+  "/dashboard/profile",
+];
+
 export default function DashboardHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
   const [isProfileNavPending, startProfileNav] = useTransition();
+
+  // Précharge le contenu des pages principales dès que ce header est monté —
+  // c'est-à-dire dès que l'utilisateur arrive sur une page du dashboard,
+  // quel que soit le point d'entrée (connexion, inscription, OAuth).
+  useEffect(() => {
+    MAIN_ROUTES.forEach((href) => router.prefetch(href));
+  }, [router]);
 
   // isProfileNavPending reste vrai jusqu'à ce que React ait fini de préparer
   // la page /dashboard/profile — contrairement à usePathname, qui change dès
