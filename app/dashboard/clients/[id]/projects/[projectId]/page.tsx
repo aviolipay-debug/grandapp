@@ -29,19 +29,22 @@ export default async function ProjectDetailPage({
 }) {
   const supabase = createClient();
 
-  const { data: projectData } = await supabase
-    .from("projects")
-    .select("id, name, status, clients(name)")
-    .eq("id", params.projectId)
-    .single();
+  // Le projet et les devis ne dépendent pas l'un de l'autre — on les
+  // lance en parallèle plutôt qu'en série pour gagner un aller-retour réseau.
+  const [{ data: projectData }, { data: quotes }] = await Promise.all([
+    supabase
+      .from("projects")
+      .select("id, name, status, clients(name)")
+      .eq("id", params.projectId)
+      .single(),
+    supabase
+      .from("quotes")
+      .select("id, quote_number, status, total, currency, issue_date")
+      .eq("project_id", params.projectId)
+      .order("created_at", { ascending: false }),
+  ]);
 
   const project = projectData as any;
-
-  const { data: quotes } = await supabase
-    .from("quotes")
-    .select("id, quote_number, status, total, currency, issue_date")
-    .eq("project_id", params.projectId)
-    .order("created_at", { ascending: false });
 
   const quoteId = quotes && quotes.length > 0 ? quotes[0].id : null;
 
