@@ -1,9 +1,9 @@
 // app/reset-password/confirm/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import LoadingOverlay from "../../components/loading-overlay";
@@ -11,6 +11,7 @@ import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
 
 export default function ResetPasswordConfirmPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
 
   const [newPassword, setNewPassword] = useState("");
@@ -20,6 +21,34 @@ export default function ResetPasswordConfirmPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+
+  // Le lien reçu par email contient un code dans l'URL (?code=...) — il faut
+  // l'échanger explicitement contre une session avant de pouvoir changer le
+  // mot de passe, sinon Supabase renvoie "Auth session missing!".
+  const [exchanging, setExchanging] = useState(true);
+  const [linkError, setLinkError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const code = searchParams.get("code");
+
+    if (!code) {
+      // Pas de code dans l'URL : soit le lien est déjà expiré/utilisé, soit
+      // la page a été ouverte directement sans passer par l'email.
+      setLinkError("Ce lien de réinitialisation est invalide ou a déjà été utilisé.");
+      setExchanging(false);
+      return;
+    }
+
+    supabase.auth
+      .exchangeCodeForSession(code)
+      .then(({ error: exchangeError }) => {
+        if (exchangeError) {
+          setLinkError("Ce lien a expiré ou est invalide. Demandez-en un nouveau.");
+        }
+      })
+      .finally(() => setExchanging(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -72,7 +101,24 @@ export default function ResetPasswordConfirmPage() {
             OliPay<span className="text-stamp">.</span>
           </Link>
 
-          {done ? (
+          {exchanging ? (
+            <p className="text-center text-sm text-[#6B7280] dark:text-white/50">
+              Vérification du lien…
+            </p>
+          ) : linkError ? (
+            <div className="text-center">
+              <h1 className="font-display mb-3 text-2xl font-bold text-ink dark:text-white">
+                Lien invalide
+              </h1>
+              <p className="mb-6 text-sm text-[#6B7280] dark:text-white/50">{linkError}</p>
+              <Link
+                href="/reset-password"
+                className="block w-full rounded-xl bg-ledger-deep py-3.5 text-center text-sm font-bold text-white transition-colors hover:bg-stamp"
+              >
+                Redemander un lien
+              </Link>
+            </div>
+          ) : done ? (
             <div className="text-center">
               <h1 className="font-display mb-3 text-3xl font-bold text-ink dark:text-white">
                 Mot de passe mis à jour
