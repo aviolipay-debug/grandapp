@@ -16,7 +16,7 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("whatsapp_number, finance_pin_hash")
+    .select("finance_pin_hash")
     .eq("id", user.id)
     .single();
 
@@ -24,7 +24,6 @@ export default async function ProfilePage() {
     <ProfileForm
       initialEmail={user.email ?? ""}
       initialFullName={(user.user_metadata?.full_name as string) ?? ""}
-      initialWhatsapp={profile?.whatsapp_number ?? ""}
       initialPinHash={profile?.finance_pin_hash ?? null}
     />
   );
