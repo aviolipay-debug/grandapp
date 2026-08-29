@@ -1,7 +1,7 @@
 // app/reset-password/confirm/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import LoadingOverlay from "../../components/loading-overlay";
 import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
 
-export default function ResetPasswordConfirmPage() {
+function ResetPasswordConfirmInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
@@ -201,5 +201,13 @@ export default function ResetPasswordConfirmPage() {
         </div>
       </main>
     </>
+  );
+}
+
+export default function ResetPasswordConfirmPage() {
+  return (
+    <Suspense fallback={null}>
+      <ResetPasswordConfirmInner />
+    </Suspense>
   );
 }
