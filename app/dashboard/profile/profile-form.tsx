@@ -4,7 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, User, Phone, Building2, Lock, ShieldCheck, AlertTriangle, LogOut } from "lucide-react";
+import { Mail, User, Phone, Building2, Lock, ShieldCheck, AlertTriangle, LogOut, Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { hashPin, isValidPin } from "@/lib/pin";
 
@@ -38,6 +38,7 @@ export default function ProfileForm({
   const [currentPinHash, setCurrentPinHash] = useState<string | null>(initialPinHash);
   const [oldPin, setOldPin] = useState("");
   const [newPin, setNewPin] = useState("");
+  const [newPinConfirm, setNewPinConfirm] = useState("");
   const [pinSaving, setPinSaving] = useState(false);
   const [pinSaved, setPinSaved] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
@@ -52,6 +53,7 @@ export default function ProfileForm({
   function openPinModal() {
     setOldPin("");
     setNewPin("");
+    setNewPinConfirm("");
     setPinError(null);
     setPinSaved(false);
     setShowPinModal(true);
@@ -59,15 +61,23 @@ export default function ProfileForm({
 
   // Changement de mot de passe.
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordSaved, setPasswordSaved] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
   function openPasswordModal() {
+    setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
+    setShowCurrentPassword(false);
+    setShowNewPassword(false);
+    setShowConfirmPassword(false);
     setPasswordError(null);
     setPasswordSaved(false);
     setShowPasswordModal(true);
@@ -78,6 +88,10 @@ export default function ProfileForm({
     setPasswordError(null);
     setPasswordSaved(false);
 
+    if (!currentPassword) {
+      setPasswordError("Entrez votre mot de passe actuel.");
+      return;
+    }
     if (newPassword.length < 6) {
       setPasswordError("Le mot de passe doit contenir au moins 6 caractères.");
       return;
@@ -88,6 +102,19 @@ export default function ProfileForm({
     }
 
     setPasswordSaving(true);
+
+    // On vérifie le mot de passe actuel en tentant une connexion avec —
+    // Supabase ne fournit pas de vérification directe sans ré-authentifier.
+    const { error: verifyError } = await supabase.auth.signInWithPassword({
+      email,
+      password: currentPassword,
+    });
+
+    if (verifyError) {
+      setPasswordSaving(false);
+      setPasswordError("Mot de passe actuel incorrect.");
+      return;
+    }
 
     const { error: passwordUpdateError } = await supabase.auth.updateUser({
       password: newPassword,
@@ -100,6 +127,7 @@ export default function ProfileForm({
       return;
     }
 
+    setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
     setPasswordSaved(true);
@@ -306,6 +334,13 @@ export default function ProfileForm({
       return;
     }
 
+    // Pour une première définition, on demande une confirmation pour éviter
+    // une faute de frappe qui bloquerait ensuite l'accès aux Finances.
+    if (!hasPin && newPin !== newPinConfirm) {
+      setPinError("Les deux codes ne correspondent pas.");
+      return;
+    }
+
     setPinSaving(true);
 
     const {
@@ -336,6 +371,7 @@ export default function ProfileForm({
     setCurrentPinHash(finance_pin_hash);
     setOldPin("");
     setNewPin("");
+    setNewPinConfirm("");
     setPinSaved(true);
   }
 
@@ -534,33 +570,75 @@ export default function ProfileForm({
               Mot de passe
             </h2>
             <p className="mb-5 text-sm text-[#6B7280] dark:text-white/50">
-              Choisissez un nouveau mot de passe (6 caractères minimum).
+              Entrez votre mot de passe actuel, puis choisissez-en un nouveau (6 caractères
+              minimum).
             </p>
 
             <div className="flex flex-col gap-4">
               <div>
+                <label className={labelClass}>Mot de passe actuel</label>
+                <div className="relative">
+                  <input
+                    type={showCurrentPassword ? "text" : "password"}
+                    autoFocus
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPassword((v) => !v)}
+                    aria-label={showCurrentPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-ink dark:hover:text-white"
+                  >
+                    {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
                 <label className={labelClass}>Nouveau mot de passe</label>
-                <input
-                  type="password"
-                  minLength={6}
-                  autoFocus
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-                />
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    minLength={6}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword((v) => !v)}
+                    aria-label={showNewPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-ink dark:hover:text-white"
+                  >
+                    {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
 
               <div>
                 <label className={labelClass}>Confirmer le mot de passe</label>
-                <input
-                  type="password"
-                  minLength={6}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-                />
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    minLength={6}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((v) => !v)}
+                    aria-label={showConfirmPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-ink dark:hover:text-white"
+                  >
+                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
 
               {passwordError && (
@@ -650,6 +728,22 @@ export default function ProfileForm({
                   className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
                 />
               </div>
+
+              {!hasPin && (
+                <div>
+                  <label className={labelClass}>Confirmer le code</label>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    pattern="\d{4}"
+                    maxLength={4}
+                    value={newPinConfirm}
+                    onChange={(e) => setNewPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                    placeholder="••••"
+                    className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+                  />
+                </div>
+              )}
 
               {pinError && (
                 <p className="rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">{pinError}</p>
