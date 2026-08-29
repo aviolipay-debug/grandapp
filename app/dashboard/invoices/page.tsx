@@ -1,6 +1,6 @@
 // app/dashboard/invoices/page.tsx
 import Link from "next/link";
-import { Receipt, ChevronRight, Wallet, Clock, AlertTriangle, FileStack } from "lucide-react";
+import { Receipt, ChevronRight, Wallet, Clock, CheckCircle2, FileStack } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateFR } from "@/lib/format-date";
 import { poppins } from "@/lib/fonts";
@@ -85,7 +85,11 @@ export default async function InvoicesPage() {
     return inv.status !== "cancelled" && remaining > 0 ? sum + remaining : sum;
   }, 0);
 
-  const facturesEnRetard = invoices.filter((inv) => getEffectiveStatus(inv) === "overdue").length;
+  // Une facture "soldée" = entièrement payée. C'est aussi le moment où le
+  // projet associé passe au statut "Terminé" dans l'app (l'enregistrement du
+  // paiement qui solde la facture est ce qui déclenche ce changement de
+  // statut) — les deux se produisent donc ensemble.
+  const facturesSoldees = invoices.filter((inv) => getEffectiveStatus(inv) === "paid").length;
 
   // Historique des paiements — somme de amount_paid groupée par mois de
   // création de la facture (created_at), triée chronologiquement.
@@ -119,7 +123,7 @@ export default async function InvoicesPage() {
   const stats = {
     encaisse: totalEncaisse,
     restantDu: totalRestantDu,
-    enRetard: facturesEnRetard,
+    soldees: facturesSoldees,
     total: invoices.length,
   };
 
@@ -149,10 +153,10 @@ export default async function InvoicesPage() {
           />
           <StatCard
             label="Factures"
-            value={stats.enRetard}
-            subtitle="en retard"
-            accent="#E5533F"
-            icon={<AlertTriangle size={18} />}
+            value={stats.soldees}
+            subtitle="soldées"
+            accent="#00A6AC"
+            icon={<CheckCircle2 size={18} />}
           />
           <StatCard
             label="Restant dû"
