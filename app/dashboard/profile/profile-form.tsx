@@ -4,7 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, User, Phone, Building2, Lock, ShieldCheck, AlertTriangle, LogOut, Eye, EyeOff } from "lucide-react";
+import { Mail, User, Phone, Building2, Lock, ShieldCheck, AlertTriangle, LogOut, Eye, EyeOff, ChevronDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { hashPin, isValidPin } from "@/lib/pin";
 
@@ -61,6 +61,7 @@ export default function ProfileForm({
 
   // Changement de mot de passe.
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showPasswordMobileOpen, setShowPasswordMobileOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -381,6 +382,84 @@ export default function ProfileForm({
     "w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 pl-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white";
   const labelClass = "mb-1.5 block text-sm font-semibold text-ink dark:text-white";
 
+  const passwordFieldsJSX = (
+    <>
+      <div>
+        <label className={labelClass}>Mot de passe actuel</label>
+        <div className="relative">
+          <input
+            type={showCurrentPassword ? "text" : "password"}
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            placeholder="••••••••"
+            className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+          />
+          <button
+            type="button"
+            onClick={() => setShowCurrentPassword((v) => !v)}
+            aria-label={showCurrentPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-ink dark:hover:text-white"
+          >
+            {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <label className={labelClass}>Nouveau mot de passe</label>
+        <div className="relative">
+          <input
+            type={showNewPassword ? "text" : "password"}
+            minLength={6}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="••••••••"
+            className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+          />
+          <button
+            type="button"
+            onClick={() => setShowNewPassword((v) => !v)}
+            aria-label={showNewPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-ink dark:hover:text-white"
+          >
+            {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <label className={labelClass}>Confirmer le mot de passe</label>
+        <div className="relative">
+          <input
+            type={showConfirmPassword ? "text" : "password"}
+            minLength={6}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="••••••••"
+            className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword((v) => !v)}
+            aria-label={showConfirmPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-ink dark:hover:text-white"
+          >
+            {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        </div>
+      </div>
+
+      {passwordError && (
+        <p className="rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">{passwordError}</p>
+      )}
+      {passwordSaved && !passwordError && (
+        <p className="rounded-xl bg-[#E7FAF9] px-4 py-2.5 text-sm font-semibold text-[#00A6AC] dark:bg-white/5">
+          Mot de passe mis à jour.
+        </p>
+      )}
+    </>
+  );
+
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-6 py-4 lg:max-w-2xl">
       <h1 className="font-display text-xl font-bold text-ink dark:text-white">Mon profil</h1>
@@ -490,12 +569,19 @@ export default function ProfileForm({
           onClick={openPinModal}
           className="shrink-0 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-white hover:bg-stamp"
         >
-          {hasPin ? "Modifier" : "Définir un code PIN"}
+          {hasPin ? (
+            "Modifier"
+          ) : (
+            <>
+              <span className="sm:hidden">Définir</span>
+              <span className="hidden sm:inline">Définir un code PIN</span>
+            </>
+          )}
         </button>
       </div>
 
-      {/* Mot de passe */}
-      <div className="flex items-center justify-between rounded-2xl border border-paperline bg-white p-5 dark:border-white/10 dark:bg-[#262626] sm:p-6">
+      {/* Mot de passe — desktop : bouton ouvrant une popup */}
+      <div className="hidden items-center justify-between rounded-2xl border border-paperline bg-white p-5 dark:border-white/10 dark:bg-[#262626] sm:flex sm:p-6">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
             <Lock size={18} />
@@ -514,6 +600,56 @@ export default function ProfileForm({
         >
           Changer le mot de passe
         </button>
+      </div>
+
+      {/* Mot de passe — mobile : menu déroulant inline, comme le bouton "Gestion" */}
+      <div className="rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626] sm:hidden">
+        <button
+          type="button"
+          onClick={() => setShowPasswordMobileOpen((v) => !v)}
+          className="flex w-full items-center justify-between p-5"
+        >
+          <span className="flex items-center gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
+              <Lock size={18} />
+            </span>
+            <span className="text-sm font-semibold text-ink dark:text-white">
+              Changer le mot de passe
+            </span>
+          </span>
+          <ChevronDown
+            size={18}
+            className={`shrink-0 text-[#9CA3AF] transition-transform ${
+              showPasswordMobileOpen ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+
+        {showPasswordMobileOpen && (
+          <form
+            onSubmit={handleChangePassword}
+            className="flex flex-col gap-4 border-t border-paperline p-5 pt-4 dark:border-white/10"
+          >
+            {passwordFieldsJSX}
+
+            <div className="mt-1 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowPasswordMobileOpen(false)}
+                className="flex-1 rounded-xl border border-paperline py-3 text-sm font-semibold text-ink hover:bg-[#F7F7FB] dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+              >
+                Fermer
+              </button>
+              <button
+                type="submit"
+                disabled={passwordSaving}
+                className="flex-1 rounded-xl bg-ledger-deep py-3 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
+              >
+                {passwordSaving ? "Enregistrement…" : "Enregistrer"}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
 
       {/* Lien vers le profil entreprise (assistant existant) */}
@@ -575,82 +711,7 @@ export default function ProfileForm({
             </p>
 
             <div className="flex flex-col gap-4">
-              <div>
-                <label className={labelClass}>Mot de passe actuel</label>
-                <div className="relative">
-                  <input
-                    type={showCurrentPassword ? "text" : "password"}
-                    autoFocus
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowCurrentPassword((v) => !v)}
-                    aria-label={showCurrentPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-ink dark:hover:text-white"
-                  >
-                    {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className={labelClass}>Nouveau mot de passe</label>
-                <div className="relative">
-                  <input
-                    type={showNewPassword ? "text" : "password"}
-                    minLength={6}
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewPassword((v) => !v)}
-                    aria-label={showNewPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-ink dark:hover:text-white"
-                  >
-                    {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className={labelClass}>Confirmer le mot de passe</label>
-                <div className="relative">
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    minLength={6}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword((v) => !v)}
-                    aria-label={showConfirmPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-ink dark:hover:text-white"
-                  >
-                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              {passwordError && (
-                <p className="rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">
-                  {passwordError}
-                </p>
-              )}
-              {passwordSaved && !passwordError && (
-                <p className="rounded-xl bg-[#E7FAF9] px-4 py-2.5 text-sm font-semibold text-[#00A6AC] dark:bg-white/5">
-                  Mot de passe mis à jour.
-                </p>
-              )}
+              {passwordFieldsJSX}
 
               <div className="mt-1 flex gap-3">
                 <button
