@@ -13,6 +13,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const supabase = createClient();
+
   const { data: invoice } = await supabase
     .from("invoices")
     .select(
@@ -20,9 +21,11 @@ export async function GET(
     )
     .eq("id", params.id)
     .single();
+
   if (!invoice) {
     return new Response("Facture introuvable", { status: 404 });
   }
+
   const { data: items } = await supabase
     .from("invoice_items")
     .select("*")
@@ -47,7 +50,11 @@ export async function GET(
         kind,
         number: invoice.invoice_number,
         objet: invoice.objet ?? null,
-        issueDate: formatDateFR(invoice.issue_date),
+        // Date affichée = la vraie date de création de ce document
+        // (created_at), pas invoice.issue_date — ce dernier est copié depuis
+        // le devis d'origine au moment de la génération automatique de la
+        // facture/bordereau, et affichait donc à tort la date du devis.
+        issueDate: formatDateFR(invoice.created_at),
         dueOrExpiryDate: formatDateFR(invoice.due_date) || null,
         companyName: invoice.profiles?.company_name ?? "Votre entreprise",
         companyAddress: invoice.profiles?.company_address ?? null,
@@ -78,7 +85,10 @@ export async function GET(
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `inline; filename="${asciiFallback}.pdf"; filename*=UTF-8''${encodeURIComponent(filenameBase)}.pdf`,
-      "Cache-Control": "no-store, max-age=0",
+      "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+      "Pragma": "no-cache",
+      "Expires": "0",
+      "Surrogate-Control": "no-store",
     },
   });
 }
