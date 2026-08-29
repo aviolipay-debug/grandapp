@@ -4,7 +4,6 @@ import { Receipt, ChevronRight, Wallet, Clock, CheckCircle2, FileStack } from "l
 import { createClient } from "@/lib/supabase/server";
 import { formatDateFR } from "@/lib/format-date";
 import { poppins } from "@/lib/fonts";
-import PaymentHistoryChart from "./payment-history-chart";
 import FinancePinGate from "./finance-pin-gate";
 
 const statusLabels: Record<string, string> = {
@@ -91,35 +90,6 @@ export default async function InvoicesPage() {
   // statut) — les deux se produisent donc ensemble.
   const facturesSoldees = invoices.filter((inv) => getEffectiveStatus(inv) === "paid").length;
 
-  // Historique des paiements — somme de amount_paid groupée par mois de
-  // création de la facture (created_at), triée chronologiquement.
-  const monthlyMap = new Map<string, { label: string; total: number }>();
-  for (const inv of invoices) {
-    if (!inv.created_at) continue;
-    const d = new Date(inv.created_at);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const label = d.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
-    const amount = Number(inv.amount_paid);
-    const existing = monthlyMap.get(key);
-    if (existing) {
-      existing.total += amount;
-    } else {
-      monthlyMap.set(key, { label, total: amount });
-    }
-  }
-  const monthlyPaymentsAll = Array.from(monthlyMap.entries())
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, v]) => ({ key, month: v.label, total: v.total }));
-
-  // On n'affiche que les 6 derniers mois sur la carte, comme la maquette.
-  const monthlyPayments = monthlyPaymentsAll.slice(-6).map(({ month, total }) => ({ month, total }));
-
-  const now = new Date();
-  const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  const currentMonthTotal =
-    monthlyPaymentsAll.find((m) => m.key === currentMonthKey)?.total ?? 0;
-  const periodTotal = monthlyPayments.reduce((sum, m) => sum + m.total, 0);
-
   const stats = {
     encaisse: totalEncaisse,
     restantDu: totalRestantDu,
@@ -164,16 +134,6 @@ export default async function InvoicesPage() {
             subtitle={currency}
             accent="#2A89DA"
             icon={<Clock size={18} />}
-          />
-        </div>
-
-        {/* Historique des paiements */}
-        <div className="mt-6">
-          <PaymentHistoryChart
-            data={monthlyPayments}
-            currency={currency}
-            currentMonthTotal={currentMonthTotal}
-            periodTotal={periodTotal}
           />
         </div>
 
