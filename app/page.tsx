@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import MobileMenu from "./mobile-menu";
 import ThemeToggle from "./theme-toggle";
 import Reveal from "./reveal";
 import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
 import { FileClock, ShieldCheck, Layers } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 
 const features = [
   {
@@ -63,7 +65,19 @@ const faqs = [
   },
 ];
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  // Un utilisateur déjà connecté qui atterrit sur la page d'accueil (lien
+  // direct, favori, etc.) est renvoyé directement vers son tableau de bord —
+  // tant qu'il ne s'est pas explicitement déconnecté.
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect("/dashboard");
+  }
+
   return (
     <main id="top">
       {/* Animations du hero : cycle infini de 12s qui rejoue en boucle la scène
