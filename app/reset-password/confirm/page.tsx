@@ -43,7 +43,8 @@ function ResetPasswordConfirmInner() {
       .exchangeCodeForSession(code)
       .then(({ error: exchangeError }) => {
         if (exchangeError) {
-          setLinkError("Ce lien a expiré ou est invalide. Demandez-en un nouveau.");
+          // Message détaillé temporaire pour diagnostiquer la cause exacte.
+          setLinkError(`Ce lien a expiré ou est invalide. (${exchangeError.message})`);
         }
       })
       .finally(() => setExchanging(false));
