@@ -3,7 +3,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import LoadingOverlay from "../../components/loading-overlay";
@@ -11,7 +11,6 @@ import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
 
 function ResetPasswordConfirmInner() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const supabase = createClient();
 
   const [newPassword, setNewPassword] = useState("");
@@ -22,32 +21,21 @@ function ResetPasswordConfirmInner() {
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
-  // Le lien reçu par email contient un code dans l'URL (?code=...) — il faut
-  // l'échanger explicitement contre une session avant de pouvoir changer le
-  // mot de passe, sinon Supabase renvoie "Auth session missing!".
-  const [exchanging, setExchanging] = useState(true);
+  // La session de récupération a déjà été établie côté serveur par
+  // /auth/callback (cookies) avant d'arriver ici — on vérifie juste qu'elle
+  // existe, sans refaire l'échange nous-mêmes (ce qui échouait auparavant :
+  // le "code verifier" PKCE n'est pas partagé entre un échange serveur et un
+  // échange client, d'où l'erreur "PKCE code verifier not found in storage").
+  const [checkingSession, setCheckingSession] = useState(true);
   const [linkError, setLinkError] = useState<string | null>(null);
 
   useEffect(() => {
-    const code = searchParams.get("code");
-
-    if (!code) {
-      // Pas de code dans l'URL : soit le lien est déjà expiré/utilisé, soit
-      // la page a été ouverte directement sans passer par l'email.
-      setLinkError("Ce lien de réinitialisation est invalide ou a déjà été utilisé.");
-      setExchanging(false);
-      return;
-    }
-
-    supabase.auth
-      .exchangeCodeForSession(code)
-      .then(({ error: exchangeError }) => {
-        if (exchangeError) {
-          // Message détaillé temporaire pour diagnostiquer la cause exacte.
-          setLinkError(`Ce lien a expiré ou est invalide. (${exchangeError.message})`);
-        }
-      })
-      .finally(() => setExchanging(false));
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) {
+        setLinkError("Ce lien de réinitialisation est invalide, a expiré, ou a déjà été utilisé.");
+      }
+      setCheckingSession(false);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -102,7 +90,7 @@ function ResetPasswordConfirmInner() {
             OliPay<span className="text-stamp">.</span>
           </Link>
 
-          {exchanging ? (
+          {checkingSession ? (
             <p className="text-center text-sm text-[#6B7280] dark:text-white/50">
               Vérification du lien…
             </p>
