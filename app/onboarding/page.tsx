@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { pdf } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/client";
 import DashboardHeader from "../dashboard/header";
 import BottomNav from "../dashboard/bottom-nav";
 import LoadingOverlay from "../components/loading-overlay";
+import { TEMPLATES, type TemplateId } from "@/lib/pdf/templates";
+import type { DocumentData } from "@/lib/pdf/types";
 
 const steps = [
   { key: "structure", label: "Structure", desc: "Modèle d'organisation" },
@@ -30,79 +33,16 @@ const sectors = [
 
 type Contact = { indicatif: string; numero: string };
 
-// Modèles disponibles — la liste est prête à en accueillir d'autres : chaque
-// nouvel id ajouté ici, avec son aperçu, apparaît automatiquement comme
-// option pour le client.
-const invoiceTemplates = ["template-ako", "template-degrade"] as const;
+// Modèles disponibles — dérivés directement du dispatch PDF (lib/pdf/templates)
+// : chaque nouveau modèle ajouté là-bas apparaît automatiquement ici, sans
+// rien à dupliquer.
+const invoiceTemplates = Object.keys(TEMPLATES) as TemplateId[];
 
 const templateLabels: Record<string, string> = {
   "template-ako": "AKO — Jaune & Noir",
   "template-degrade": "La Facture — Dégradé coloré",
+  "template-nuit": "Nuit — Sombre & Jaune",
 };
-
-// Miniature visuelle du modèle de facture (aperçu, pas le vrai PDF)
-function TemplatePreview({ id, logoPreview }: { id: string; logoPreview: string | null }) {
-  if (id === "template-degrade") {
-    return (
-      <div
-        className="relative h-40 w-full overflow-hidden text-[6px] leading-none"
-        style={{ background: "linear-gradient(135deg, #F3C9A088, #E8748B55, #C9A2D955)" }}
-      >
-        <div className="flex flex-col items-center pt-4">
-          <span className="italic text-[7px] font-bold text-[#111]">La</span>
-          <span className="text-[13px] font-black tracking-wide text-[#111]">FACTURE</span>
-          <span className="mt-0.5 text-[5px] font-semibold text-[#111]">N° 0001 — 01/01/2026</span>
-        </div>
-        <div className="mt-2 flex justify-between px-3">
-          <div className="h-1.5 w-10 rounded-sm bg-[#111]" />
-          <div className="h-1.5 w-10 rounded-sm bg-[#111]" />
-        </div>
-        <div className="mx-3 mt-3 overflow-hidden rounded-sm">
-          <div className="h-2.5 w-full bg-[#111]" />
-          <div className="h-2 w-full border-b border-white/60 bg-white/70" />
-          <div className="h-2 w-full bg-white/70" />
-        </div>
-        <div className="mt-2 flex justify-end px-3">
-          <div className="h-2 w-16 rounded-sm bg-[#111]" />
-        </div>
-        <div className="mt-3 text-center text-[6px] font-black text-[#111]">MERCI</div>
-      </div>
-    );
-  }
-  // template-ako (défaut)
-  return (
-    <div className="relative h-40 w-full overflow-hidden bg-white text-[6px] leading-none dark:bg-[#1e1e1e]">
-      <div className="h-2 w-full bg-[#0E0E0E]" />
-      <div className="absolute left-0 top-6 h-14 w-1.5 bg-[#E9F23A]" />
-      <div className="p-3 pl-4">
-        <div className="flex items-start justify-between">
-          {logoPreview ? (
-            <div className="flex h-6 max-w-[50px] items-center rounded-sm bg-[#E9F23A] px-1">
-              <img src={logoPreview} alt="" className="h-4 object-contain" />
-            </div>
-          ) : (
-            <div className="h-5 w-10 rounded-sm bg-[#E9F23A]" />
-          )}
-          <div className="flex items-end gap-0.5">
-            <div className="h-4 w-10 rounded-sm bg-[#111111]" />
-            <div className="h-4 w-1 rounded-sm bg-[#E9F23A]" />
-          </div>
-        </div>
-        <div className="mt-2 h-px w-full bg-[#111111]" />
-        <div className="mt-2 flex justify-between">
-          <div className="h-1.5 w-10 rounded-sm bg-[#D4D4D4]" />
-          <div className="h-1.5 w-14 rounded-sm bg-[#D4D4D4]" />
-        </div>
-        <div className="mt-2 h-1.5 w-full rounded-sm border-b border-[#D4D4D4]" />
-        <div className="mt-1 h-1.5 w-full rounded-sm border-b border-[#D4D4D4]" />
-        <div className="mt-2 flex justify-end">
-          <div className="h-2 w-14 rounded-sm bg-[#111111]" />
-        </div>
-      </div>
-      <div className="mt-1 h-1.5 w-2/3 self-end bg-[#E9F23A]" />
-    </div>
-  );
-}
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -143,6 +83,12 @@ export default function OnboardingPage() {
 
   // Étape 5 — Facture (modèle choisi par le client)
   const [template, setTemplate] = useState<string>("template-ako");
+
+  // Aperçus PDF réels (pas un dessin approximatif) — un par modèle, générés
+  // avec les vraies infos déjà saisies (nom, adresse, contact, logo) plus
+  // quelques lignes d'exemple pour remplir le tableau.
+  const [previewUrls, setPreviewUrls] = useState<Record<string, string>>({});
+  const [previewsLoading, setPreviewsLoading] = useState(false);
 
   const isLastStep = step === steps.length - 1;
 
@@ -192,6 +138,78 @@ export default function OnboardingPage() {
     }
     loadProfile();
   }, [supabase]);
+
+  // Génère un vrai rendu PDF (via @react-pdf/renderer) pour chaque modèle
+  // disponible, uniquement à l'étape 5 — avec le vrai nom d'entreprise, la
+  // vraie adresse, le vrai contact et le vrai logo déjà sélectionnés.
+  useEffect(() => {
+    if (step !== 4) return;
+
+    let cancelled = false;
+    const generatedUrls: string[] = [];
+
+    async function generatePreviews() {
+      setPreviewsLoading(true);
+
+      const previewData: DocumentData = {
+        kind: "Facture",
+        number: "0001",
+        objet: "Exemple de prestation",
+        issueDate: "01/01/2026",
+        dueOrExpiryDate: null,
+        companyName: companyName || "Votre entreprise",
+        companyAddress: siegeSocial || null,
+        companyLogoUrl: logoPreview,
+        companyPhone: contacts[0]?.numero
+          ? `${contacts[0].indicatif} ${contacts[0].numero}`
+          : null,
+        clientName: "Client Exemple",
+        clientPhone: "+229 01 00 00 00 00",
+        clientEmail: null,
+        clientAddress: "Cotonou, Bénin",
+        items: [
+          { description: "Prestation 1", quantity: 1, unit_price: 50000, line_total: 50000 },
+          { description: "Prestation 2", quantity: 2, unit_price: 25000, line_total: 50000 },
+        ],
+        subtotal: 100000,
+        discountRate: 0,
+        taxRate: 0,
+        total: 100000,
+        amountPaid: 0,
+        currency: "FCFA",
+        notes: null,
+      };
+
+      const entries = await Promise.all(
+        invoiceTemplates.map(async (id) => {
+          try {
+            const Component = TEMPLATES[id];
+            const blob = await pdf(<Component data={previewData} />).toBlob();
+            const url = URL.createObjectURL(blob);
+            generatedUrls.push(url);
+            return [id, url] as const;
+          } catch {
+            return [id, null] as const;
+          }
+        })
+      );
+
+      if (cancelled) return;
+
+      setPreviewUrls(
+        Object.fromEntries(entries.filter(([, url]) => url !== null)) as Record<string, string>
+      );
+      setPreviewsLoading(false);
+    }
+
+    generatePreviews();
+
+    return () => {
+      cancelled = true;
+      generatedUrls.forEach((u) => URL.revokeObjectURL(u));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, companyName, siegeSocial, contacts, logoPreview]);
 
   function updateContact(i: number, field: keyof Contact, value: string) {
     // Pour le numéro, on formate à la volée avec un espace tous les 2 chiffres
@@ -586,14 +604,15 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* Étape 5 : Facture */}
+        {/* Étape 5 : Facture — vrai aperçu PDF (react-pdf), avec le vrai logo/nom déjà saisis */}
         {step === 4 && (
           <div>
             <h2 className="font-display mb-1 text-xl font-bold text-ink dark:text-white">
               Personnalisez votre style de facturation
             </h2>
             <p className="mb-4 text-sm text-[#6B7280] dark:text-white/50 sm:mb-6">
-              Choisissez simplement celui qui vous plaît.
+              Choisissez simplement celui qui vous plaît — l&apos;aperçu ci-dessous est le vrai
+              PDF, avec votre logo.
             </p>
             <div className="grid grid-cols-2 gap-4">
               {invoiceTemplates.map((id) => (
@@ -607,7 +626,20 @@ export default function OnboardingPage() {
                       : "border-paperline dark:border-white/10"
                   }`}
                 >
-                  <TemplatePreview id={id} logoPreview={logoPreview} />
+                  <div className="h-40 w-full overflow-hidden bg-[#F3F4F6] dark:bg-[#1e1e1e]">
+                    {previewUrls[id] ? (
+                      <iframe
+                        src={`${previewUrls[id]}#toolbar=0&navpanes=0&scrollbar=0`}
+                        className="pointer-events-none h-[420px] w-full origin-top-left"
+                        style={{ transform: "scale(0.62)", width: "161%" }}
+                        title={templateLabels[id] ?? id}
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-xs text-[#6B7280] dark:text-white/50">
+                        {previewsLoading ? "Génération de l'aperçu…" : "Aperçu indisponible"}
+                      </div>
+                    )}
+                  </div>
                   <p className="px-2 py-1.5 text-center text-xs font-semibold text-ink dark:text-white">
                     {templateLabels[id] ?? id}
                   </p>
