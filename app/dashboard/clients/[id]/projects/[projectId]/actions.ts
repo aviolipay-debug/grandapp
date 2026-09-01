@@ -76,11 +76,17 @@ export async function updateProjectStatusWithPayment(
   // 1. Change le statut du projet (et génère Facture + Bordereau si "En cours").
   await updateProjectStatus(projectId, clientId, status);
 
-  // 2. Retrouve le devis (source de vérité).
+  // 2. Retrouve le devis (source de vérité) — le plus récent, exactement comme
+  // dans la page projet (quotes[0]). Sans ce tri, s'il existe plusieurs devis
+  // pour ce projet (ex. après plusieurs tests/modifications), on risque de
+  // retomber sur un devis différent de celui affiché à l'écran, et donc de ne
+  // jamais retrouver la Facture qui lui est réellement rattachée — c'est ce
+  // qui causait l'absence de "Restant dû actuellement" dans la popup.
   const { data: quote } = await supabase
     .from("quotes")
     .select("id, total")
     .eq("project_id", projectId)
+    .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
 
@@ -143,11 +149,13 @@ async function generateInvoicesForProject(projectId: string) {
   } = await supabase.auth.getUser();
   if (!user) return;
 
-  // Un projet = un devis actif — on prend le devis rattaché à ce projet.
+  // Un projet = un devis actif — on prend le devis le plus récent rattaché à
+  // ce projet (même tri que partout ailleurs, voir commentaire ci-dessus).
   const { data: quote } = await supabase
     .from("quotes")
     .select("*")
     .eq("project_id", projectId)
+    .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
 
