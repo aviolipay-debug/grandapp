@@ -33,7 +33,7 @@ async function renderFirstPageToImage(blob: Blob): Promise<string> {
   canvas.height = viewport.height;
   const context = canvas.getContext("2d")!;
 
-  await page.render({ canvasContext: context, viewport }).promise;
+  await page.render({ canvas, canvasContext: context, viewport }).promise;
   return canvas.toDataURL("image/png");
 }
 
