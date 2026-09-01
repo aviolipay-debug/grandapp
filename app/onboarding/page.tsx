@@ -632,11 +632,10 @@ export default function OnboardingPage() {
         {step === 4 && (
           <div>
             <h2 className="font-display mb-1 text-xl font-bold text-ink dark:text-white">
-              Personnalisez votre style de facturation
+              Choisissez un modèle de facture
             </h2>
             <p className="mb-4 text-sm text-[#6B7280] dark:text-white/50 sm:mb-6">
-              Choisissez simplement celui qui vous plaît — l&apos;aperçu ci-dessous est le vrai
-              PDF, avec votre logo.
+              Sélectionnez un modèle qui reflète votre identité professionnelle
             </p>
             <div className="grid grid-cols-2 gap-4">
               {invoiceTemplates.map((id) => (
@@ -664,9 +663,6 @@ export default function OnboardingPage() {
                       </div>
                     )}
                   </div>
-                  <p className="px-2 py-1.5 text-center text-xs font-semibold text-ink dark:text-white">
-                    {templateLabels[id] ?? id}
-                  </p>
                 </button>
               ))}
             </div>
