@@ -3,12 +3,39 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { pdf } from "@react-pdf/renderer";
+import * as pdfjsLib from "pdfjs-dist";
 import { createClient } from "@/lib/supabase/client";
 import DashboardHeader from "../dashboard/header";
 import BottomNav from "../dashboard/bottom-nav";
 import LoadingOverlay from "../components/loading-overlay";
 import { TEMPLATES, type TemplateId } from "@/lib/pdf/templates";
 import type { DocumentData } from "@/lib/pdf/types";
+
+// pdfjs-dist a besoin d'un "worker" séparé pour analyser le PDF — on pointe
+// vers celui hébergé par cdnjs (même version que la librairie installée),
+// ce qui évite toute configuration de bundling côté Next.js/Webpack.
+if (typeof window !== "undefined") {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+}
+
+// Convertit la 1ère page d'un PDF (Blob) en image PNG (data URL) — contrairement
+// à une <iframe> pointant vers un PDF, une image s'affiche de façon identique
+// sur desktop ET sur mobile (Safari/Chrome Android n'affichent pas les PDF
+// dans une iframe, ils proposent juste un écran "Ouvrir le fichier").
+async function renderFirstPageToImage(blob: Blob): Promise<string> {
+  const arrayBuffer = await blob.arrayBuffer();
+  const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const page = await pdfDoc.getPage(1);
+  const viewport = page.getViewport({ scale: 1.4 });
+
+  const canvas = document.createElement("canvas");
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  const context = canvas.getContext("2d")!;
+
+  await page.render({ canvasContext: context, viewport }).promise;
+  return canvas.toDataURL("image/png");
+}
 
 const steps = [
   { key: "structure", label: "Structure", desc: "Modèle d'organisation" },
@@ -146,7 +173,6 @@ export default function OnboardingPage() {
     if (step !== 4) return;
 
     let cancelled = false;
-    const generatedUrls: string[] = [];
 
     async function generatePreviews() {
       setPreviewsLoading(true);
@@ -185,9 +211,8 @@ export default function OnboardingPage() {
           try {
             const Component = TEMPLATES[id];
             const blob = await pdf(<Component data={previewData} />).toBlob();
-            const url = URL.createObjectURL(blob);
-            generatedUrls.push(url);
-            return [id, url] as const;
+            const imageUrl = await renderFirstPageToImage(blob);
+            return [id, imageUrl] as const;
           } catch {
             return [id, null] as const;
           }
@@ -206,7 +231,6 @@ export default function OnboardingPage() {
 
     return () => {
       cancelled = true;
-      generatedUrls.forEach((u) => URL.revokeObjectURL(u));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, companyName, siegeSocial, contacts, logoPreview]);
@@ -628,11 +652,11 @@ export default function OnboardingPage() {
                 >
                   <div className="h-40 w-full overflow-hidden bg-[#F3F4F6] dark:bg-[#1e1e1e]">
                     {previewUrls[id] ? (
-                      <iframe
-                        src={`${previewUrls[id]}#toolbar=0&navpanes=0&scrollbar=0`}
-                        className="pointer-events-none h-[420px] w-full origin-top-left"
-                        style={{ transform: "scale(0.62)", width: "161%" }}
-                        title={templateLabels[id] ?? id}
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={previewUrls[id]}
+                        alt={templateLabels[id] ?? id}
+                        className="h-full w-full object-cover object-top"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-xs text-[#6B7280] dark:text-white/50">
