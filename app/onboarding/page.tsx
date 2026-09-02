@@ -69,6 +69,8 @@ const templateLabels: Record<string, string> = {
   "template-ako": "AKO — Jaune & Noir",
   "template-degrade": "La Facture — Dégradé coloré",
   "template-nuit": "Nuit — Sombre & Jaune",
+  "template-eclat": "Éclat — Orange & Noir",
+  "template-signature": "Signature — Sauge & Rose",
 };
 
 export default function OnboardingPage() {
