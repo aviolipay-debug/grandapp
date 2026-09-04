@@ -71,6 +71,8 @@ const templateLabels: Record<string, string> = {
   "template-nuit": "Nuit — Sombre & Jaune",
   "template-eclat": "Éclat — Orange & Noir",
   "template-signature": "Signature — Sauge & Rose",
+  "template-jovial": "Jovial — Jaune & Rose",
+  "template-bicolore": "Bicolore — Violet & Jaune",
 };
 
 export default function OnboardingPage() {
