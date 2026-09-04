@@ -4,6 +4,8 @@ import TemplateDegrade from "./template-degrade";
 import TemplateNuit from "./template-nuit";
 import TemplateEclat from "./template-eclat";
 import TemplateSignature from "./template-signature";
+import TemplateJovial from "./template-jovial";
+import TemplateBicolore from "./template-bicolore";
 
 export const TEMPLATES = {
   "template-ako": TemplateAko,
@@ -11,6 +13,8 @@ export const TEMPLATES = {
   "template-nuit": TemplateNuit,
   "template-eclat": TemplateEclat,
   "template-signature": TemplateSignature,
+  "template-jovial": TemplateJovial,
+  "template-bicolore": TemplateBicolore,
 } as const;
 
 export type TemplateId = keyof typeof TEMPLATES;

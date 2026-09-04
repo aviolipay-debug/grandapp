@@ -29,10 +29,11 @@ const styles = StyleSheet.create({
 
   decor: { fontSize: 20, color: PINK, marginHorizontal: 2 },
 
-  clientBlock: { alignItems: "flex-end", marginTop: 4 },
+  clientBlockWrap: { flexDirection: "row", justifyContent: "flex-end", marginTop: 4 },
+  clientBlock: { width: 230 },
   clientRow: { flexDirection: "row", marginBottom: 3 },
   clientKey: { width: 66, fontSize: 8.5, color: MUTED },
-  clientValue: { fontSize: 8.5, color: INK },
+  clientValue: { flex: 1, fontSize: 8.5, color: INK, textAlign: "right" },
 
   numberBar: {
     borderTopWidth: 2,
@@ -119,26 +120,28 @@ export default function TemplateSignature({ data }: { data: DocumentData }) {
             </View>
           </View>
 
-          <View style={styles.clientBlock}>
-            <View style={styles.clientRow}>
-              <Text style={styles.clientKey}>CLIENT</Text>
-              <Text style={styles.clientValue}>{data.clientName}</Text>
-            </View>
-            {data.clientPhone && (
+          <View style={styles.clientBlockWrap}>
+            <View style={styles.clientBlock}>
               <View style={styles.clientRow}>
-                <Text style={styles.clientKey}>CONTACT</Text>
-                <Text style={styles.clientValue}>{data.clientPhone}</Text>
+                <Text style={styles.clientKey}>CLIENT</Text>
+                <Text style={styles.clientValue}>{data.clientName}</Text>
               </View>
-            )}
-            {data.clientAddress && (
+              {data.clientPhone && (
+                <View style={styles.clientRow}>
+                  <Text style={styles.clientKey}>CONTACT</Text>
+                  <Text style={styles.clientValue}>{data.clientPhone}</Text>
+                </View>
+              )}
+              {data.clientAddress && (
+                <View style={styles.clientRow}>
+                  <Text style={styles.clientKey}>ADRESSE</Text>
+                  <Text style={styles.clientValue}>{data.clientAddress}</Text>
+                </View>
+              )}
               <View style={styles.clientRow}>
-                <Text style={styles.clientKey}>ADRESSE</Text>
-                <Text style={styles.clientValue}>{data.clientAddress}</Text>
+                <Text style={styles.clientKey}>ÉMIS LE</Text>
+                <Text style={styles.clientValue}>{data.issueDate}</Text>
               </View>
-            )}
-            <View style={styles.clientRow}>
-              <Text style={styles.clientKey}>ÉMIS LE</Text>
-              <Text style={styles.clientValue}>{data.issueDate}</Text>
             </View>
           </View>
 
