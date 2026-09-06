@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { pdf } from "@react-pdf/renderer";
 import * as pdfjsLib from "pdfjs-dist";
@@ -18,15 +18,22 @@ if (typeof window !== "undefined") {
   pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 }
 
+// Échelle de rendu des vignettes de l'étape 5. Les vignettes ne s'affichent
+// qu'en ~160px de haut (h-40) : inutile de rasteriser le PDF à pleine
+// résolution (scale 1.4) pour ensuite le réduire en CSS — ça multipliait le
+// temps de rendu de chaque modèle pour rien. 0.55 donne une image encore
+// nette sur les écrans retina tout en étant nettement plus rapide à générer.
+const THUMBNAIL_SCALE = 0.55;
+
 // Convertit la 1ère page d'un PDF (Blob) en image PNG (data URL) — contrairement
 // à une <iframe> pointant vers un PDF, une image s'affiche de façon identique
 // sur desktop ET sur mobile (Safari/Chrome Android n'affichent pas les PDF
 // dans une iframe, ils proposent juste un écran "Ouvrir le fichier").
-async function renderFirstPageToImage(blob: Blob): Promise<string> {
+async function renderFirstPageToImage(blob: Blob, scale: number = 1.4): Promise<string> {
   const arrayBuffer = await blob.arrayBuffer();
   const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
   const page = await pdfDoc.getPage(1);
-  const viewport = page.getViewport({ scale: 1.4 });
+  const viewport = page.getViewport({ scale });
 
   const canvas = document.createElement("canvas");
   canvas.width = viewport.width;
@@ -121,6 +128,11 @@ export default function OnboardingPage() {
   const [previewUrls, setPreviewUrls] = useState<Record<string, string>>({});
   const [previewsLoading, setPreviewsLoading] = useState(false);
 
+  // Mémorise la "clé" des données ayant servi à générer les aperçus actuels,
+  // pour ne pas tout regénérer si l'utilisateur revient simplement sur
+  // l'étape 5 sans avoir rien changé (nom, adresse, contact, logo).
+  const lastPreviewKeyRef = useRef<string | null>(null);
+
   const isLastStep = step === steps.length - 1;
 
   // Au chargement : si un profil déjà configuré existe, on bascule en mode
@@ -173,65 +185,81 @@ export default function OnboardingPage() {
   // Génère un vrai rendu PDF (via @react-pdf/renderer) pour chaque modèle
   // disponible, uniquement à l'étape 5 — avec le vrai nom d'entreprise, la
   // vraie adresse, le vrai contact et le vrai logo déjà sélectionnés.
+  //
+  // Deux optimisations par rapport à la version précédente :
+  // 1. Chaque vignette s'affiche dès qu'elle est prête (au lieu d'attendre
+  //    que les 7 modèles soient terminés avant d'afficher quoi que ce soit).
+  // 2. Si l'utilisateur revient sur cette étape sans avoir changé les
+  //    données sources (nom, adresse, contact, logo), on réutilise les
+  //    aperçus déjà générés au lieu de tout recalculer.
   useEffect(() => {
     if (step !== 4) return;
 
+    const dataKey = JSON.stringify({ companyName, siegeSocial, contacts, logoPreview });
+    const alreadyGenerated =
+      lastPreviewKeyRef.current === dataKey && Object.keys(previewUrls).length > 0;
+
+    if (alreadyGenerated) return;
+
+    lastPreviewKeyRef.current = dataKey;
+
     let cancelled = false;
+    setPreviewsLoading(true);
+    setPreviewUrls({});
 
-    async function generatePreviews() {
-      setPreviewsLoading(true);
+    const previewData: DocumentData = {
+      kind: "Facture",
+      number: "0001",
+      objet: "Exemple de prestation",
+      issueDate: "01/01/2026",
+      dueOrExpiryDate: null,
+      companyName: companyName || "Votre entreprise",
+      companyAddress: siegeSocial || null,
+      companyLogoUrl: logoPreview,
+      companyPhone: contacts[0]?.numero
+        ? `${contacts[0].indicatif} ${contacts[0].numero}`
+        : null,
+      clientName: "Client Exemple",
+      clientPhone: "+229 01 00 00 00 00",
+      clientEmail: null,
+      clientAddress: "Cotonou, Bénin",
+      items: [
+        { description: "Prestation 1", quantity: 1, unit_price: 50000, line_total: 50000 },
+        { description: "Prestation 2", quantity: 2, unit_price: 25000, line_total: 50000 },
+      ],
+      subtotal: 100000,
+      discountRate: 0,
+      taxRate: 0,
+      total: 100000,
+      amountPaid: 0,
+      currency: "FCFA",
+      notes: null,
+    };
 
-      const previewData: DocumentData = {
-        kind: "Facture",
-        number: "0001",
-        objet: "Exemple de prestation",
-        issueDate: "01/01/2026",
-        dueOrExpiryDate: null,
-        companyName: companyName || "Votre entreprise",
-        companyAddress: siegeSocial || null,
-        companyLogoUrl: logoPreview,
-        companyPhone: contacts[0]?.numero
-          ? `${contacts[0].indicatif} ${contacts[0].numero}`
-          : null,
-        clientName: "Client Exemple",
-        clientPhone: "+229 01 00 00 00 00",
-        clientEmail: null,
-        clientAddress: "Cotonou, Bénin",
-        items: [
-          { description: "Prestation 1", quantity: 1, unit_price: 50000, line_total: 50000 },
-          { description: "Prestation 2", quantity: 2, unit_price: 25000, line_total: 50000 },
-        ],
-        subtotal: 100000,
-        discountRate: 0,
-        taxRate: 0,
-        total: 100000,
-        amountPaid: 0,
-        currency: "FCFA",
-        notes: null,
-      };
-
-      const entries = await Promise.all(
-        invoiceTemplates.map(async (id) => {
-          try {
-            const Component = TEMPLATES[id];
-            const blob = await pdf(<Component data={previewData} />).toBlob();
-            const imageUrl = await renderFirstPageToImage(blob);
-            return [id, imageUrl] as const;
-          } catch {
-            return [id, null] as const;
+    // Chaque modèle est généré indépendamment : dès qu'un rendu est prêt, on
+    // met à jour l'état pour afficher SA vignette, sans attendre les autres.
+    const renderJobs = invoiceTemplates.map((id) =>
+      (async () => {
+        try {
+          const Component = TEMPLATES[id];
+          const blob = await pdf(<Component data={previewData} />).toBlob();
+          const imageUrl = await renderFirstPageToImage(blob, THUMBNAIL_SCALE);
+          if (!cancelled) {
+            setPreviewUrls((prev) => ({ ...prev, [id]: imageUrl }));
           }
-        })
-      );
+        } catch {
+          // Cette vignette restera "Aperçu indisponible" — les autres modèles
+          // continuent leur génération indépendamment.
+        }
+      })()
+    );
 
-      if (cancelled) return;
-
-      setPreviewUrls(
-        Object.fromEntries(entries.filter(([, url]) => url !== null)) as Record<string, string>
-      );
-      setPreviewsLoading(false);
-    }
-
-    generatePreviews();
+    // Le loader global ne disparaît qu'une fois tous les modèles traités
+    // (succès ou échec), mais l'affichage individuel des vignettes ne
+    // dépend pas de ça.
+    Promise.allSettled(renderJobs).then(() => {
+      if (!cancelled) setPreviewsLoading(false);
+    });
 
     return () => {
       cancelled = true;
