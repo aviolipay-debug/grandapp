@@ -1,55 +1,42 @@
 // app/dashboard/invoices/finance-pin-gate.tsx
 "use client";
-
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
-import { hashPin } from "@/lib/pin";
+import { verifyFinancePin } from "./actions";
 
-// Écran de verrouillage : demandé à chaque ouverture de la page Finances.
-// Le hash du PIN est fourni par le parent (Server Component) — plus besoin
-// de le recharger côté navigateur, ce qui évite un flash "Chargement...".
-export default function FinancePinGate({
-  pinHash,
-  children,
-}: {
-  pinHash: string | null;
-  children: React.ReactNode;
-}) {
+// Écran de verrouillage : ne reçoit plus jamais le hash du PIN ni les
+// données protégées (children a été supprimé). La vérification se fait
+// entièrement côté serveur via la Server Action verifyFinancePin — en cas
+// de succès, un cookie httpOnly signé est posé côté serveur et on rafraîchit
+// la page (router.refresh) pour que le Server Component parent (page.tsx)
+// recharge et affiche les vraies données.
+export default function FinancePinGate() {
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const [unlocked, setUnlocked] = useState(!pinHash);
   const [digits, setDigits] = useState("");
   const [error, setError] = useState(false);
-  const [verifying, setVerifying] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    if (!unlocked) {
-      inputRef.current?.focus();
-    }
-  }, [unlocked]);
+    inputRef.current?.focus();
+  }, []);
 
   useEffect(() => {
-    async function verify() {
-      if (digits.length !== 4 || !pinHash) return;
-      setVerifying(true);
-      setError(false);
+    if (digits.length !== 4) return;
 
-      const entered = await hashPin(digits);
-
-      if (entered === pinHash) {
-        setUnlocked(true);
+    setError(false);
+    startTransition(async () => {
+      const result = await verifyFinancePin(digits);
+      if (result.success) {
+        router.refresh();
       } else {
         setError(true);
         setDigits("");
       }
-      setVerifying(false);
-    }
-    verify();
-  }, [digits, pinHash]);
-
-  if (unlocked) {
-    return <>{children}</>;
-  }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [digits]);
 
   return (
     <div className="flex min-h-[60vh] items-center justify-center px-4">
@@ -61,7 +48,6 @@ export default function FinancePinGate({
         <p className="mt-1.5 text-sm text-[#6B7280] dark:text-white/50">
           Entrez votre code PIN pour accéder à vos finances.
         </p>
-
         <div
           className="mt-6 flex cursor-text justify-center gap-3"
           onClick={() => inputRef.current?.focus()}
@@ -79,7 +65,6 @@ export default function FinancePinGate({
             </div>
           ))}
         </div>
-
         <input
           ref={inputRef}
           type="password"
@@ -88,18 +73,16 @@ export default function FinancePinGate({
           maxLength={4}
           autoFocus
           value={digits}
-          disabled={verifying}
+          disabled={isPending}
           onChange={(e) => setDigits(e.target.value.replace(/\D/g, "").slice(0, 4))}
           className="h-px w-px opacity-0"
           aria-label="Code PIN"
         />
-
         {error && (
           <p className="mt-4 text-sm font-semibold text-stamp">
             Code incorrect, réessayez.
           </p>
         )}
-
         <button
           type="button"
           onClick={() => inputRef.current?.focus()}

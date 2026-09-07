@@ -4,6 +4,7 @@ import { Receipt, ChevronRight, Wallet, Clock, CheckCircle2, FileStack } from "l
 import { createClient } from "@/lib/supabase/server";
 import { formatDateFR } from "@/lib/format-date";
 import { poppins } from "@/lib/fonts";
+import { isFinanceUnlocked } from "@/lib/session/finance-unlock";
 import FinancePinGate from "./finance-pin-gate";
 
 const statusLabels: Record<string, string> = {
@@ -46,33 +47,43 @@ function getEffectiveStatus(inv: {
 export default async function InvoicesPage() {
   const supabase = createClient();
 
-  // Le PIN de la page Finances est chargé côté serveur, en parallèle avec les
-  // factures, pour éviter un flash "Chargement..." côté navigateur.
-  const [
-    {
-      data: { user },
-    },
-    { data: invoicesData },
-  ] = await Promise.all([
-    supabase.auth.getUser(),
-    // On ne récupère que les Factures — les Bordereaux de livraison ne
-    // représentent pas un encaissement et fausseraient les totaux financiers.
-    supabase
-      .from("invoices")
-      .select("id, invoice_number, status, total, amount_paid, currency, due_date, created_at, clients(name)")
-      .eq("document_type", "facture")
-      .order("created_at", { ascending: false }),
-  ]);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const { data: profileForPin } = user
-    ? await supabase
-        .from("profiles")
-        .select("finance_pin_hash")
-        .eq("id", user.id)
-        .single()
-    : { data: null };
+  if (!user) {
+    // Sécurité : sans utilisateur authentifié, on ne charge rien du tout.
+    return <FinancePinGate />;
+  }
+
+  // Étape 1 (légère) : on ne récupère QUE l'existence d'un PIN, jamais les
+  // factures, avant de savoir si l'accès est autorisé.
+  const { data: profileForPin } = await supabase
+    .from("profiles")
+    .select("finance_pin_hash")
+    .eq("id", user.id)
+    .single();
 
   const pinHash = profileForPin?.finance_pin_hash ?? null;
+
+  // Si aucun PIN n'est défini pour ce compte, la zone n'est pas protégée
+  // (comportement identique à avant). Sinon, il faut un cookie de
+  // déverrouillage valide, vérifié côté serveur — impossible à falsifier
+  // depuis le navigateur.
+  const unlocked = !pinHash || isFinanceUnlocked(user.id);
+
+  if (!unlocked) {
+    // Aucune facture n'est chargée ni envoyée au navigateur tant que le
+    // code n'a pas été validé par la Server Action verifyFinancePin.
+    return <FinancePinGate />;
+  }
+
+  // Étape 2 : accès autorisé, on charge les vraies données financières.
+  const { data: invoicesData } = await supabase
+    .from("invoices")
+    .select("id, invoice_number, status, total, amount_paid, currency, due_date, created_at, clients(name)")
+    .eq("document_type", "facture")
+    .order("created_at", { ascending: false });
 
   const invoices = (invoicesData ?? []) as any[];
   const currency = invoices[0]?.currency ?? "FCFA";
@@ -98,100 +109,98 @@ export default async function InvoicesPage() {
   };
 
   return (
-    <FinancePinGate pinHash={pinHash}>
-      <div className={poppins.className}>
-        <h1 className="hidden font-display text-2xl font-bold text-ink dark:text-white sm:block">Finances</h1>
-        <p className="mt-1 hidden text-sm text-[#6B7280] dark:text-white/50 sm:block">
-          Vue d&apos;ensemble de vos encaissements et factures.
-        </p>
+    <div className={poppins.className}>
+      <h1 className="hidden font-display text-2xl font-bold text-ink dark:text-white sm:block">Finances</h1>
+      <p className="mt-1 hidden text-sm text-[#6B7280] dark:text-white/50 sm:block">
+        Vue d&apos;ensemble de vos encaissements et factures.
+      </p>
 
-        {/* Vue d'ensemble */}
-        <div className="mt-3 grid grid-cols-2 gap-4 sm:mt-6 lg:grid-cols-4">
-          <StatCard
-            label="Encaissé"
-            value={stats.encaisse.toLocaleString("fr-FR")}
-            subtitle={currency}
-            accent="#00C4CC"
-            icon={<Wallet size={18} />}
-          />
-          <StatCard
-            label="Factures"
-            value={stats.total}
-            subtitle="émises"
-            accent="#7D2AE7"
-            icon={<FileStack size={18} />}
-          />
-          <StatCard
-            label="Factures"
-            value={stats.soldees}
-            subtitle="soldées"
-            accent="#00A6AC"
-            icon={<CheckCircle2 size={18} />}
-          />
-          <StatCard
-            label="Restant dû"
-            value={stats.restantDu.toLocaleString("fr-FR")}
-            subtitle={currency}
-            accent="#2A89DA"
-            icon={<Clock size={18} />}
-          />
-        </div>
-
-        {/* Liste des factures */}
-        <div className="mt-8 overflow-hidden rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626]">
-          {invoices.length === 0 ? (
-            <p className="p-10 text-center text-sm text-[#6B7280] dark:text-white/50">
-              Aucune facture pour l&apos;instant. Elles sont générées automatiquement quand un
-              projet passe "En cours".
-            </p>
-          ) : (
-            <div className="divide-y divide-paperline dark:divide-white/10">
-              {invoices.slice(0, 5).map((inv) => {
-                const remaining = Number(inv.total) - Number(inv.amount_paid);
-                const effectiveStatus = getEffectiveStatus(inv);
-                return (
-                  <Link
-                    key={inv.id}
-                    href={`/dashboard/invoices/${inv.id}`}
-                    className="flex items-center gap-3 px-3 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
-                  >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7FAF9] text-[#00A6AC] dark:bg-white/10">
-                      <Receipt size={18} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="truncate font-medium text-ink dark:text-white">
-                          {inv.invoice_number}
-                        </p>
-                        <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
-                          {remaining > 0
-                            ? `${remaining.toLocaleString("fr-FR")} ${inv.currency}`
-                            : "Payée"}
-                        </p>
-                      </div>
-                      <div className="mt-1 flex items-center justify-between gap-2">
-                        <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
-                          {inv.clients?.name ?? "—"}
-                          {inv.due_date ? ` · Échéance ${formatDateFR(inv.due_date)}` : ""}
-                        </p>
-                        <span
-                          className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                            statusStyles[effectiveStatus] ?? "bg-[#F3F4F6] text-[#6B7280]"
-                          }`}
-                        >
-                          {statusLabels[effectiveStatus] ?? effectiveStatus}
-                        </span>
-                      </div>
-                    </div>
-                    <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </div>
+      {/* Vue d'ensemble */}
+      <div className="mt-3 grid grid-cols-2 gap-4 sm:mt-6 lg:grid-cols-4">
+        <StatCard
+          label="Encaissé"
+          value={stats.encaisse.toLocaleString("fr-FR")}
+          subtitle={currency}
+          accent="#00C4CC"
+          icon={<Wallet size={18} />}
+        />
+        <StatCard
+          label="Factures"
+          value={stats.total}
+          subtitle="émises"
+          accent="#7D2AE7"
+          icon={<FileStack size={18} />}
+        />
+        <StatCard
+          label="Factures"
+          value={stats.soldees}
+          subtitle="soldées"
+          accent="#00A6AC"
+          icon={<CheckCircle2 size={18} />}
+        />
+        <StatCard
+          label="Restant dû"
+          value={stats.restantDu.toLocaleString("fr-FR")}
+          subtitle={currency}
+          accent="#2A89DA"
+          icon={<Clock size={18} />}
+        />
       </div>
-    </FinancePinGate>
+
+      {/* Liste des factures */}
+      <div className="mt-8 overflow-hidden rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626]">
+        {invoices.length === 0 ? (
+          <p className="p-10 text-center text-sm text-[#6B7280] dark:text-white/50">
+            Aucune facture pour l&apos;instant. Elles sont générées automatiquement quand un
+            projet passe "En cours".
+          </p>
+        ) : (
+          <div className="divide-y divide-paperline dark:divide-white/10">
+            {invoices.slice(0, 5).map((inv) => {
+              const remaining = Number(inv.total) - Number(inv.amount_paid);
+              const effectiveStatus = getEffectiveStatus(inv);
+              return (
+                <Link
+                  key={inv.id}
+                  href={`/dashboard/invoices/${inv.id}`}
+                  className="flex items-center gap-3 px-3 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7FAF9] text-[#00A6AC] dark:bg-white/10">
+                    <Receipt size={18} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="truncate font-medium text-ink dark:text-white">
+                        {inv.invoice_number}
+                      </p>
+                      <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
+                        {remaining > 0
+                          ? `${remaining.toLocaleString("fr-FR")} ${inv.currency}`
+                          : "Payée"}
+                      </p>
+                    </div>
+                    <div className="mt-1 flex items-center justify-between gap-2">
+                      <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
+                        {inv.clients?.name ?? "—"}
+                        {inv.due_date ? ` · Échéance ${formatDateFR(inv.due_date)}` : ""}
+                      </p>
+                      <span
+                        className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                          statusStyles[effectiveStatus] ?? "bg-[#F3F4F6] text-[#6B7280]"
+                        }`}
+                      >
+                        {statusLabels[effectiveStatus] ?? effectiveStatus}
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
