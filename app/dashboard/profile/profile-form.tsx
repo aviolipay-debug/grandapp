@@ -6,18 +6,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Building2, Lock, ShieldCheck, AlertTriangle, LogOut, Eye, EyeOff, ChevronDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { hashPin, isValidPin } from "@/lib/pin";
+import { isValidPin } from "@/lib/pin";
+import { setFinancePin } from "./actions";
 
 const RESET_CONFIRM_WORD = "SUPPRIMER";
 
 export default function ProfileForm({
   initialEmail,
   initialFullName,
-  initialPinHash,
+  initialHasPin,
 }: {
   initialEmail: string;
   initialFullName: string;
-  initialPinHash: string | null;
+  initialHasPin: boolean;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -25,20 +26,16 @@ export default function ProfileForm({
   const [email] = useState(initialEmail);
   const [fullName] = useState(initialFullName);
 
-  // Code PIN de la page Finances — déjà connu au premier rendu, plus de
-  // fetch ni de flash "Chargement..." au montage.
-  const [hasPin, setHasPin] = useState(!!initialPinHash);
-  const [currentPinHash, setCurrentPinHash] = useState<string | null>(initialPinHash);
+  // Code PIN de la page Finances — on ne connaît plus que son existence
+  // (booléen), jamais son hash : la vérification et la mise à jour se font
+  // entièrement côté serveur via la Server Action setFinancePin (./actions.ts).
+  const [hasPin, setHasPin] = useState(initialHasPin);
   const [oldPin, setOldPin] = useState("");
   const [newPin, setNewPin] = useState("");
   const [newPinConfirm, setNewPinConfirm] = useState("");
   const [pinSaving, setPinSaving] = useState(false);
   const [pinSaved, setPinSaved] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
-
-  // Code de secours utilisable à la place de l'ancien PIN si l'utilisateur
-  // l'a oublié.
-  const DEFAULT_PIN = "8080";
 
   // Popup de code PIN — masqué par défaut, ouvert via le bouton.
   const [showPinModal, setShowPinModal] = useState(false);
@@ -257,7 +254,6 @@ export default function ProfileForm({
       return;
     }
     setHasPin(false);
-    setCurrentPinHash(null);
 
     setResetLoading(false);
     setShowResetModal(false);
@@ -270,20 +266,9 @@ export default function ProfileForm({
     setPinError(null);
     setPinSaved(false);
 
-    // Si un code existe déjà, il faut d'abord prouver qu'on le connaît —
-    // soit l'ancien code exact, soit le code de secours par défaut.
-    if (hasPin) {
-      if (!isValidPin(oldPin)) {
-        setPinError("Entrez votre ancien code (4 chiffres).");
-        return;
-      }
-      const oldPinMatches =
-        oldPin === DEFAULT_PIN ||
-        (currentPinHash && (await hashPin(oldPin)) === currentPinHash);
-      if (!oldPinMatches) {
-        setPinError("Ancien code incorrect.");
-        return;
-      }
+    if (hasPin && !isValidPin(oldPin)) {
+      setPinError("Entrez votre ancien code (4 chiffres).");
+      return;
     }
 
     if (!isValidPin(newPin)) {
@@ -300,36 +285,29 @@ export default function ProfileForm({
 
     setPinSaving(true);
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      setPinError("Session expirée, reconnectez-vous.");
-      setPinSaving(false);
-      return;
-    }
-
-    const finance_pin_hash = await hashPin(newPin);
-
-    const { error: pinUpdateError } = await supabase
-      .from("profiles")
-      .update({ finance_pin_hash })
-      .eq("id", user.id);
+    // Toute la vérification (ancien code / code de secours) et le hachage du
+    // nouveau code se font côté serveur — voir app/dashboard/profile/actions.ts.
+    const result = await setFinancePin({ oldPin, newPin });
 
     setPinSaving(false);
 
-    if (pinUpdateError) {
-      setPinError(pinUpdateError.message);
+    if (!result.success) {
+      setPinError(result.error ?? "Une erreur est survenue.");
       return;
     }
 
     setHasPin(true);
-    setCurrentPinHash(finance_pin_hash);
     setOldPin("");
     setNewPin("");
     setNewPinConfirm("");
     setPinSaved(true);
+
+    // Le popup se ferme tout seul une fois le code enregistré, après un
+    // court délai pour laisser voir la confirmation.
+    setTimeout(() => {
+      setShowPinModal(false);
+      setPinSaved(false);
+    }, 900);
   }
 
   const initial = (fullName || email || "?").trim().charAt(0).toUpperCase();
