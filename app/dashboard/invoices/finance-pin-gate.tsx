@@ -19,10 +19,6 @@ export default function FinancePinGate() {
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
-
-  useEffect(() => {
     if (digits.length !== 4) return;
 
     setError(false);
@@ -39,8 +35,15 @@ export default function FinancePinGate() {
   }, [digits]);
 
   return (
-    <div className="flex min-h-[50vh] items-center justify-center px-4 sm:min-h-[60vh]">
-      <div className="w-full max-w-xs rounded-2xl border border-paperline bg-white p-5 text-center shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#262626] dark:shadow-none sm:p-8">
+    // justify-end (au lieu d'un centrage vertical) : la carte s'affiche tout
+    // près du bas de l'écran, là où le clavier numérique du téléphone va
+    // s'ouvrir, pour qu'il n'y ait aucun espace visible entre les deux. Le
+    // seul déclencheur de focus est l'attribut autoFocus ci-dessous (un
+    // useEffect séparé qui refocalisait l'input juste après le rendu
+    // provoquait un très léger décalage : la carte apparaissait d'abord,
+    // puis le clavier un instant après).
+    <div className="flex min-h-[50vh] flex-col justify-end px-4 pb-4 sm:min-h-[60vh] sm:justify-center sm:pb-0">
+      <div className="mx-auto w-full max-w-xs rounded-2xl border border-paperline bg-white p-5 text-center shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#262626] dark:shadow-none sm:p-8">
         <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-ledger-deep text-white sm:mb-4 sm:h-12 sm:w-12">
           <ShieldCheck size={18} className="sm:hidden" />
           <ShieldCheck size={22} className="hidden sm:block" />
