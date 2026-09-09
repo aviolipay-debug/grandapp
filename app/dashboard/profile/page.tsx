@@ -24,7 +24,10 @@ export default async function ProfilePage() {
     <ProfileForm
       initialEmail={user.email ?? ""}
       initialFullName={(user.user_metadata?.full_name as string) ?? ""}
-      initialPinHash={profile?.finance_pin_hash ?? null}
+      // On ne transmet plus jamais le hash lui-même au client — seulement le
+      // fait qu'un PIN existe ou non. La vérification/mise à jour du PIN se
+      // fait désormais entièrement côté serveur (voir ./actions.ts).
+      initialHasPin={!!profile?.finance_pin_hash}
     />
   );
 }
