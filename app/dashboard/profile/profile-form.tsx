@@ -122,6 +122,15 @@ export default function ProfileForm({
     setNewPassword("");
     setConfirmPassword("");
     setPasswordSaved(true);
+
+    // Le popup (desktop) et le menu déroulant (mobile) se ferment tout seuls
+    // une fois le mot de passe changé, après un court délai pour laisser
+    // voir la confirmation.
+    setTimeout(() => {
+      setShowPasswordModal(false);
+      setShowPasswordMobileOpen(false);
+      setPasswordSaved(false);
+    }, 900);
   }
 
   // Réinitialisation du compte — supprime toutes les données métier
