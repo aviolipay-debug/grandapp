@@ -39,31 +39,44 @@ export default function FinancePinGate() {
   }, [digits]);
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center px-4">
-      <div className="w-full max-w-xs rounded-2xl border border-paperline bg-white p-8 text-center shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#262626] dark:shadow-none">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-ledger-deep text-white">
-          <ShieldCheck size={22} />
+    <div className="flex min-h-[50vh] items-center justify-center px-4 sm:min-h-[60vh]">
+      <div className="w-full max-w-xs rounded-2xl border border-paperline bg-white p-5 text-center shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#262626] dark:shadow-none sm:p-8">
+        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-ledger-deep text-white sm:mb-4 sm:h-12 sm:w-12">
+          <ShieldCheck size={18} className="sm:hidden" />
+          <ShieldCheck size={22} className="hidden sm:block" />
         </div>
-        <h2 className="font-display text-lg font-bold text-ink dark:text-white">Zone protégée</h2>
-        <p className="mt-1.5 text-sm text-[#6B7280] dark:text-white/50">
+        <h2 className="font-display text-base font-bold text-ink dark:text-white sm:text-lg">
+          Zone protégée
+        </h2>
+        <p className="mt-1 text-xs text-[#6B7280] dark:text-white/50 sm:mt-1.5 sm:text-sm">
           Entrez votre code PIN pour accéder à vos finances.
         </p>
         <div
-          className="mt-6 flex cursor-text justify-center gap-3"
+          className="mt-4 flex cursor-text justify-center gap-2.5 sm:mt-6 sm:gap-3"
           onClick={() => inputRef.current?.focus()}
         >
-          {[0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className={`flex h-12 w-11 items-center justify-center rounded-xl border text-xl font-bold ${
-                error
-                  ? "border-stamp text-stamp"
-                  : "border-paperline text-ink dark:border-white/10 dark:text-white"
-              }`}
-            >
-              {digits[i] ? "•" : ""}
-            </div>
-          ))}
+          {[0, 1, 2, 3].map((i) => {
+            // La case active (celle où le prochain chiffre s'insérera)
+            // affiche une barre verticale clignotante, comme un vrai curseur
+            // de saisie, pour indiquer où l'utilisateur doit taper.
+            const isCurrent = !isPending && !error && i === digits.length;
+            return (
+              <div
+                key={i}
+                className={`flex h-10 w-9 items-center justify-center rounded-xl border text-lg font-bold sm:h-12 sm:w-11 sm:text-xl ${
+                  error
+                    ? "border-stamp text-stamp"
+                    : "border-paperline text-ink dark:border-white/10 dark:text-white"
+                }`}
+              >
+                {digits[i] ? (
+                  "•"
+                ) : isCurrent ? (
+                  <span className="h-4 w-0.5 animate-pulse rounded-full bg-ledger-deep dark:bg-ledger sm:h-5" />
+                ) : null}
+              </div>
+            );
+          })}
         </div>
         <input
           ref={inputRef}
@@ -79,17 +92,10 @@ export default function FinancePinGate() {
           aria-label="Code PIN"
         />
         {error && (
-          <p className="mt-4 text-sm font-semibold text-stamp">
+          <p className="mt-3 text-xs font-semibold text-stamp sm:mt-4 sm:text-sm">
             Code incorrect, réessayez.
           </p>
         )}
-        <button
-          type="button"
-          onClick={() => inputRef.current?.focus()}
-          className="mt-6 text-sm font-semibold text-ledger-deep underline underline-offset-2 dark:text-ledger"
-        >
-          Saisir le code
-        </button>
       </div>
     </div>
   );
