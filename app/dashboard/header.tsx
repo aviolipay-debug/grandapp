@@ -14,9 +14,16 @@ import LoadingOverlay from "../components/loading-overlay";
 // Pages principales du compte — préchargées dès l'arrivée sur le dashboard
 // (connexion, inscription, ou retour de Google) pour que la navigation entre
 // elles soit quasi instantanée ensuite.
+//
+// /dashboard/invoices n'est volontairement PAS préchargée : depuis la
+// protection par code PIN, cette page est entièrement dynamique (elle lit un
+// cookie de sécurité à chaque requête via cookies()), donc un prefetch()
+// déclenche une vraie exécution serveur (authentification + requête Supabase)
+// à chaque fois que ce header est monté, sans aucun gain réel pour
+// l'utilisateur — ça ne faisait qu'ajouter des appels Supabase inutiles à
+// chaque navigation dans le dashboard.
 const MAIN_ROUTES = [
   "/dashboard",
-  "/dashboard/invoices",
   "/dashboard/clients",
   "/dashboard/quotes",
   "/dashboard/profile",
