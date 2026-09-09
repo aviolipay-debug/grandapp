@@ -670,23 +670,29 @@ export default function OnboardingPage() {
               Sélectionnez un modèle qui reflète votre identité professionnelle
             </p>
             <div className="grid grid-cols-2 gap-4">
-              {invoiceTemplates.map((id) => (
+              {invoiceTemplates.map((id, index) => (
                 <button
                   key={id}
                   type="button"
                   onClick={() => setTemplate(id)}
-                  className={`overflow-hidden rounded-xl border-2 text-left transition-colors ${
+                  className={`relative overflow-hidden rounded-xl border-2 text-left transition-colors ${
                     template === id
                       ? "border-ledger-deep"
                       : "border-paperline dark:border-white/10"
                   }`}
                 >
+                  {/* Numéro du modèle — aide le client à s'y retrouver et à
+                      communiquer facilement lequel il préfère (ex. au téléphone
+                      avec le support), plutôt que de décrire l'image. */}
+                  <span className="absolute left-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-xs font-bold text-white backdrop-blur-sm">
+                    {index + 1}
+                  </span>
                   <div className="h-40 w-full overflow-hidden bg-[#F3F4F6] dark:bg-[#1e1e1e]">
                     {previewUrls[id] ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={previewUrls[id]}
-                        alt={templateLabels[id] ?? id}
+                        alt={`Modèle ${index + 1} — ${templateLabels[id] ?? id}`}
                         className="h-full w-full object-cover object-top"
                       />
                     ) : (
