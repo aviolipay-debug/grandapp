@@ -1,15 +1,17 @@
 // lib/pdf/templates/index.ts
 import TemplateAko from "./template-ako";
-import TemplateDegrade from "./template-degrade";
 import TemplateNuit from "./template-nuit";
 import TemplateEclat from "./template-eclat";
 import TemplateSignature from "./template-signature";
 import TemplateJovial from "./template-jovial";
 import TemplateBicolore from "./template-bicolore";
 
+// template-degrade ("La Facture") retiré du choix proposé aux clients — les
+// comptes qui l'avaient déjà sélectionné basculent automatiquement sur AKO à
+// leur prochaine génération de PDF, via le fallback de getTemplateComponent
+// ci-dessous (aucune erreur, pas de migration de données nécessaire).
 export const TEMPLATES = {
   "template-ako": TemplateAko,
-  "template-degrade": TemplateDegrade,
   "template-nuit": TemplateNuit,
   "template-eclat": TemplateEclat,
   "template-signature": TemplateSignature,

@@ -74,7 +74,6 @@ const invoiceTemplates = Object.keys(TEMPLATES) as TemplateId[];
 
 const templateLabels: Record<string, string> = {
   "template-ako": "AKO — Jaune & Noir",
-  "template-degrade": "La Facture — Dégradé coloré",
   "template-nuit": "Nuit — Sombre & Jaune",
   "template-eclat": "Éclat — Orange & Noir",
   "template-signature": "Signature — Sauge & Rose",
@@ -684,7 +683,7 @@ export default function OnboardingPage() {
                   {/* Numéro du modèle — aide le client à s'y retrouver et à
                       communiquer facilement lequel il préfère (ex. au téléphone
                       avec le support), plutôt que de décrire l'image. */}
-                  <span className="absolute left-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-xs font-bold text-white backdrop-blur-sm">
+                  <span className="absolute bottom-2 right-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-xs font-bold text-white backdrop-blur-sm">
                     {index + 1}
                   </span>
                   <div className="h-40 w-full overflow-hidden bg-[#F3F4F6] dark:bg-[#1e1e1e]">
