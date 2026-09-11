@@ -8,38 +8,55 @@ import DashboardExitGuard from "./dashboard-exit-guard";
 
 export default async function DashboardPage() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+
+  // Étape 1 : on ne fait attendre que ce qui est réellement indépendant de
+  // l'utilisateur. Les 4 compteurs et les 2 listes n'ont pas besoin de
+  // connaître user.id — RLS filtre déjà automatiquement sur l'utilisateur
+  // connecté — donc ils partent EN MÊME TEMPS que la récupération de
+  // l'utilisateur, au lieu d'attendre bêtement leur tour. On passe ainsi de
+  // 8 allers-retours Supabase en série à seulement 2 étapes.
+  const [
+    {
+      data: { user },
+    },
+    { count: clientsActifsCount },
+    { count: devisGeneresCount },
+    { count: projetsEnCoursCount },
+    { count: projetsEnAttenteCount },
+    { data: clientsRecentsData },
+    { data: projetsRecentsData },
+  ] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase.from("clients").select("*", { count: "exact", head: true }),
+    supabase.from("quotes").select("*", { count: "exact", head: true }),
+    supabase
+      .from("projects")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "en_cours"),
+    supabase
+      .from("projects")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "attente"),
+    supabase
+      .from("clients")
+      .select("id, name")
+      .order("created_at", { ascending: false })
+      .limit(3),
+    supabase
+      .from("projects")
+      .select("id, name, status, created_at, clients(id, name)")
+      .order("created_at", { ascending: false })
+      .limit(6),
+  ]);
 
   const firstName = user?.user_metadata?.first_name ?? "";
 
-  // Le profil est considéré "configuré" dès que le nom d'entreprise est renseigné
-  // (rempli à la fin de l'assistant d'onboarding) — sert à masquer le bouton.
+  // Étape 2 : celle-ci dépend bien de user.id, donc elle ne peut pas être
+  // parallélisée avec l'étape 1 — mais c'est la seule qui attend désormais.
   const { data: profile } = user
     ? await supabase.from("profiles").select("company_name").eq("id", user.id).single()
     : { data: null };
   const isConfigured = !!profile?.company_name;
-
-  // Devis générés / Clients / Projets en cours / Projets en attente —
-  // ajuste les noms de table/colonne/statut si besoin.
-  const { count: clientsActifsCount } = await supabase
-    .from("clients")
-    .select("*", { count: "exact", head: true });
-
-  const { count: devisGeneresCount } = await supabase
-    .from("quotes")
-    .select("*", { count: "exact", head: true });
-
-  const { count: projetsEnCoursCount } = await supabase
-    .from("projects")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "en_cours");
-
-  const { count: projetsEnAttenteCount } = await supabase
-    .from("projects")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "attente");
 
   const stats = {
     clientsActifs: clientsActifsCount ?? 0,
@@ -48,22 +65,8 @@ export default async function DashboardPage() {
     projetsEnAttente: projetsEnAttenteCount ?? 0,
   };
 
-  // Clients récents — ajuste "name" si ta colonne s'appelle autrement (ex: "nom")
-  const { data: clientsRecentsData } = await supabase
-    .from("clients")
-    .select("id, name")
-    .order("created_at", { ascending: false })
-    .limit(3);
-
   const clientsRecents =
     clientsRecentsData?.map((c) => ({ id: c.id, nom: c.name })) ?? [];
-
-  // Projets récents — jointure avec clients pour récupérer le nom et l'id du client.
-  const { data: projetsRecentsData } = await supabase
-    .from("projects")
-    .select("id, name, status, created_at, clients(id, name)")
-    .order("created_at", { ascending: false })
-    .limit(6);
 
   const projetsRecents =
     projetsRecentsData?.map((p) => ({
