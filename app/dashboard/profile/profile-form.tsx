@@ -50,7 +50,6 @@ export default function ProfileForm({
   }
 
   // Changement de mot de passe.
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showPasswordMobileOpen, setShowPasswordMobileOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -61,18 +60,6 @@ export default function ProfileForm({
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordSaved, setPasswordSaved] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
-
-  function openPasswordModal() {
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
-    setShowCurrentPassword(false);
-    setShowNewPassword(false);
-    setShowConfirmPassword(false);
-    setPasswordError(null);
-    setPasswordSaved(false);
-    setShowPasswordModal(true);
-  }
 
   async function handleChangePassword(e: React.FormEvent) {
     e.preventDefault();
@@ -123,9 +110,8 @@ export default function ProfileForm({
     setConfirmPassword("");
     setPasswordSaved(true);
 
-    // Le popup (desktop) et le menu déroulant (mobile) se ferment tout seuls
-    // une fois le mot de passe changé, après un court délai pour laisser
-    // voir la confirmation.
+    // Le menu déroulant se ferme tout seul une fois le mot de passe changé,
+    // après un court délai pour laisser voir la confirmation.
     setTimeout(() => {
       setShowPasswordModal(false);
       setShowPasswordMobileOpen(false);
@@ -465,41 +451,24 @@ export default function ProfileForm({
         </button>
       </div>
 
-      {/* Mot de passe — desktop : bouton ouvrant une popup */}
-      <div className="hidden items-center justify-between rounded-2xl border border-paperline bg-white p-5 dark:border-white/10 dark:bg-[#262626] sm:flex sm:p-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
-            <Lock size={18} />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-ink dark:text-white">Mot de passe</p>
-            <p className="text-xs text-[#6B7280] dark:text-white/50">
-              Dernière modification non affichée
-            </p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={openPasswordModal}
-          className="shrink-0 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-white hover:bg-stamp"
-        >
-          Changer le mot de passe
-        </button>
-      </div>
-
-      {/* Mot de passe — mobile : menu déroulant inline, comme le bouton "Gestion" */}
-      <div className="rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626] sm:hidden">
+      {/* Mot de passe — menu déroulant inline (même comportement desktop et mobile) */}
+      <div className="rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626]">
         <button
           type="button"
           onClick={() => setShowPasswordMobileOpen((v) => !v)}
-          className="flex w-full items-center justify-between p-5"
+          className="flex w-full items-center justify-between p-5 sm:p-6"
         >
           <span className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
               <Lock size={18} />
             </span>
-            <span className="text-sm font-semibold text-ink dark:text-white">
-              Changer le mot de passe
+            <span className="text-left">
+              <span className="block text-sm font-semibold text-ink dark:text-white">
+                Mot de passe
+              </span>
+              <span className="hidden text-xs text-[#6B7280] dark:text-white/50 sm:block">
+                Dernière modification non affichée
+              </span>
             </span>
           </span>
           <ChevronDown
@@ -513,7 +482,7 @@ export default function ProfileForm({
         {showPasswordMobileOpen && (
           <form
             onSubmit={handleChangePassword}
-            className="flex flex-col gap-4 border-t border-paperline p-5 pt-4 dark:border-white/10"
+            className="flex flex-col gap-4 border-t border-paperline p-5 pt-4 dark:border-white/10 sm:p-6 sm:pt-4"
           >
             {passwordFieldsJSX}
 
@@ -556,50 +525,6 @@ export default function ProfileForm({
         <AlertTriangle size={16} />
         Réinitialiser mon compte
       </button>
-
-      {/* Popup de changement de mot de passe */}
-      {showPasswordModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
-          onClick={() => setShowPasswordModal(false)}
-        >
-          <form
-            onSubmit={handleChangePassword}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-paperline bg-white p-6 dark:border-white/10 dark:bg-[#262626] sm:p-7"
-          >
-            <h2 className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#6B7280] dark:text-white/50">
-              <Lock size={14} />
-              Mot de passe
-            </h2>
-            <p className="mb-5 text-sm text-[#6B7280] dark:text-white/50">
-              Entrez votre mot de passe actuel, puis choisissez-en un nouveau (6 caractères
-              minimum).
-            </p>
-
-            <div className="flex flex-col gap-4">
-              {passwordFieldsJSX}
-
-              <div className="mt-1 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowPasswordModal(false)}
-                  className="flex-1 rounded-xl border border-paperline py-3 text-sm font-semibold text-ink hover:bg-[#F7F7FB] dark:border-white/10 dark:text-white dark:hover:bg-white/5"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="submit"
-                  disabled={passwordSaving}
-                  className="flex-1 rounded-xl bg-ledger-deep py-3 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
-                >
-                  {passwordSaving ? "Enregistrement…" : "Enregistrer"}
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      )}
 
       {/* Popup de saisie du code PIN */}
       {showPinModal && (
