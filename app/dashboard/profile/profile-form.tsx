@@ -1,7 +1,7 @@
 // app/dashboard/profile/profile-form.tsx
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Building2, Lock, ShieldCheck, AlertTriangle, LogOut, Eye, EyeOff, ChevronDown } from "lucide-react";
@@ -42,9 +42,6 @@ export default function ProfileForm({
   const [pinSaving, setPinSaving] = useState(false);
   const [pinSaved, setPinSaved] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
-  const oldPinInputRef = useRef<HTMLInputElement>(null);
-  const newPinInputRef = useRef<HTMLInputElement>(null);
-  const newPinConfirmInputRef = useRef<HTMLInputElement>(null);
 
   // Popup de code PIN — masqué par défaut, ouvert via le bouton.
   const [showPinModal, setShowPinModal] = useState(false);
@@ -337,54 +334,31 @@ export default function ProfileForm({
 
   const labelClass = "mb-1.5 block text-sm font-semibold text-ink dark:text-white";
 
-  // Même style de saisie que l'écran de verrouillage Finances
-  // (finance-pin-gate.tsx) : 4 cases avec une barre verticale clignotante
-  // indiquant la position courante, au lieu d'un simple champ texte.
-  function renderPinBoxes(
+  // Champ classique (texte simple) plutôt qu'un style "4 cases + input
+  // caché" : un champ visible reçoit le focus natif immédiatement, sans le
+  // léger délai d'ouverture du clavier observé sur mobile avec un input de
+  // taille quasi nulle superposé à des cases décoratives.
+  function renderPinInput(
     value: string,
     setValue: (v: string) => void,
-    inputRef: React.RefObject<HTMLInputElement>,
     autoFocus: boolean,
     hasError: boolean
   ) {
     return (
-      <div
-        className="flex cursor-text justify-center gap-2.5"
-        onClick={() => inputRef.current?.focus()}
-      >
-        {[0, 1, 2, 3].map((i) => {
-          const isCurrent = !pinSaving && !hasError && i === value.length;
-          return (
-            <div
-              key={i}
-              className={`flex h-12 w-11 items-center justify-center rounded-xl border text-lg font-bold ${
-                hasError
-                  ? "border-stamp text-stamp"
-                  : "border-paperline text-ink dark:border-white/10 dark:text-white"
-              }`}
-            >
-              {value[i] ? (
-                "•"
-              ) : isCurrent ? (
-                <span className="h-5 w-0.5 animate-pulse rounded-full bg-ledger-deep dark:bg-ledger" />
-              ) : null}
-            </div>
-          );
-        })}
-        <input
-          ref={inputRef}
-          type="password"
-          inputMode="numeric"
-          pattern="\d*"
-          maxLength={4}
-          autoFocus={autoFocus}
-          value={value}
-          disabled={pinSaving}
-          onChange={(e) => setValue(e.target.value.replace(/\D/g, "").slice(0, 4))}
-          className="h-px w-px opacity-0"
-          aria-label="Code PIN"
-        />
-      </div>
+      <input
+        type="password"
+        inputMode="numeric"
+        pattern="\d{4}"
+        maxLength={4}
+        autoFocus={autoFocus}
+        disabled={pinSaving}
+        value={value}
+        onChange={(e) => setValue(e.target.value.replace(/\D/g, "").slice(0, 4))}
+        placeholder="••••"
+        className={`w-full rounded-xl border bg-[#F7F7FB] px-4 py-3 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-ledger dark:bg-[#2F2F2F] dark:text-white ${
+          hasError ? "border-stamp" : "border-paperline dark:border-white/10"
+        }`}
+      />
     );
   }
 
@@ -632,8 +606,8 @@ export default function ProfileForm({
 
               <div className="flex flex-col gap-4">
                 <div>
-                  <label className={`${labelClass} text-center`}>Code actuel</label>
-                  {renderPinBoxes(oldPin, setOldPin, oldPinInputRef, true, !!pinError)}
+                  <label className={labelClass}>Code actuel</label>
+                  {renderPinInput(oldPin, setOldPin, true, !!pinError)}
                 </div>
 
                 {pinError && (
@@ -678,22 +652,16 @@ export default function ProfileForm({
 
               <div className="flex flex-col gap-4">
                 <div>
-                  <label className={`${labelClass} text-center`}>
+                  <label className={labelClass}>
                     {hasPin ? "Nouveau code PIN" : "Code PIN"}
                   </label>
-                  {renderPinBoxes(newPin, setNewPin, newPinInputRef, true, !!pinError)}
+                  {renderPinInput(newPin, setNewPin, true, !!pinError)}
                 </div>
 
                 {!hasPin && (
                   <div>
-                    <label className={`${labelClass} text-center`}>Confirmer le code</label>
-                    {renderPinBoxes(
-                      newPinConfirm,
-                      setNewPinConfirm,
-                      newPinConfirmInputRef,
-                      false,
-                      !!pinError
-                    )}
+                    <label className={labelClass}>Confirmer le code</label>
+                    {renderPinInput(newPinConfirm, setNewPinConfirm, false, !!pinError)}
                   </div>
                 )}
 
