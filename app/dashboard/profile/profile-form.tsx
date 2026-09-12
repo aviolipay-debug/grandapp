@@ -14,10 +14,12 @@ const RESET_CONFIRM_WORD = "SUPPRIMER";
 export default function ProfileForm({
   initialEmail,
   initialFullName,
+  initialCompanyName,
   initialHasPin,
 }: {
   initialEmail: string;
   initialFullName: string;
+  initialCompanyName: string;
   initialHasPin: boolean;
 }) {
   const router = useRouter();
@@ -25,6 +27,7 @@ export default function ProfileForm({
 
   const [email] = useState(initialEmail);
   const [fullName] = useState(initialFullName);
+  const [companyName] = useState(initialCompanyName);
 
   // Code PIN de la page Finances — on ne connaît plus que son existence
   // (booléen), jamais son hash : la vérification et la mise à jour se font
@@ -413,119 +416,122 @@ export default function ProfileForm({
     <div className="mx-auto flex w-full max-w-lg flex-col gap-6 py-4 lg:max-w-2xl">
       <h1 className="font-display text-xl font-bold text-ink dark:text-white">Mon profil</h1>
 
-      {/* Carte d'identité */}
-      <div className="flex items-center gap-4 rounded-2xl border border-paperline bg-white p-5 dark:border-white/10 dark:bg-[#262626]">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#E9F23A] text-xl font-bold text-ink">
-          {initial}
-        </div>
-        <div className="min-w-0">
-          <p className="truncate font-display text-lg font-bold text-ink dark:text-white">
-            {fullName || "Utilisateur"}
-          </p>
-          <p className="truncate text-sm text-[#6B7280] dark:text-white/50">{email}</p>
-        </div>
-      </div>
-
-      {/* Profil de l'entreprise (assistant existant) */}
-      <Link
-        href="/onboarding"
-        className="flex items-center justify-between rounded-2xl border border-paperline bg-white p-5 transition-colors hover:bg-[#F7F7FB] dark:border-white/10 dark:bg-[#262626] dark:hover:bg-white/5"
-      >
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
-            <Building2 size={18} />
+      {/* Carte unique : identité, profil entreprise, sécurité PIN, mot de passe */}
+      <div className="divide-y divide-paperline rounded-2xl border border-paperline bg-white dark:divide-white/10 dark:border-white/10 dark:bg-[#262626]">
+        {/* Identité — le nom affiché est celui de l'entreprise */}
+        <div className="flex items-center gap-4 p-5">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#E9F23A] text-xl font-bold text-ink">
+            {initial}
           </div>
-          <div>
-            <p className="text-sm font-semibold text-ink dark:text-white">Profil de l&apos;entreprise</p>
-            <p className="text-xs text-[#6B7280] dark:text-white/50">
-              Nom, secteur, logo, modèle de facture…
+          <div className="min-w-0">
+            <p className="truncate font-display text-lg font-bold text-ink dark:text-white">
+              {companyName || fullName || "Utilisateur"}
             </p>
+            <p className="truncate text-sm text-[#6B7280] dark:text-white/50">{email}</p>
           </div>
         </div>
-      </Link>
 
-      {/* Code PIN de la page Finances — bouton discret, la saisie se fait en popup */}
-      <div className="flex items-center justify-between rounded-2xl border border-paperline bg-white p-5 dark:border-white/10 dark:bg-[#262626] sm:p-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F3EEFC] text-[#5B21B6] dark:bg-white/10">
-            <ShieldCheck size={18} />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-ink dark:text-white">Sécurité — Finances</p>
-            <p className="text-xs text-[#6B7280] dark:text-white/50">
-              {hasPin ? "Code PIN activé" : "Aucun code PIN défini"}
-            </p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={openPinModal}
-          className="shrink-0 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-white hover:bg-stamp"
+        {/* Profil de l'entreprise (assistant existant) */}
+        <Link
+          href="/onboarding"
+          className="flex items-center justify-between p-5 transition-colors hover:bg-[#F7F7FB] dark:hover:bg-white/5"
         >
-          {hasPin ? (
-            "Modifier"
-          ) : (
-            <>
-              <span className="sm:hidden">Définir</span>
-              <span className="hidden sm:inline">Définir un code PIN</span>
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Mot de passe — menu déroulant inline (même comportement desktop et mobile) */}
-      <div className="rounded-2xl border border-paperline bg-white dark:border-white/10 dark:bg-[#262626]">
-        <button
-          type="button"
-          onClick={() => setShowPasswordMobileOpen((v) => !v)}
-          className="flex w-full items-center justify-between p-5 sm:p-6"
-        >
-          <span className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
-              <Lock size={18} />
-            </span>
-            <span className="text-left">
-              <span className="block text-sm font-semibold text-ink dark:text-white">
-                Mot de passe
-              </span>
-              <span className="hidden text-xs text-[#6B7280] dark:text-white/50 sm:block">
-                Dernière modification non affichée
-              </span>
-            </span>
-          </span>
-          <ChevronDown
-            size={18}
-            className={`shrink-0 text-[#9CA3AF] transition-transform ${
-              showPasswordMobileOpen ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-
-        {showPasswordMobileOpen && (
-          <form
-            onSubmit={handleChangePassword}
-            className="flex flex-col gap-4 border-t border-paperline p-5 pt-4 dark:border-white/10 sm:p-6 sm:pt-4"
-          >
-            {passwordFieldsJSX}
-
-            <div className="mt-1 flex gap-3">
-              <button
-                type="button"
-                onClick={() => setShowPasswordMobileOpen(false)}
-                className="flex-1 rounded-xl border border-paperline py-3 text-sm font-semibold text-ink hover:bg-[#F7F7FB] dark:border-white/10 dark:text-white dark:hover:bg-white/5"
-              >
-                Fermer
-              </button>
-              <button
-                type="submit"
-                disabled={passwordSaving}
-                className="flex-1 rounded-xl bg-ledger-deep py-3 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
-              >
-                {passwordSaving ? "Enregistrement…" : "Enregistrer"}
-              </button>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
+              <Building2 size={18} />
             </div>
-          </form>
-        )}
+            <div>
+              <p className="text-sm font-semibold text-ink dark:text-white">Profil de l&apos;entreprise</p>
+              <p className="text-xs text-[#6B7280] dark:text-white/50">
+                Nom, secteur, logo, modèle de facture…
+              </p>
+            </div>
+          </div>
+        </Link>
+
+        {/* Code PIN de la page Finances — bouton discret, la saisie se fait en popup */}
+        <div className="flex items-center justify-between p-5 sm:p-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F3EEFC] text-[#5B21B6] dark:bg-white/10">
+              <ShieldCheck size={18} />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-ink dark:text-white">Sécurité — Finances</p>
+              <p className="text-xs text-[#6B7280] dark:text-white/50">
+                {hasPin ? "Code PIN activé" : "Aucun code PIN défini"}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={openPinModal}
+            className="shrink-0 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-white hover:bg-stamp"
+          >
+            {hasPin ? (
+              "Modifier"
+            ) : (
+              <>
+                <span className="sm:hidden">Définir</span>
+                <span className="hidden sm:inline">Définir un code PIN</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Mot de passe — menu déroulant inline (même comportement desktop et mobile) */}
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowPasswordMobileOpen((v) => !v)}
+            className="flex w-full items-center justify-between p-5 sm:p-6"
+          >
+            <span className="flex items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
+                <Lock size={18} />
+              </span>
+              <span className="text-left">
+                <span className="block text-sm font-semibold text-ink dark:text-white">
+                  Mot de passe
+                </span>
+                <span className="hidden text-xs text-[#6B7280] dark:text-white/50 sm:block">
+                  Dernière modification non affichée
+                </span>
+              </span>
+            </span>
+            <ChevronDown
+              size={18}
+              className={`shrink-0 text-[#9CA3AF] transition-transform ${
+                showPasswordMobileOpen ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
+          {showPasswordMobileOpen && (
+            <form
+              onSubmit={handleChangePassword}
+              className="flex flex-col gap-4 border-t border-paperline p-5 pt-4 dark:border-white/10 sm:p-6 sm:pt-4"
+            >
+              {passwordFieldsJSX}
+
+              <div className="mt-1 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordMobileOpen(false)}
+                  className="flex-1 rounded-xl border border-paperline py-3 text-sm font-semibold text-ink hover:bg-[#F7F7FB] dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+                >
+                  Fermer
+                </button>
+                <button
+                  type="submit"
+                  disabled={passwordSaving}
+                  className="flex-1 rounded-xl bg-ledger-deep py-3 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
+                >
+                  {passwordSaving ? "Enregistrement…" : "Enregistrer"}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
 
       {/* Déconnexion */}
