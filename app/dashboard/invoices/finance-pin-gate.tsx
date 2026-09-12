@@ -11,6 +11,11 @@ import { verifyFinancePin } from "./actions";
 // de succès, un cookie httpOnly signé est posé côté serveur et on rafraîchit
 // la page (router.refresh) pour que le Server Component parent (page.tsx)
 // recharge et affiche les vraies données.
+//
+// Champ classique (texte simple) plutôt qu'un style "4 cases + input caché" :
+// un champ visible reçoit le focus natif immédiatement, sans le léger délai
+// d'ouverture du clavier observé sur mobile avec un input de taille quasi
+// nulle superposé à des cases décoratives.
 export default function FinancePinGate() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -37,11 +42,7 @@ export default function FinancePinGate() {
   return (
     // justify-end (au lieu d'un centrage vertical) : la carte s'affiche tout
     // près du bas de l'écran, là où le clavier numérique du téléphone va
-    // s'ouvrir, pour qu'il n'y ait aucun espace visible entre les deux. Le
-    // seul déclencheur de focus est l'attribut autoFocus ci-dessous (un
-    // useEffect séparé qui refocalisait l'input juste après le rendu
-    // provoquait un très léger décalage : la carte apparaissait d'abord,
-    // puis le clavier un instant après).
+    // s'ouvrir, pour qu'il n'y ait aucun espace visible entre les deux.
     <div className="flex min-h-[50vh] flex-col justify-end px-4 pb-4 sm:min-h-[60vh] sm:justify-center sm:pb-0">
       <div className="mx-auto w-full max-w-xs rounded-2xl border border-paperline bg-white p-5 text-center shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#262626] dark:shadow-none sm:p-8">
         <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-ledger-deep text-white sm:mb-4 sm:h-12 sm:w-12">
@@ -54,46 +55,25 @@ export default function FinancePinGate() {
         <p className="mt-1 text-xs text-[#6B7280] dark:text-white/50 sm:mt-1.5 sm:text-sm">
           Entrez votre code PIN pour accéder à vos finances.
         </p>
-        <div
-          className="mt-4 flex cursor-text justify-center gap-2.5 sm:mt-6 sm:gap-3"
-          onClick={() => inputRef.current?.focus()}
-        >
-          {[0, 1, 2, 3].map((i) => {
-            // La case active (celle où le prochain chiffre s'insérera)
-            // affiche une barre verticale clignotante, comme un vrai curseur
-            // de saisie, pour indiquer où l'utilisateur doit taper.
-            const isCurrent = !isPending && !error && i === digits.length;
-            return (
-              <div
-                key={i}
-                className={`flex h-10 w-9 items-center justify-center rounded-xl border text-lg font-bold sm:h-12 sm:w-11 sm:text-xl ${
-                  error
-                    ? "border-stamp text-stamp"
-                    : "border-paperline text-ink dark:border-white/10 dark:text-white"
-                }`}
-              >
-                {digits[i] ? (
-                  "•"
-                ) : isCurrent ? (
-                  <span className="h-4 w-0.5 animate-pulse rounded-full bg-ledger-deep dark:bg-ledger sm:h-5" />
-                ) : null}
-              </div>
-            );
-          })}
+
+        <div className="mt-4 sm:mt-6">
+          <input
+            ref={inputRef}
+            type="password"
+            inputMode="numeric"
+            pattern="\d*"
+            maxLength={4}
+            autoFocus
+            value={digits}
+            disabled={isPending}
+            onChange={(e) => setDigits(e.target.value.replace(/\D/g, "").slice(0, 4))}
+            placeholder="••••"
+            className={`w-full rounded-xl border bg-[#F7F7FB] px-4 py-3 text-center text-lg tracking-[0.6em] text-ink outline-none transition-colors focus:border-ledger dark:bg-[#2F2F2F] dark:text-white ${
+              error ? "border-stamp" : "border-paperline dark:border-white/10"
+            }`}
+          />
         </div>
-        <input
-          ref={inputRef}
-          type="password"
-          inputMode="numeric"
-          pattern="\d*"
-          maxLength={4}
-          autoFocus
-          value={digits}
-          disabled={isPending}
-          onChange={(e) => setDigits(e.target.value.replace(/\D/g, "").slice(0, 4))}
-          className="h-px w-px opacity-0"
-          aria-label="Code PIN"
-        />
+
         {error && (
           <p className="mt-3 text-xs font-semibold text-stamp sm:mt-4 sm:text-sm">
             Code incorrect, réessayez.
