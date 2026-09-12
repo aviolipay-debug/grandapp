@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Building2, Lock, ShieldCheck, AlertTriangle, LogOut, Eye, EyeOff, ChevronDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { isValidPin } from "@/lib/pin";
-import { setFinancePin } from "./actions";
+import { setFinancePin, verifyOldFinancePin } from "./actions";
 
 const RESET_CONFIRM_WORD = "SUPPRIMER";
 
@@ -30,6 +30,9 @@ export default function ProfileForm({
   // (booléen), jamais son hash : la vérification et la mise à jour se font
   // entièrement côté serveur via la Server Action setFinancePin (./actions.ts).
   const [hasPin, setHasPin] = useState(initialHasPin);
+  // pinStep ne concerne que la modification (hasPin=true) : "verify" affiche
+  // le champ ancien code, "newPin" n'apparaît qu'une fois celui-ci validé.
+  const [pinStep, setPinStep] = useState<"verify" | "newPin">("verify");
   const [oldPin, setOldPin] = useState("");
   const [newPin, setNewPin] = useState("");
   const [newPinConfirm, setNewPinConfirm] = useState("");
@@ -41,6 +44,7 @@ export default function ProfileForm({
   const [showPinModal, setShowPinModal] = useState(false);
 
   function openPinModal() {
+    setPinStep("verify");
     setOldPin("");
     setNewPin("");
     setNewPinConfirm("");
@@ -256,18 +260,35 @@ export default function ProfileForm({
     router.refresh();
   }
 
+  async function handleVerifyOldPin(e: React.FormEvent) {
+    e.preventDefault();
+    setPinError(null);
+
+    if (!isValidPin(oldPin)) {
+      setPinError("Entrez un code à 4 chiffres.");
+      return;
+    }
+
+    setPinSaving(true);
+    const result = await verifyOldFinancePin(oldPin);
+    setPinSaving(false);
+
+    if (!result.success) {
+      setPinError(result.error ?? "Code incorrect.");
+      return;
+    }
+
+    setPinError(null);
+    setPinStep("newPin");
+  }
+
   async function handleSavePin(e: React.FormEvent) {
     e.preventDefault();
     setPinError(null);
     setPinSaved(false);
 
-    if (hasPin && !isValidPin(oldPin)) {
-      setPinError("Entrez votre ancien code (4 chiffres).");
-      return;
-    }
-
     if (!isValidPin(newPin)) {
-      setPinError("Le nouveau code doit contenir exactement 4 chiffres.");
+      setPinError("Le code doit contenir exactement 4 chiffres.");
       return;
     }
 
@@ -280,9 +301,10 @@ export default function ProfileForm({
 
     setPinSaving(true);
 
-    // Toute la vérification (ancien code / code de secours) et le hachage du
-    // nouveau code se font côté serveur — voir app/dashboard/profile/actions.ts.
-    const result = await setFinancePin({ oldPin, newPin });
+    // oldPin n'est transmis que pour une modification (déjà validé à
+    // l'étape précédente) — le serveur le revérifie quand même avant
+    // d'enregistrer. Voir app/dashboard/profile/actions.ts.
+    const result = await setFinancePin(hasPin ? { oldPin, newPin } : { newPin });
 
     setPinSaving(false);
 
@@ -292,6 +314,7 @@ export default function ProfileForm({
     }
 
     setHasPin(true);
+    setPinStep("verify");
     setOldPin("");
     setNewPin("");
     setNewPinConfirm("");
@@ -532,27 +555,25 @@ export default function ProfileForm({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
           onClick={() => setShowPinModal(false)}
         >
-          <form
-            onSubmit={async (e) => {
-              await handleSavePin(e);
-            }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-paperline bg-white p-6 dark:border-white/10 dark:bg-[#262626] sm:p-7"
-          >
-            <h2 className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#6B7280] dark:text-white/50">
-              <ShieldCheck size={14} />
-              Sécurité — Finances
-            </h2>
-            <p className="mb-5 text-sm text-[#6B7280] dark:text-white/50">
-              {hasPin
-                ? "Entrez votre ancien code, puis choisissez-en un nouveau."
-                : "Définissez un code à 4 chiffres demandé à chaque ouverture de la page Finances."}
-            </p>
+          {hasPin && pinStep === "verify" ? (
+            // Modification, étape 1 : valider l'ancien code (ou le code de
+            // secours) avant de pouvoir en choisir un nouveau.
+            <form
+              onSubmit={handleVerifyOldPin}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm rounded-2xl border border-paperline bg-white p-6 dark:border-white/10 dark:bg-[#262626] sm:p-7"
+            >
+              <h2 className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#6B7280] dark:text-white/50">
+                <ShieldCheck size={14} />
+                Sécurité — Finances
+              </h2>
+              <p className="mb-5 text-sm text-[#6B7280] dark:text-white/50">
+                Entrez votre code actuel (ou le code de secours) pour continuer.
+              </p>
 
-            <div className="flex flex-col gap-4">
-              {hasPin && (
+              <div className="flex flex-col gap-4">
                 <div>
-                  <label className={labelClass}>Ancien code PIN</label>
+                  <label className={labelClass}>Code actuel</label>
                   <input
                     type="password"
                     inputMode="numeric"
@@ -565,66 +586,109 @@ export default function ProfileForm({
                     className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
                   />
                 </div>
-              )}
 
-              <div>
-                <label className={labelClass}>{hasPin ? "Nouveau code PIN" : "Code PIN"}</label>
-                <input
-                  type="password"
-                  inputMode="numeric"
-                  pattern="\d{4}"
-                  maxLength={4}
-                  autoFocus={!hasPin}
-                  value={newPin}
-                  onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                  placeholder="••••"
-                  className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-                />
+                {pinError && (
+                  <p className="rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">{pinError}</p>
+                )}
+
+                <div className="mt-1 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowPinModal(false)}
+                    className="flex-1 rounded-xl border border-paperline py-3 text-sm font-semibold text-ink hover:bg-[#F7F7FB] dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={pinSaving}
+                    className="flex-1 rounded-xl bg-ledger-deep py-3 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
+                  >
+                    {pinSaving ? "Vérification…" : "Valider"}
+                  </button>
+                </div>
               </div>
+            </form>
+          ) : (
+            // Définition (1 étape, code + confirmation) ou modification
+            // étape 2 (nouveau code, une fois l'ancien déjà validé).
+            <form
+              onSubmit={handleSavePin}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm rounded-2xl border border-paperline bg-white p-6 dark:border-white/10 dark:bg-[#262626] sm:p-7"
+            >
+              <h2 className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#6B7280] dark:text-white/50">
+                <ShieldCheck size={14} />
+                Sécurité — Finances
+              </h2>
+              <p className="mb-5 text-sm text-[#6B7280] dark:text-white/50">
+                {hasPin
+                  ? "Choisissez votre nouveau code à 4 chiffres."
+                  : "Définissez un code à 4 chiffres demandé à chaque ouverture de la page Finances."}
+              </p>
 
-              {!hasPin && (
+              <div className="flex flex-col gap-4">
                 <div>
-                  <label className={labelClass}>Confirmer le code</label>
+                  <label className={labelClass}>{hasPin ? "Nouveau code PIN" : "Code PIN"}</label>
                   <input
                     type="password"
                     inputMode="numeric"
                     pattern="\d{4}"
                     maxLength={4}
-                    value={newPinConfirm}
-                    onChange={(e) => setNewPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                    autoFocus
+                    value={newPin}
+                    onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
                     placeholder="••••"
                     className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
                   />
                 </div>
-              )}
 
-              {pinError && (
-                <p className="rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">{pinError}</p>
-              )}
-              {pinSaved && !pinError && (
-                <p className="rounded-xl bg-[#E7FAF9] px-4 py-2.5 text-sm font-semibold text-[#00A6AC] dark:bg-white/5">
-                  Code PIN enregistré.
-                </p>
-              )}
+                {!hasPin && (
+                  <div>
+                    <label className={labelClass}>Confirmer le code</label>
+                    <input
+                      type="password"
+                      inputMode="numeric"
+                      pattern="\d{4}"
+                      maxLength={4}
+                      value={newPinConfirm}
+                      onChange={(e) =>
+                        setNewPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))
+                      }
+                      placeholder="••••"
+                      className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+                    />
+                  </div>
+                )}
 
-              <div className="mt-1 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowPinModal(false)}
-                  className="flex-1 rounded-xl border border-paperline py-3 text-sm font-semibold text-ink hover:bg-[#F7F7FB] dark:border-white/10 dark:text-white dark:hover:bg-white/5"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="submit"
-                  disabled={pinSaving}
-                  className="flex-1 rounded-xl bg-ledger-deep py-3 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
-                >
-                  {pinSaving ? "Enregistrement…" : "Enregistrer"}
-                </button>
+                {pinError && (
+                  <p className="rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">{pinError}</p>
+                )}
+                {pinSaved && !pinError && (
+                  <p className="rounded-xl bg-[#E7FAF9] px-4 py-2.5 text-sm font-semibold text-[#00A6AC] dark:bg-white/5">
+                    Code PIN enregistré.
+                  </p>
+                )}
+
+                <div className="mt-1 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => (hasPin ? setPinStep("verify") : setShowPinModal(false))}
+                    className="flex-1 rounded-xl border border-paperline py-3 text-sm font-semibold text-ink hover:bg-[#F7F7FB] dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+                  >
+                    {hasPin ? "Retour" : "Annuler"}
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={pinSaving}
+                    className="flex-1 rounded-xl bg-ledger-deep py-3 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
+                  >
+                    {pinSaving ? "Enregistrement…" : "Enregistrer"}
+                  </button>
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
+          )}
         </div>
       )}
 
