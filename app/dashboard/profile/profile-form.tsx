@@ -117,7 +117,6 @@ export default function ProfileForm({
     // Le menu déroulant se ferme tout seul une fois le mot de passe changé,
     // après un court délai pour laisser voir la confirmation.
     setTimeout(() => {
-      setShowPasswordModal(false);
       setShowPasswordMobileOpen(false);
       setPasswordSaved(false);
     }, 900);
