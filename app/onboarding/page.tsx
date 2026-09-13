@@ -182,17 +182,26 @@ export default function OnboardingPage() {
   }, [supabase]);
 
   // Génère un vrai rendu PDF (via @react-pdf/renderer) pour chaque modèle
-  // disponible, uniquement à l'étape 5 — avec le vrai nom d'entreprise, la
-  // vraie adresse, le vrai contact et le vrai logo déjà sélectionnés.
+  // disponible, dès l'étape "Fichier joint" (index 3) — avec le vrai nom
+  // d'entreprise, la vraie adresse, le vrai contact et le vrai logo déjà
+  // sélectionnés (ou un logo générique si pas encore choisi à ce stade).
   //
-  // Deux optimisations par rapport à la version précédente :
-  // 1. Chaque vignette s'affiche dès qu'elle est prête (au lieu d'attendre
-  //    que les 7 modèles soient terminés avant d'afficher quoi que ce soit).
-  // 2. Si l'utilisateur revient sur cette étape sans avoir changé les
-  //    données sources (nom, adresse, contact, logo), on réutilise les
-  //    aperçus déjà générés au lieu de tout recalculer.
+  // Trois optimisations par rapport à la version précédente :
+  // 1. La génération démarre dès l'étape "Fichier joint", PENDANT que
+  //    l'utilisateur choisit son logo et finit de remplir le formulaire, au
+  //    lieu d'attendre qu'il arrive sur l'étape "Facture" — le calcul se
+  //    fait en arrière-plan, invisible, plutôt que comme un temps d'attente
+  //    visible une fois sur la bonne étape.
+  // 2. Chaque vignette s'affiche dès qu'elle est prête (au lieu d'attendre
+  //    que les 6 modèles soient terminés avant d'afficher quoi que ce soit).
+  // 3. Si les données sources (nom, adresse, contact, logo) n'ont pas changé
+  //    depuis la dernière génération, on réutilise les aperçus déjà générés
+  //    au lieu de tout recalculer — utile si le logo est choisi APRÈS le
+  //    premier passage sur cette étape : une seule régénération a lieu,
+  //    déclenchée par le changement de logoPreview, toujours avant que
+  //    l'utilisateur n'atteigne l'étape Facture dans le cas courant.
   useEffect(() => {
-    if (step !== 4) return;
+    if (step < 3) return;
 
     const dataKey = JSON.stringify({ companyName, siegeSocial, contacts, logoPreview });
     const alreadyGenerated =
