@@ -31,7 +31,10 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 7 },
   rowLabel: { fontSize: 9.5, color: MUTED },
   rowValue: { fontSize: 9.5, fontWeight: 700, textAlign: "right" },
-  amountWords: { fontSize: 8.5, color: MUTED, textAlign: "center", marginTop: 26 },
+  // Taille augmentée (8.5 -> 10) et montant en lettres en gras via un Text
+  // imbriqué (amountWordsBold), qui hérite de la taille/couleur du parent.
+  amountWords: { fontSize: 10, color: MUTED, textAlign: "center", marginTop: 26 },
+  amountWordsBold: { fontWeight: 700 },
   footer: { fontSize: 7.5, color: MUTED, textAlign: "center", marginTop: 40 },
 });
 
@@ -83,7 +86,7 @@ export default function TemplateRecu({ data }: { data: ReceiptData }) {
           )}
         </View>
         <Text style={styles.amountWords}>
-          Reçu la somme de {amountWords}
+          Reçu la somme de <Text style={styles.amountWordsBold}>{amountWords}</Text>
         </Text>
         <Text style={styles.footer}>
           {data.companyName}
