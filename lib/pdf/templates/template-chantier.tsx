@@ -77,7 +77,8 @@ const styles = StyleSheet.create({
   remainingLabel: { fontSize: 10.5, fontWeight: 700, color: BLUE },
   remainingValue: { fontSize: 10.5, fontWeight: 700, color: BLUE },
 
-  amountInWords: { fontSize: 8.5, textAlign: "center", marginTop: 26, color: "#2B2B2B" },
+  amountInWords: { fontSize: 10, textAlign: "center", marginTop: 26, color: "#2B2B2B" },
+  amountInWordsBold: { fontWeight: 700 },
 
   legal: { fontSize: 7.5, color: "#4B4B4B", marginTop: 20, lineHeight: 1.4 },
 
@@ -221,7 +222,8 @@ export default function TemplateChantier({ data }: { data: DocumentData }) {
           </View>
 
           <Text style={styles.amountInWords}>
-            Arrêté le présent {documentWord} à la somme de {amountWords}
+            Arrêté le présent {documentWord} à la somme de{" "}
+            <Text style={styles.amountInWordsBold}>{amountWords}</Text>
           </Text>
 
           <Text style={styles.legal}>

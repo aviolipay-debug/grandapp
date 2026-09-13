@@ -55,7 +55,11 @@ const styles = StyleSheet.create({
   grandLabel: { fontSize: 11.5, fontWeight: 700 },
   grandValue: { fontSize: 11.5, fontWeight: 700 },
 
-  amountInWords: { fontSize: 8.5, textAlign: "center", marginTop: 24, color: "#2B2B2B" },
+  // Taille de police augmentée (8.5 -> 10) et montant en lettres mis en gras
+  // via un Text imbriqué (amountInWordsBold), tout en gardant le reste de la
+  // phrase en poids normal.
+  amountInWords: { fontSize: 10, textAlign: "center", marginTop: 24, color: "#2B2B2B" },
+  amountInWordsBold: { fontWeight: 700 },
 
   legal: { fontSize: 7.5, color: "#4B4B4B", marginTop: 24, maxWidth: 340, lineHeight: 1.4 },
   bottomBar: { height: 12, backgroundColor: YELLOW, marginTop: 30, marginLeft: 220 },
@@ -186,7 +190,8 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
           </View>
 
           <Text style={styles.amountInWords}>
-            Arrêté le présent {documentWord} à la somme de {amountWords}
+            Arrêté le présent {documentWord} à la somme de{" "}
+            <Text style={styles.amountInWordsBold}>{amountWords}</Text>
           </Text>
 
           <Text style={styles.legal}>
