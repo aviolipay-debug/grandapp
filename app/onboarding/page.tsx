@@ -79,6 +79,7 @@ const templateLabels: Record<string, string> = {
   "template-signature": "Signature — Sauge & Rose",
   "template-jovial": "Jovial — Jaune & Rose",
   "template-bicolore": "Bicolore — Violet & Jaune",
+  "template-chantier": "Chantier — Bleu & Blanc technique",
 };
 
 export default function OnboardingPage() {
