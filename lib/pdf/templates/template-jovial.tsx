@@ -77,7 +77,10 @@ const styles = StyleSheet.create({
   grandLabel: { fontSize: 11, fontWeight: 700 },
   grandValue: { fontSize: 11, fontWeight: 700 },
 
-  amountInWords: { fontSize: 8.5, textAlign: "center", marginTop: 26, color: MUTED },
+  // Taille augmentée (8.5 -> 10) et montant en lettres en gras via un Text
+  // imbriqué (amountInWordsBold), qui hérite de la taille/couleur du parent.
+  amountInWords: { fontSize: 10, textAlign: "center", marginTop: 26, color: MUTED },
+  amountInWordsBold: { fontWeight: 700 },
 
   bottomRow: { flexDirection: "row", alignItems: "center", justifyContent: "flex-end", gap: 10, marginTop: 34 },
   thanksBadge: { backgroundColor: YELLOW, borderRadius: 6, paddingVertical: 8, paddingHorizontal: 16 },
@@ -209,7 +212,8 @@ export default function TemplateJovial({ data }: { data: DocumentData }) {
         </View>
 
         <Text style={styles.amountInWords}>
-          Arrêté le présent {documentWord} à la somme de {amountWords}
+          Arrêté le présent {documentWord} à la somme de{" "}
+          <Text style={styles.amountInWordsBold}>{amountWords}</Text>
         </Text>
 
         <View style={styles.bottomRow}>

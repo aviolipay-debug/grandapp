@@ -59,7 +59,10 @@ const styles = StyleSheet.create({
   grandLabel: { fontSize: 14 },
   grandValue: { fontSize: 14 },
 
-  amountInWords: { fontSize: 8.5, textAlign: "center", marginTop: 22, color: MUTED, paddingHorizontal: 40 },
+  // Taille augmentée (8.5 -> 10) et montant en lettres en gras via un Text
+  // imbriqué (amountInWordsBold), qui hérite de la taille/couleur du parent.
+  amountInWords: { fontSize: 10, textAlign: "center", marginTop: 22, color: MUTED, paddingHorizontal: 40 },
+  amountInWordsBold: { fontWeight: 700 },
 
   footerRow: { flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 40, marginTop: 26 },
   footerLabel: { fontSize: 9.5, fontWeight: 700, marginBottom: 6 },
@@ -183,7 +186,8 @@ export default function TemplateBicolore({ data }: { data: DocumentData }) {
         )}
 
         <Text style={styles.amountInWords}>
-          Arrêté le présent {documentWord} à la somme de {amountWords}
+          Arrêté le présent {documentWord} à la somme de{" "}
+          <Text style={styles.amountInWordsBold}>{amountWords}</Text>
         </Text>
 
         {data.notes && (

@@ -53,7 +53,10 @@ const styles = StyleSheet.create({
   totalsLabel: { fontSize: 9.5, fontWeight: 700, color: "#1A1A1A" },
   totalsValue: { fontSize: 9.5, fontWeight: 700, color: "#1A1A1A", textAlign: "right" },
 
-  amountInWords: { fontSize: 9, textAlign: "center", marginTop: 40, color: WHITE },
+  // Taille augmentée (9 -> 10.5) et montant en lettres en gras via un Text
+  // imbriqué (amountInWordsBold), qui hérite de la taille/couleur du parent.
+  amountInWords: { fontSize: 10.5, textAlign: "center", marginTop: 40, color: WHITE },
+  amountInWordsBold: { fontWeight: 700 },
 });
 
 export default function TemplateNuit({ data }: { data: DocumentData }) {
@@ -171,7 +174,8 @@ export default function TemplateNuit({ data }: { data: DocumentData }) {
         </View>
 
         <Text style={styles.amountInWords}>
-          Arrêté le présent {documentWord} à la somme de {amountWords}
+          Arrêté le présent {documentWord} à la somme de{" "}
+          <Text style={styles.amountInWordsBold}>{amountWords}</Text>
         </Text>
       </Page>
     </Document>

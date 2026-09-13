@@ -65,6 +65,11 @@ const styles = StyleSheet.create({
 
   paiementLabel: { fontSize: 10, fontWeight: 700, marginTop: 40, marginBottom: 6 },
   paiementLine: { fontSize: 8.5, color: MUTED, marginBottom: 2 },
+  // Style dédié à la phrase du montant en lettres — taille augmentée (8.5 ->
+  // 10) et mot-clé en gras via un Text imbriqué, sans toucher à la taille de
+  // la ligne "Titulaire" juste en dessous (qui garde paiementLine).
+  amountInWords: { fontSize: 10, color: MUTED, marginBottom: 4 },
+  amountInWordsBold: { fontWeight: 700 },
 
   bottomDecor: { textAlign: "center", marginTop: 24 },
 });
@@ -207,8 +212,9 @@ export default function TemplateSignature({ data }: { data: DocumentData }) {
           </View>
 
           <Text style={styles.paiementLabel}>Paiement</Text>
-          <Text style={styles.paiementLine}>
-            Arrêté le présent {documentWord} à la somme de {amountWords}
+          <Text style={styles.amountInWords}>
+            Arrêté le présent {documentWord} à la somme de{" "}
+            <Text style={styles.amountInWordsBold}>{amountWords}</Text>
           </Text>
           <Text style={styles.paiementLine}>Titulaire : {data.companyName}</Text>
 

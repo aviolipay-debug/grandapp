@@ -56,7 +56,10 @@ const styles = StyleSheet.create({
   totalsLabelFinal: { fontSize: 9.5, fontWeight: 700, color: "#FFFFFF" },
   totalsValueFinal: { fontSize: 9.5, fontWeight: 700, color: "#FFFFFF", textAlign: "right" },
 
-  amountInWords: { fontSize: 8.5, textAlign: "center", marginTop: 28, color: MUTED },
+  // Taille augmentée (8.5 -> 10) et montant en lettres en gras via un Text
+  // imbriqué (amountInWordsBold), qui hérite de la taille/couleur du parent.
+  amountInWords: { fontSize: 10, textAlign: "center", marginTop: 28, color: MUTED },
+  amountInWordsBold: { fontWeight: 700 },
 
   footerDivider: { height: 1, backgroundColor: "#E5E5E5", marginTop: 34, marginBottom: 14 },
   footerRow: { flexDirection: "row", justifyContent: "space-between" },
@@ -179,7 +182,8 @@ export default function TemplateEclat({ data }: { data: DocumentData }) {
         </View>
 
         <Text style={styles.amountInWords}>
-          Arrêté le présent {documentWord} à la somme de {amountWords}
+          Arrêté le présent {documentWord} à la somme de{" "}
+          <Text style={styles.amountInWordsBold}>{amountWords}</Text>
         </Text>
 
         <View style={styles.footerDivider} />
