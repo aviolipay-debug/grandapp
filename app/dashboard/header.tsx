@@ -78,7 +78,7 @@ export default function DashboardHeader() {
           href="/dashboard"
           className={`${vastron.className} justify-self-center text-2xl font-semibold text-ink dark:text-white`}
         >
-          OliPay<span className="text-stamp">.</span>
+          Devisfinance<span className="text-stamp">.</span>
         </Link>
         <div className="flex items-center justify-end">
           <button
@@ -97,7 +97,7 @@ export default function DashboardHeader() {
           href="/dashboard"
           className={`${vastron.className} text-2xl font-semibold text-ink dark:text-white`}
         >
-          OliPay<span className="text-stamp">.</span>
+          Devisfinance<span className="text-stamp">.</span>
         </Link>
 
         <nav className="hidden items-center gap-14 md:flex">
