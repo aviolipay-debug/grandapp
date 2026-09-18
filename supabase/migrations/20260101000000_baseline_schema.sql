@@ -1,4 +1,4 @@
--- Migration de référence — capture l'état actuel du schéma OliPay/grandapp.
+-- Migration de référence — capture l'état actuel du schéma Devisfinance (ex-OliPay, repo grandapp).
 --
 -- Contexte : jusqu'ici, tous les changements de schéma (nouvelles colonnes,
 -- table projects, policies RLS, index...) ont été appliqués directement via
