@@ -79,7 +79,7 @@ export default function SignupForm() {
           href="/"
           className={`${vastron.className} mb-6 block text-center text-3xl font-semibold text-ink dark:text-white sm:mb-10`}
         >
-          OliPay<span className="text-stamp">.</span>
+          Devisfinance<span className="text-stamp">.</span>
         </Link>
 
         {success ? (
@@ -99,7 +99,7 @@ export default function SignupForm() {
               Créer un compte
             </h1>
             <p className="mb-6 text-center text-sm text-[#6B7280] dark:text-white/50 sm:mb-10">
-              Rejoignez OliPay en quelques secondes
+              Rejoignez Devisfinance en quelques secondes
             </p>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:gap-4">
