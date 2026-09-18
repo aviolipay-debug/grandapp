@@ -72,7 +72,7 @@ export default function LoginForm() {
           href="/"
           className={`${vastron.className} mb-6 block text-center text-3xl font-semibold text-ink dark:text-white sm:mb-10`}
         >
-          OliPay<span className="text-stamp">.</span>
+          Devisfinance<span className="text-stamp">.</span>
         </Link>
 
         <h1 className="font-display mb-2 text-center text-3xl font-bold text-ink dark:text-white">
