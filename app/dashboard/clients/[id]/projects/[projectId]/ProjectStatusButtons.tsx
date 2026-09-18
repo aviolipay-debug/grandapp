@@ -4,6 +4,7 @@
 import { useState, useTransition } from "react";
 import { HelpCircle } from "lucide-react";
 import { updateProjectStatus, updateProjectStatusWithPayment } from "./actions";
+import LoadingOverlay from "../../../../../components/loading-overlay";
 
 const projectStatusOptions: { value: "en_cours" | "attente" | "termine"; label: string }[] = [
   { value: "attente", label: "En attente" },
@@ -16,6 +17,7 @@ export default function ProjectStatusButtons({
   clientId,
   currentStatus,
   remainingDue,
+  quoteTotal,
   currency,
   hasQuote,
 }: {
@@ -23,6 +25,7 @@ export default function ProjectStatusButtons({
   clientId: string;
   currentStatus: string;
   remainingDue: number | null;
+  quoteTotal: number | null;
   currency: string;
   hasQuote: boolean;
 }) {
@@ -30,6 +33,10 @@ export default function ProjectStatusButtons({
   const [showNoQuoteAlert, setShowNoQuoteAlert] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [submittedPaymentId, setSubmittedPaymentId] = useState<string | null>(null);
+  // Empêche un double-clic sur "Enregistrer" de créer deux paiements/reçus
+  // par accident : l'overlay bloque toute nouvelle interaction pendant que
+  // la Server Action est en cours.
+  const [paymentSaving, setPaymentSaving] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   function handleClick(value: "en_cours" | "attente" | "termine") {
@@ -49,6 +56,7 @@ export default function ProjectStatusButtons({
   }
 
   function closeModal() {
+    if (paymentSaving) return;
     setModalStatus(null);
   }
 
@@ -57,8 +65,12 @@ export default function ProjectStatusButtons({
   }
 
   async function handleSubmit(formData: FormData) {
-    if (!modalStatus) return;
+    if (!modalStatus || paymentSaving) return;
+
+    setPaymentSaving(true);
     const result = await updateProjectStatusWithPayment(projectId, clientId, modalStatus, formData);
+    setPaymentSaving(false);
+
     setModalStatus(null);
     if (result?.paymentId) {
       setSubmittedPaymentId(result.paymentId);
@@ -71,6 +83,8 @@ export default function ProjectStatusButtons({
 
   return (
     <>
+      <LoadingOverlay show={paymentSaving} message="Enregistrement du paiement…" />
+
       <div className="mt-2 flex flex-wrap items-center gap-2">
         {projectStatusOptions.map((opt) => (
           <button
@@ -192,12 +206,21 @@ export default function ProjectStatusButtons({
                   min={0}
                   step="0.01"
                   required
+                  disabled={paymentSaving}
                   defaultValue={
                     modalStatus === "termine" && remainingDue ? remainingDue : undefined
                   }
                   className="w-full rounded-lg border border-paperline bg-white px-3 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
                 />
-                {remainingDue !== null && (
+                {/* "En cours" (premier passage, avant qu'une facture existe) :
+                    on affiche le total du devis comme référence. "Terminé"
+                    (facture déjà existante) : on garde le restant dû. */}
+                {modalStatus === "en_cours" && quoteTotal !== null && (
+                  <p className="mt-1 text-xs text-[#6B7280] dark:text-white/40">
+                    Total à payer du devis : {quoteTotal.toLocaleString("fr-FR")} {currency}
+                  </p>
+                )}
+                {modalStatus === "termine" && remainingDue !== null && (
                   <p className="mt-1 text-xs text-[#6B7280] dark:text-white/40">
                     Restant dû actuellement : {remainingDue.toLocaleString("fr-FR")} {currency}
                   </p>
@@ -210,6 +233,7 @@ export default function ProjectStatusButtons({
                 </label>
                 <select
                   name="method"
+                  disabled={paymentSaving}
                   className="w-full rounded-lg border border-paperline bg-white px-3 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
                 >
                   <option value="mobile_money">Mobile Money</option>
@@ -224,15 +248,17 @@ export default function ProjectStatusButtons({
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 rounded-lg border border-paperline px-4 py-2.5 text-sm font-semibold text-[#4B5563] dark:border-white/15 dark:text-white/60"
+                  disabled={paymentSaving}
+                  className="flex-1 rounded-lg border border-paperline px-4 py-2.5 text-sm font-semibold text-[#4B5563] disabled:opacity-60 dark:border-white/15 dark:text-white/60"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
+                  disabled={paymentSaving}
+                  className="flex-1 rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp disabled:opacity-60"
                 >
-                  Enregistrer
+                  {paymentSaving ? "Enregistrement…" : "Enregistrer"}
                 </button>
               </div>
             </form>
