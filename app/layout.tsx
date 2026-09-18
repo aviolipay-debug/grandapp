@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "OliPay — Devis, factures et comptes, tenus au propre",
+  title: "Devisfinance — Devis, factures et comptes, tenus au propre",
   description:
     "Créez des devis, transformez-les en factures, et suivez vos paiements sans ouvrir un tableur.",
 };
@@ -19,7 +19,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                var theme = localStorage.getItem('olipay-theme');
+                var theme = localStorage.getItem('devisfinance-theme');
                 if (theme === 'dark') document.documentElement.classList.add('dark');
               } catch (e) {}
             `,
