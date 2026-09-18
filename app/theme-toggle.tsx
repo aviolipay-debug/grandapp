@@ -6,7 +6,7 @@ export default function ThemeToggle() {
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("olipay-theme");
+    const stored = localStorage.getItem("devisfinance-theme");
     const isDark = stored === "dark";
     setDark(isDark);
     document.documentElement.classList.toggle("dark", isDark);
@@ -16,7 +16,7 @@ export default function ThemeToggle() {
     const next = !dark;
     setDark(next);
     document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("olipay-theme", next ? "dark" : "light");
+    localStorage.setItem("devisfinance-theme", next ? "dark" : "light");
   }
 
   return (
