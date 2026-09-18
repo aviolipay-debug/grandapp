@@ -87,7 +87,7 @@ function ResetPasswordConfirmInner() {
             href="/"
             className={`${vastron.className} mb-6 block text-center text-3xl font-semibold text-ink dark:text-white sm:mb-10`}
           >
-            OliPay<span className="text-stamp">.</span>
+            Devisfinance<span className="text-stamp">.</span>
           </Link>
 
           {checkingSession ? (
