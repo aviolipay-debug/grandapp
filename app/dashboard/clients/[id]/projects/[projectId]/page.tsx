@@ -63,6 +63,11 @@ export default async function ProjectDetailPage({
     ? Number(facture.total) - Number(facture.amount_paid)
     : null;
 
+  // Total du devis en cours — affiché dans la popup de paiement au premier
+  // passage à "En cours" (avant qu'une facture n'existe, donc avant que
+  // remainingDue ne soit calculable).
+  const quoteTotal = quotes && quotes.length > 0 ? Number(quotes[0].total) : null;
+
   // Paramètre anti-cache : change à chaque affichage de la page, pour que les
   // navigateurs mobiles (qui accrochent leur lecteur PDF intégré à l'URL et
   // ignorent souvent les en-têtes Cache-Control une fois le PDF ouvert)
@@ -114,7 +119,8 @@ export default async function ProjectDetailPage({
         clientId={params.id}
         currentStatus={project.status}
         remainingDue={remainingDue}
-        currency={facture?.currency ?? "FCFA"}
+        quoteTotal={quoteTotal}
+        currency={facture?.currency ?? quotes?.[0]?.currency ?? "FCFA"}
         hasQuote={!!quotes && quotes.length > 0}
       />
 
