@@ -48,8 +48,8 @@ const audiences = [
 
 const faqs = [
   {
-    q: "Ai-je besoin de compétences en comptabilité pour utiliser OliPay ?",
-    a: "Non. OliPay est pensé pour les indépendants et petites équipes sans service compta dédié : les calculs, les statuts et les relances sont automatisés.",
+    q: "Ai-je besoin de compétences en comptabilité pour utiliser Devisfinance ?",
+    a: "Non. Devisfinance est pensé pour les indépendants et petites équipes sans service compta dédié : les calculs, les statuts et les relances sont automatisés.",
   },
   {
     q: "Puis-je personnaliser mes devis et factures avec mon logo ?",
@@ -60,7 +60,7 @@ const faqs = [
     a: "Oui, toutes vos données sont chiffrées et sauvegardées automatiquement, avec un accès strictement limité à votre compte.",
   },
   {
-    q: "Puis-je essayer OliPay gratuitement ?",
+    q: "Puis-je essayer Devisfinance gratuitement ?",
     a: "Oui, la création de compte est gratuite et vous pouvez commencer à créer des devis et factures immédiatement.",
   },
 ];
@@ -137,7 +137,7 @@ export default async function LandingPage() {
           <ThemeToggle />
         </div>
         <div className={`${vastron.className} justify-self-center text-2xl font-semibold text-ink dark:text-white`}>
-          OliPay<span className="text-stamp">.</span>
+          Devisfinance<span className="text-stamp">.</span>
         </div>
         <div className="flex items-center justify-end">
           <MobileMenu />
@@ -147,7 +147,7 @@ export default async function LandingPage() {
       {/* Header desktop : version précédente restaurée (fond clair, logo à gauche, nav au centre, CTA à droite) */}
       <header className="sticky top-0 z-50 hidden items-center justify-between border-b border-paperline bg-paper px-[6vw] py-7 dark:border-white/10 dark:bg-[#2F2F2F] md:flex">
         <div className={`${vastron.className} text-2xl font-semibold text-ink dark:text-white`}>
-          OliPay<span className="text-stamp">.</span>
+          Devisfinance<span className="text-stamp">.</span>
         </div>
         <nav className="hidden gap-8 md:flex">
           <a href="#top" className="text-sm font-bold text-ink dark:text-white hover:text-ledger-deep dark:hover:text-ledger">
@@ -406,7 +406,7 @@ export default async function LandingPage() {
             Prêt à simplifier votre gestion ?
           </h2>
           <p className="mx-auto my-5 max-w-[50ch] text-white/85">
-            Utilisez OliPay dès maintenant et reprenez le contrôle de votre
+            Utilisez Devisfinance dès maintenant et reprenez le contrôle de votre
             comptabilité en quelques minutes.
           </p>
           <Link
@@ -419,7 +419,7 @@ export default async function LandingPage() {
       </Reveal>
 
       <footer className="flex flex-col items-center justify-between gap-2.5 border-t border-paperline bg-white px-[6vw] py-10 text-sm text-[#6B7280] dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white/60 md:flex-row">
-        <div>© 2026 OliPay.</div>
+        <div>© 2026 Devisfinance.</div>
         <div>Fait pour les entrepreneurs qui n&apos;ont pas le temps de tenir un tableur.</div>
       </footer>
     </main>
