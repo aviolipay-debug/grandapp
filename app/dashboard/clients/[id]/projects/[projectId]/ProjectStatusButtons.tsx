@@ -217,7 +217,7 @@ export default function ProjectStatusButtons({
                     (facture déjà existante) : on garde le restant dû. */}
                 {modalStatus === "en_cours" && quoteTotal !== null && (
                   <p className="mt-1 text-xs text-[#6B7280] dark:text-white/40">
-                    Total à payer du devis : {quoteTotal.toLocaleString("fr-FR")} {currency}
+                    Total à payer : {quoteTotal.toLocaleString("fr-FR")} {currency}
                   </p>
                 )}
                 {modalStatus === "termine" && remainingDue !== null && (
