@@ -230,7 +230,7 @@ export default function ProjectStatusButtons({
                     "En cours"). */}
                 {remainingDue !== null ? (
                   <p className="mt-1 text-xs text-[#6B7280] dark:text-white/40">
-                    Restant dû actuellement : {remainingDue.toLocaleString("fr-FR")} {currency}
+                    Reste à payer : {remainingDue.toLocaleString("fr-FR")} {currency}
                   </p>
                 ) : (
                   modalStatus === "en_cours" &&
