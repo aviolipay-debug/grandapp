@@ -20,6 +20,7 @@ const statusOptions: { value: string; label: string }[] = [
   { value: "attente", label: "En attente" },
   { value: "en_cours", label: "En cours" },
   { value: "termine", label: "Terminé" },
+  { value: "refuse", label: "Refusé" },
 ];
 
 function ProjectStatusBadge({ statut }: { statut: string }) {
@@ -27,6 +28,7 @@ function ProjectStatusBadge({ statut }: { statut: string }) {
     termine: { label: "Terminé", bg: "#00C4CC1A", text: "#00A6AC" },
     en_cours: { label: "En cours", bg: "#7D2AE71A", text: "#7D2AE7" },
     attente: { label: "En attente", bg: "#2A89DA1A", text: "#2A89DA" },
+    refuse: { label: "Refusé", bg: "#E5533F1A", text: "#E5533F" },
   };
   const c = config[statut] ?? config.attente;
   return (
