@@ -44,7 +44,7 @@ export default async function DashboardPage() {
       .limit(3),
     supabase
       .from("projects")
-      .select("id, name, status, created_at, clients(id, name)")
+      .select("id, name, status, created_at, clients(id, name), quotes(status, created_at)")
       .order("created_at", { ascending: false })
       .limit(6),
   ]);
@@ -69,14 +69,32 @@ export default async function DashboardPage() {
     clientsRecentsData?.map((c) => ({ id: c.id, nom: c.name })) ?? [];
 
   const projetsRecents =
-    projetsRecentsData?.map((p) => ({
-      id: p.id,
-      date: new Date(p.created_at).toLocaleDateString("fr-FR"),
-      projet: p.name,
-      statut: p.status,
-      client: (p as any).clients?.name ?? "—",
-      clientId: (p as any).clients?.id ?? null,
-    })) ?? [];
+    projetsRecentsData?.map((p) => {
+      // Si le devis le plus récent du projet a été refusé, on l'affiche tel
+      // quel ("Refusé", en rouge) plutôt que le statut brut du projet
+      // (attente/en_cours/termine), qui ne connaît pas cette notion — c'est
+      // une valeur d'affichage calculée, jamais stockée en base.
+      const quotesForProject = ((p as any).quotes ?? []) as {
+        status: string;
+        created_at: string;
+      }[];
+      const latestQuote =
+        quotesForProject.length > 0
+          ? [...quotesForProject].sort(
+              (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            )[0]
+          : null;
+      const statutAffiche = latestQuote?.status === "declined" ? "refuse" : p.status;
+
+      return {
+        id: p.id,
+        date: new Date(p.created_at).toLocaleDateString("fr-FR"),
+        projet: p.name,
+        statut: statutAffiche,
+        client: (p as any).clients?.name ?? "—",
+        clientId: (p as any).clients?.id ?? null,
+      };
+    }) ?? [];
 
   return (
     <>
