@@ -4,7 +4,6 @@
 import { useState, useTransition } from "react";
 import { HelpCircle } from "lucide-react";
 import { updateProjectStatus, updateProjectStatusWithPayment } from "./actions";
-import LoadingOverlay from "../../../../../components/loading-overlay";
 
 const projectStatusOptions: { value: "en_cours" | "attente" | "termine"; label: string }[] = [
   { value: "attente", label: "En attente" },
@@ -34,8 +33,10 @@ export default function ProjectStatusButtons({
   const [showHelp, setShowHelp] = useState(false);
   const [submittedPaymentId, setSubmittedPaymentId] = useState<string | null>(null);
   // Empêche un double-clic sur "Enregistrer" de créer deux paiements/reçus
-  // par accident : l'overlay bloque toute nouvelle interaction pendant que
-  // la Server Action est en cours.
+  // par accident : le popup reste ouvert le temps de l'appel serveur, avec
+  // un indicateur DANS le popup lui-même (pas un overlay séparé — un overlay
+  // séparé resterait invisible, caché derrière ce popup qui reste ouvert
+  // pendant toute la durée de l'enregistrement).
   const [paymentSaving, setPaymentSaving] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -83,8 +84,6 @@ export default function ProjectStatusButtons({
 
   return (
     <>
-      <LoadingOverlay show={paymentSaving} message="Enregistrement du paiement…" />
-
       <div className="mt-2 flex flex-wrap items-center gap-2">
         {projectStatusOptions.map((opt) => (
           <button
@@ -185,7 +184,19 @@ export default function ProjectStatusButtons({
 
       {modalStatus && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 dark:bg-[#262626]">
+          <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 dark:bg-[#262626]">
+            {/* Indicateur de chargement DANS le popup — visible même si le
+                popup reste ouvert pendant tout l'enregistrement, contrairement
+                à un overlay séparé qui resterait caché derrière lui. */}
+            {paymentSaving && (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-2xl bg-white/95 dark:bg-[#262626]/95">
+                <span className="h-9 w-9 animate-spin rounded-full border-[3px] border-ledger-deep border-t-transparent" />
+                <p className="text-sm font-semibold text-ink dark:text-white">
+                  Enregistrement du paiement…
+                </p>
+              </div>
+            )}
+
             <h2 className="font-display text-lg font-semibold text-ink dark:text-white">
               Enregistrer un paiement
             </h2>
@@ -212,18 +223,22 @@ export default function ProjectStatusButtons({
                   }
                   className="w-full rounded-lg border border-paperline bg-white px-3 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
                 />
-                {/* "En cours" (premier passage, avant qu'une facture existe) :
-                    on affiche le total du devis comme référence. "Terminé"
-                    (facture déjà existante) : on garde le restant dû. */}
-                {modalStatus === "en_cours" && quoteTotal !== null && (
-                  <p className="mt-1 text-xs text-[#6B7280] dark:text-white/40">
-                    Total à payer : {quoteTotal.toLocaleString("fr-FR")} {currency}
-                  </p>
-                )}
-                {modalStatus === "termine" && remainingDue !== null && (
+                {/* Dès qu'une facture existe (remainingDue non nul), on
+                    affiche le vrai restant dû — peu importe le bouton
+                    cliqué. Le total du devis ne sert que tant qu'aucune
+                    facture n'a encore été générée (tout premier passage à
+                    "En cours"). */}
+                {remainingDue !== null ? (
                   <p className="mt-1 text-xs text-[#6B7280] dark:text-white/40">
                     Restant dû actuellement : {remainingDue.toLocaleString("fr-FR")} {currency}
                   </p>
+                ) : (
+                  modalStatus === "en_cours" &&
+                  quoteTotal !== null && (
+                    <p className="mt-1 text-xs text-[#6B7280] dark:text-white/40">
+                      Total à payer : {quoteTotal.toLocaleString("fr-FR")} {currency}
+                    </p>
+                  )
                 )}
               </div>
 
