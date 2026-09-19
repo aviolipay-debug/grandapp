@@ -1,7 +1,7 @@
 // app/dashboard/clients/[id]/projects/[projectId]/ProjectStatusButtons.tsx
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { HelpCircle } from "lucide-react";
 import { updateProjectStatus, updateProjectStatusWithPayment } from "./actions";
 
@@ -38,6 +38,12 @@ export default function ProjectStatusButtons({
   // séparé resterait invisible, caché derrière ce popup qui reste ouvert
   // pendant toute la durée de l'enregistrement).
   const [paymentSaving, setPaymentSaving] = useState(false);
+  // Garde synchrone : contrairement au state React (qui n'a d'effet qu'après
+  // un nouveau rendu), un ref est lu/écrit immédiatement. Si les deux clics
+  // d'un double-clic arrivent avant que React n'ait eu le temps de
+  // désactiver visuellement le bouton, ce ref bloque quand même le second
+  // appel dès la première ligne de handleSubmit.
+  const submittingRef = useRef(false);
   const [isPending, startTransition] = useTransition();
 
   function handleClick(value: "en_cours" | "attente" | "termine") {
@@ -65,16 +71,24 @@ export default function ProjectStatusButtons({
     setShowNoQuoteAlert(false);
   }
 
-  async function handleSubmit(formData: FormData) {
-    if (!modalStatus || paymentSaving) return;
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
 
+    if (!modalStatus || submittingRef.current) return;
+    submittingRef.current = true;
     setPaymentSaving(true);
-    const result = await updateProjectStatusWithPayment(projectId, clientId, modalStatus, formData);
-    setPaymentSaving(false);
 
-    setModalStatus(null);
-    if (result?.paymentId) {
-      setSubmittedPaymentId(result.paymentId);
+    const formData = new FormData(e.currentTarget);
+
+    try {
+      const result = await updateProjectStatusWithPayment(projectId, clientId, modalStatus, formData);
+      setModalStatus(null);
+      if (result?.paymentId) {
+        setSubmittedPaymentId(result.paymentId);
+      }
+    } finally {
+      submittingRef.current = false;
+      setPaymentSaving(false);
     }
   }
 
@@ -206,7 +220,7 @@ export default function ProjectStatusButtons({
                 : "Solde reçu pour clôturer le projet."}
             </p>
 
-            <form action={handleSubmit} className="mt-5 space-y-4">
+            <form onSubmit={handleSubmit} className="mt-5 space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-ink dark:text-white/80">
                   Montant {modalStatus === "termine" ? "(solde)" : "(acompte)"}
