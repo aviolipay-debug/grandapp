@@ -65,7 +65,7 @@ export default function SignupForm() {
   return (
     <>
       <LoadingOverlay show={loading || googleLoading} message={loading ? "Création en cours…" : "Connexion à Google…"} />
-      <main className="flex min-h-screen items-center justify-center relative isolate overflow-hidden bg-[#F0F0F3] px-6 py-16 dark:bg-[#2F2F2F]">
+      <main className="flex h-screen items-center justify-center relative isolate overflow-hidden bg-[#F0F0F3] px-6 py-4 dark:bg-[#2F2F2F]">
       {/* Fond décoratif — taches de couleur floutées, cohérent avec le dashboard */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-[#7D2AE7]/25 blur-3xl dark:bg-[#7D2AE7]/15" />
@@ -77,7 +77,7 @@ export default function SignupForm() {
       <div className="w-full max-w-sm">
         <Link
           href="/"
-          className={`${vastron.className} mb-6 block text-center text-3xl font-semibold text-ink dark:text-white sm:mb-10`}
+          className={`${vastron.className} mb-3 block text-center text-2xl font-semibold text-ink dark:text-white sm:mb-4 sm:text-3xl`}
         >
           Devisfinance<span className="text-stamp">.</span>
         </Link>
@@ -95,21 +95,21 @@ export default function SignupForm() {
           </div>
         ) : (
           <>
-            <h1 className="font-display mb-2 text-center text-3xl font-bold text-ink dark:text-white">
+            <h1 className="font-display mb-1.5 text-center text-2xl font-bold text-ink dark:text-white sm:text-3xl">
               Créer un compte
             </h1>
-            <p className="mb-6 text-center text-sm text-[#6B7280] dark:text-white/50 sm:mb-10">
+            <p className="mb-3 text-center text-sm text-[#6B7280] dark:text-white/50 sm:mb-4">
               Rejoignez Devisfinance en quelques secondes
             </p>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:gap-4">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-2 sm:gap-2.5">
               <input
                 type="text"
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Nom et prénom"
-                className="w-full rounded-xl border border-paperline bg-white px-5 py-3.5 text-sm text-ink placeholder-[#9CA3AF] outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white dark:placeholder-white/40"
+                className="w-full rounded-xl border border-paperline bg-white px-5 py-2.5 text-sm text-ink placeholder-[#9CA3AF] outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white dark:placeholder-white/40"
               />
 
               <input
@@ -118,7 +118,7 @@ export default function SignupForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
-                className="w-full rounded-xl border border-paperline bg-white px-5 py-3.5 text-sm text-ink placeholder-[#9CA3AF] outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white dark:placeholder-white/40"
+                className="w-full rounded-xl border border-paperline bg-white px-5 py-2.5 text-sm text-ink placeholder-[#9CA3AF] outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white dark:placeholder-white/40"
               />
 
               <div className="relative">
@@ -129,7 +129,7 @@ export default function SignupForm() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Mot de passe"
-                  className="w-full rounded-xl border border-paperline bg-white px-5 py-3.5 pr-12 text-sm text-ink placeholder-[#9CA3AF] outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white dark:placeholder-white/40"
+                  className="w-full rounded-xl border border-paperline bg-white px-5 py-2.5 pr-12 text-sm text-ink placeholder-[#9CA3AF] outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white dark:placeholder-white/40"
                 />
                 <button
                   type="button"
@@ -167,13 +167,13 @@ export default function SignupForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-2 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
+                className="mt-1 rounded-xl bg-ledger-deep py-2.5 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
               >
                 {loading ? "Création en cours…" : "S'inscrire"}
               </button>
             </form>
 
-            <div className="my-4 flex items-center gap-3 sm:my-7">
+            <div className="my-2.5 flex items-center gap-3 sm:my-3">
               <div className="h-px flex-1 bg-paperline dark:bg-white/10" />
               <span className="text-sm text-[#6B7280] dark:text-white/40">ou</span>
               <div className="h-px flex-1 bg-paperline dark:bg-white/10" />
@@ -183,7 +183,7 @@ export default function SignupForm() {
               type="button"
               onClick={handleGoogleSignIn}
               disabled={googleLoading}
-              className="flex w-full items-center justify-center gap-3 rounded-xl border border-paperline bg-white py-3.5 text-sm font-semibold text-ink transition-colors hover:bg-[#F0F0F3] disabled:opacity-60 dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white dark:hover:bg-[#454545]"
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-paperline bg-white py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-[#F0F0F3] disabled:opacity-60 dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white dark:hover:bg-[#454545]"
             >
               <svg width="18" height="18" viewBox="0 0 18 18">
                 <path
@@ -206,7 +206,7 @@ export default function SignupForm() {
               {googleLoading ? "Connexion…" : "Continuer avec Google"}
             </button>
 
-            <p className="mt-5 text-center text-sm text-[#6B7280] dark:text-white/50 sm:mt-8">
+            <p className="mt-2.5 text-center text-sm text-[#6B7280] dark:text-white/50 sm:mt-3">
               Déjà un compte ?{" "}
               <Link href="/login" className="font-semibold text-ledger-deep dark:text-ledger">
                 Se connecter
