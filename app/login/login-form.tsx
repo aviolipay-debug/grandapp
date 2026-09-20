@@ -62,7 +62,7 @@ export default function LoginForm() {
           milieu, le lien final en bas — l'espace libre se répartit tout
           autour au lieu d'être compressé, à la manière de la référence Payme,
           mais avec les couleurs propres à Devisfinance. */}
-      <main className="relative isolate flex h-screen flex-col items-center overflow-hidden bg-[#F0F0F3] px-6 py-8 dark:bg-[#2F2F2F]">
+      <main className="relative isolate flex h-[100dvh] flex-col items-center overflow-hidden bg-[#F0F0F3] px-6 py-8 dark:bg-[#2F2F2F]">
         {/* Fond décoratif — taches de couleur floutées, cohérent avec le dashboard */}
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
           <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-[#7D2AE7]/25 blur-3xl dark:bg-[#7D2AE7]/15" />
