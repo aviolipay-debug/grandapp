@@ -421,6 +421,19 @@ export default async function LandingPage() {
       <footer className="flex flex-col items-center justify-between gap-2.5 border-t border-paperline bg-white px-[6vw] py-10 text-sm text-[#6B7280] dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white/60 md:flex-row">
         <div>© 2026 Devisfinance.</div>
         <div>Fait pour les entrepreneurs qui n&apos;ont pas le temps de tenir un tableur.</div>
+        <div className="flex items-center gap-2">
+          <Link href="/mentions-legales" className="hover:text-ledger-deep dark:hover:text-ledger">
+            Mentions légales
+          </Link>
+          <span>·</span>
+          <Link href="/confidentialite" className="hover:text-ledger-deep dark:hover:text-ledger">
+            Confidentialité
+          </Link>
+          <span>·</span>
+          <Link href="/cookies" className="hover:text-ledger-deep dark:hover:text-ledger">
+            Cookies
+          </Link>
+        </div>
       </footer>
     </main>
   );
