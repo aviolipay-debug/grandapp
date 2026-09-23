@@ -300,7 +300,7 @@ function StatCard({
 }) {
   return (
     <div
-      className={`rounded-3xl p-5 ${
+      className={`rounded-3xl px-5 py-3.5 ${
         dark
           ? "bg-[#181818] text-white"
           : "border border-black/5 bg-white text-ink dark:border-white/10 dark:bg-[#262626] dark:text-white"
@@ -309,14 +309,14 @@ function StatCard({
       <div className="flex items-start justify-between">
         <span className="text-xs font-bold uppercase tracking-wide">{label}</span>
         <div
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
           style={{ backgroundColor: iconBg, color: iconColor }}
         >
           {icon}
         </div>
       </div>
-      <p className="mt-4 text-3xl font-extrabold">{value}</p>
-      <p className={`mt-1 text-sm ${dark ? "text-white/50" : "text-[#9CA3AF]"}`}>{subtitle}</p>
+      <p className="mt-1.5 text-2xl font-extrabold leading-tight">{value}</p>
+      <p className={`text-sm ${dark ? "text-white/50" : "text-[#9CA3AF]"}`}>{subtitle}</p>
     </div>
   );
 }
