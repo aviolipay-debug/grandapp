@@ -218,18 +218,18 @@ function StatCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-3xl border border-black/5 bg-white px-3 py-4 text-ink dark:border-white/10 dark:bg-[#262626] dark:text-white sm:p-5">
+    <div className="rounded-3xl border border-black/5 bg-white px-3 py-3.5 text-ink dark:border-white/10 dark:bg-[#262626] dark:text-white sm:px-5">
       <div className="flex items-start justify-between">
         <span className="text-xs font-bold uppercase tracking-wide">{label}</span>
         <div
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-white"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-white"
           style={{ backgroundColor: accent }}
         >
           {icon}
         </div>
       </div>
-      <p className="font-display mt-4 whitespace-nowrap text-2xl font-extrabold sm:text-3xl">{value}</p>
-      <p className="mt-1 text-sm text-[#9CA3AF]">{subtitle}</p>
+      <p className="font-display mt-1.5 whitespace-nowrap text-2xl font-extrabold leading-tight">{value}</p>
+      <p className="text-sm text-[#9CA3AF]">{subtitle}</p>
     </div>
   );
 }
