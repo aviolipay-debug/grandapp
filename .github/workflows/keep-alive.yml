@@ -1,0 +1,28 @@
+name: Keep-alive Vercel + Supabase
+
+# Objectif : empêcher la mise en pause automatique du projet Supabase
+# (plan gratuit) après une semaine sans trafic, et éviter le cold start
+# Vercel, en gardant les deux services "réveillés" avec une requête légère
+# et régulière.
+
+on:
+  schedule:
+    # Tous les jours à 05h00 UTC (06h00 à Cotonou/Lagos en heure normale).
+    # Largement suffisant : Supabase se met en pause après ~7 jours
+    # d'inactivité, un ping quotidien ne laisse jamais ce délai s'écouler.
+    - cron: "0 5 * * *"
+  workflow_dispatch: {} # permet aussi de le déclencher manuellement depuis l'onglet Actions
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping le site Vercel
+        run: |
+          curl -sS -o /dev/null -w "Vercel: %{http_code}\n" "${{ secrets.SITE_URL }}"
+
+      - name: Ping Supabase (évite la mise en pause du projet)
+        run: |
+          curl -sS -o /dev/null -w "Supabase: %{http_code}\n" \
+            "https://ztovtlmomupdkayrmiwm.supabase.co/rest/v1/" \
+            -H "apikey: sb_publishable_VweAWyPzKR-cRR0zqxyZvQ_To8KAjFK"
