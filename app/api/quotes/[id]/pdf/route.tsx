@@ -17,7 +17,7 @@ export async function GET(
   const { data: quote } = await supabase
     .from("quotes")
     .select(
-      "*, clients(name, email, address, phone), profiles:owner_id(company_name, company_address, company_logo_url, company_phone, company_contacts, invoice_template)"
+      "*, clients(name, email, address, phone), profiles:owner_id(company_name, company_address, company_logo_url, company_phone, company_contacts, invoice_template, rccm_number, tax_ids)"
     )
     .eq("id", params.id)
     .single();
@@ -41,6 +41,13 @@ export async function GET(
     ? `${primaryContact.indicatif ?? ""} ${primaryContact.numero}`.trim()
     : quote.profiles?.company_phone ?? null;
 
+  // Numéro(s) d'identification : profiles.tax_ids est un tableau JSON de
+  // textes — on ne garde que les valeurs de type texte, les templates
+  // ignorent ensuite les valeurs vides (voir lib/pdf/legal-footer.ts).
+  const taxIds: string[] = Array.isArray(quote.profiles?.tax_ids)
+    ? quote.profiles.tax_ids.filter((v: unknown): v is string => typeof v === "string")
+    : [];
+
   const stream = await renderToStream(
     <DocumentPDF
       templateId={quote.profiles?.invoice_template}
@@ -54,6 +61,8 @@ export async function GET(
         companyAddress: quote.profiles?.company_address ?? null,
         companyLogoUrl: quote.profiles?.company_logo_url ?? null,
         companyPhone: emitterPhone,
+        companyRccm: quote.profiles?.rccm_number ?? null,
+        companyTaxIds: taxIds,
         clientName: quote.clients?.name ?? "Client",
         clientPhone: quote.clients?.phone ?? null,
         clientEmail: quote.clients?.email ?? null,
