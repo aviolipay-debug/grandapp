@@ -16,6 +16,8 @@ export type DocumentData = {
   companyAddress: string | null; // Siège social — affiché sous le nom de l'ÉMETTEUR
   companyLogoUrl: string | null;
   companyPhone?: string | null; // Contact primaire (indicatif + numéro) — affiché sous l'ÉMETTEUR
+  companyRccm?: string | null; // N° Registre du commerce — affiché en pied de page si renseigné
+  companyTaxIds?: string[] | null; // Numéro(s) d'identification — affiché(s) en pied de page si renseigné(s)
   clientName: string;
   clientPhone?: string | null; // NOUVEAU — remplace l'email sous le nom du CLIENT
   clientEmail: string | null; // Conservé dans le type mais plus affiché sur le PDF
