@@ -112,7 +112,7 @@ function NewQuoteForm() {
         </p>
         <Link
           href="/dashboard/clients"
-          className="mt-6 inline-flex items-center justify-center rounded-lg bg-ledger-deep px-5 py-3 text-sm font-semibold text-paper hover:bg-stamp"
+          className="mt-6 inline-flex items-center justify-center rounded-lg bg-ledger-deep px-5 py-3 text-sm font-semibold text-paper hover:bg-ledger-dark"
         >
           Voir mes clients
         </Link>
@@ -314,7 +314,7 @@ function NewQuoteForm() {
                         type="button"
                         onClick={() => removeItem(i)}
                         disabled={items.length === 1}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg text-stamp hover:bg-stamp/10 disabled:opacity-30"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-stamp hover:bg-ledger-dark/10 disabled:opacity-30"
                         aria-label="Supprimer la ligne"
                       >
                         <Trash2 size={16} />
@@ -354,7 +354,7 @@ function NewQuoteForm() {
                       type="button"
                       onClick={() => removeItem(i)}
                       disabled={items.length === 1}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-stamp hover:bg-stamp/10 disabled:opacity-30"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-stamp hover:bg-ledger-dark/10 disabled:opacity-30"
                       aria-label="Supprimer la ligne"
                     >
                       <Trash2 size={16} />
@@ -368,7 +368,7 @@ function NewQuoteForm() {
           <button
             type="button"
             onClick={addItem}
-            className="mt-3 flex w-full items-center justify-center gap-1.5 text-sm font-semibold text-stamp"
+            className="mt-3 flex w-full items-center justify-center gap-1.5 text-sm font-semibold text-ledger-deep dark:text-ledger-light"
           >
             <Plus size={16} />
             Ajouter une ligne
@@ -430,7 +430,7 @@ function NewQuoteForm() {
           <button
             type="submit"
             disabled={loading || !clientId}
-            className="w-full rounded-lg bg-ledger-deep px-5 py-3 text-sm font-semibold text-paper hover:bg-stamp disabled:opacity-60 sm:w-auto"
+            className="w-full rounded-lg bg-ledger-deep px-5 py-3 text-sm font-semibold text-paper hover:bg-ledger-dark disabled:opacity-60 sm:w-auto"
           >
             {loading ? "Enregistrement..." : "Créer le devis"}
           </button>
