@@ -10,6 +10,7 @@ import BottomNav from "../dashboard/bottom-nav";
 import LoadingOverlay from "../components/loading-overlay";
 import { TEMPLATES, type TemplateId } from "@/lib/pdf/templates";
 import type { DocumentData } from "@/lib/pdf/types";
+import Spinner from "@/app/components/spinner";
 
 // pdfjs-dist a besoin d'un "worker" séparé pour analyser le PDF — on pointe
 // vers celui hébergé par cdnjs (même version que la librairie installée),
@@ -427,10 +428,6 @@ export default function OnboardingPage() {
   // ---------- MODE "ASSISTANT" (première configuration) ----------
   return (
     <div className="flex min-h-screen flex-col bg-[#F0F0F3] font-sans md:pl-64 text-ink dark:bg-[#2F2F2F] dark:text-white">
-      <LoadingOverlay
-        show={loading}
-        message={mode === "wizard" ? "Finalisation…" : "Enregistrement…"}
-      />
       <DashboardHeader />
       <main className="relative isolate flex flex-1 items-center justify-center overflow-hidden px-6 py-12 pb-24 md:pb-12">
 
@@ -732,8 +729,9 @@ export default function OnboardingPage() {
               type="button"
               onClick={handlePrimaryAction}
               disabled={loading}
-              className="flex-1 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-ledger-dark disabled:opacity-60"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-ledger-dark disabled:opacity-60"
             >
+              {loading && <Spinner />}
               {loading
                 ? mode === "wizard"
                   ? "Finalisation…"
