@@ -122,10 +122,10 @@ export default async function DashboardPage() {
               Configurer mon compte
             </Link>
           )}
-          {/* Un devis se crée toujours depuis un projet : cette page explique
-              la marche à suivre et mène à la liste des clients. */}
+          {/* Un devis se crée toujours depuis un projet : on ouvre donc
+              directement la liste des clients. */}
           <Link
-            href="/dashboard/quotes/new"
+            href="/dashboard/clients"
             className="hidden lg:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl bg-ledger-deep px-5 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark"
           >
             <Plus size={16} strokeWidth={2.5} />
