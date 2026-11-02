@@ -25,10 +25,10 @@ const statusOptions: { value: string; label: string }[] = [
 
 function ProjectStatusBadge({ statut }: { statut: string }) {
   const config: Record<string, { label: string; bg: string; text: string }> = {
-    termine: { label: "Terminé", bg: "#00C4CC1A", text: "#00A6AC" },
-    en_cours: { label: "En cours", bg: "#7D2AE71A", text: "#7D2AE7" },
-    attente: { label: "En attente", bg: "#2A89DA1A", text: "#2A89DA" },
-    refuse: { label: "Refusé", bg: "#E5533F1A", text: "#E5533F" },
+    termine: { label: "Terminé", bg: "#E3F6EC", text: "#0F7B4B" },
+    en_cours: { label: "En cours", bg: "#E6F0FB", text: "#1D5799" },
+    attente: { label: "En attente", bg: "#FFF1DD", text: "#9A5200" },
+    refuse: { label: "Refusé", bg: "#FDE8E6", text: "#B3261E" },
   };
   const c = config[statut] ?? config.attente;
   return (
@@ -68,7 +68,7 @@ export default function ProjetsRecentsSection({ projects }: { projects: Projet[]
       {/* ---------- MOBILE ---------- */}
       <div className={`lg:hidden ${poppins.className}`}>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50">
+          <h2 className="font-display text-lg font-bold text-ink dark:text-white">
             Projets récents
           </h2>
           <div className="flex items-center gap-3">
@@ -176,7 +176,7 @@ export default function ProjetsRecentsSection({ projects }: { projects: Projet[]
       {/* ---------- DESKTOP ---------- */}
       <div className={`hidden lg:block ${poppins.className}`}>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50">
+          <h2 className="font-display text-lg font-bold text-ink dark:text-white">
             Projets récents
           </h2>
           <div className="flex items-center gap-3">
