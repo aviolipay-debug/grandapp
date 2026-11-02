@@ -17,12 +17,12 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusStyles: Record<string, string> = {
-  draft: "bg-[#F3F4F6] text-[#6B7280]",
-  sent: "bg-[#EAF3FC] text-[#2A89DA]",
-  paid: "bg-[#E7FAF9] text-[#00A6AC]",
-  partially_paid: "bg-[#FFF4E5] text-[#B4690E]",
-  overdue: "bg-[#FDEBEA] text-[#E5533F]",
-  cancelled: "bg-[#F3F4F6] text-[#6B7280]",
+  draft: "bg-[#F3F4F6] text-muted",
+  sent: "bg-info-soft text-info",
+  paid: "bg-success-soft text-success",
+  partially_paid: "bg-warn-soft text-warn",
+  overdue: "bg-danger-soft text-danger",
+  cancelled: "bg-[#F3F4F6] text-muted",
 };
 
 // Le champ `status` en base ne passe jamais automatiquement à "overdue" —
@@ -121,28 +121,28 @@ export default async function InvoicesPage() {
           label="Encaissé"
           value={stats.encaisse.toLocaleString("fr-FR")}
           subtitle={currency}
-          accent="#00C4CC"
+          accent="#7D2AE7"
           icon={<Wallet size={18} />}
         />
         <StatCard
           label="Factures"
           value={stats.total}
           subtitle="émises"
-          accent="#7D2AE7"
+          accent="#1D5799"
           icon={<FileStack size={18} />}
         />
         <StatCard
           label="Factures"
           value={stats.soldees}
           subtitle="soldées"
-          accent="#00A6AC"
+          accent="#0F7B4B"
           icon={<CheckCircle2 size={18} />}
         />
         <StatCard
           label="Restant dû"
           value={stats.restantDu.toLocaleString("fr-FR")}
           subtitle={currency}
-          accent="#2A89DA"
+          accent="#9A5200"
           icon={<Clock size={18} />}
         />
       </div>
@@ -165,7 +165,7 @@ export default async function InvoicesPage() {
                   href={`/dashboard/invoices/${inv.id}`}
                   className="flex items-center gap-3 px-3 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7FAF9] text-[#00A6AC] dark:bg-white/10">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ledger-soft text-ledger-deep dark:bg-white/10">
                     <Receipt size={18} />
                   </div>
                   <div className="min-w-0 flex-1">
