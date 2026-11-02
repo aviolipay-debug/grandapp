@@ -4,9 +4,8 @@
 import { useEffect, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, ChevronDown } from "lucide-react";
+import { LogOut, Home, Wallet, Users, FileText, UserCircle2 } from "lucide-react";
 import ThemeToggle from "../theme-toggle";
-import SignOutButton from "./sign-out-button";
 import { createClient } from "@/lib/supabase/client"; // adapte le chemin si besoin
 import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
 import LoadingOverlay from "../components/loading-overlay";
@@ -28,6 +27,38 @@ const MAIN_ROUTES = [
   "/dashboard/quotes",
   "/dashboard/profile",
 ];
+
+// Lien du menu latéral (ordinateur) : l'élément actif est plein violet,
+// les autres sont gris clair avec un léger survol.
+function SideLink({
+  href,
+  label,
+  icon,
+  active,
+  onClick,
+}: {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  active: boolean;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+}) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      aria-current={active ? "page" : undefined}
+      className={`flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors ${
+        active
+          ? "bg-ledger-deep text-white"
+          : "text-[#D1D5DB] hover:bg-white/10 hover:text-white"
+      }`}
+    >
+      {icon}
+      {label}
+    </Link>
+  );
+}
 
 export default function DashboardHeader() {
   const pathname = usePathname();
@@ -53,11 +84,7 @@ export default function DashboardHeader() {
   }
 
   const isActive = (href: string) =>
-    href === "/dashboard" ? pathname === href : pathname?.startsWith(href);
-
-  const isGestionActive =
-    pathname?.startsWith("/dashboard/clients") ||
-    pathname?.startsWith("/dashboard/quotes");
+    href === "/dashboard" ? pathname === href : !!pathname?.startsWith(href);
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -78,7 +105,7 @@ export default function DashboardHeader() {
           href="/dashboard"
           className={`${vastron.className} justify-self-center text-2xl font-semibold text-ink dark:text-white`}
         >
-          Devisfinance<span className="text-stamp">.</span>
+          Devisfinance<span className="text-ledger-deep dark:text-ledger-light">.</span>
         </Link>
         <div className="flex items-center justify-end">
           <button
@@ -91,92 +118,69 @@ export default function DashboardHeader() {
         </div>
       </header>
 
-      {/* Header desktop : logo gauche, nav centre (Accueil/Finance/Gestion/Profil), déconnexion à droite */}
-      <header className="sticky top-0 z-50 hidden items-center justify-between border-b border-paperline bg-paper px-[6vw] py-8 dark:border-white/10 dark:bg-[#2F2F2F] md:flex">
-        <Link
-          href="/dashboard"
-          className={`${vastron.className} text-2xl font-semibold text-ink dark:text-white`}
-        >
-          Devisfinance<span className="text-stamp">.</span>
-        </Link>
-
-        <nav className="hidden items-center gap-14 md:flex">
+      {/* Menu latéral sombre (ordinateur) — fixe à gauche, largeur 16rem.
+          Les pages qui l'affichent doivent avoir "md:pl-64" sur leur conteneur. */}
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col justify-between bg-[#181818] px-5 py-7 text-white md:flex">
+        <div className="flex flex-col gap-8">
           <Link
             href="/dashboard"
-            className={`text-lg font-bold hover:text-ledger-deep dark:hover:text-ledger ${
-              pathname === "/dashboard"
-                ? "text-ledger-deep dark:text-ledger"
-                : "text-ink dark:text-white"
-            }`}
+            className={`${vastron.className} px-1 text-2xl font-semibold text-white`}
           >
-            Accueil
+            Devisfinance<span className="text-ledger-light">.</span>
           </Link>
 
-          <Link
-            href="/dashboard/invoices"
-            className={`text-lg font-bold hover:text-ledger-deep dark:hover:text-ledger ${
-              isActive("/dashboard/invoices")
-                ? "text-ledger-deep dark:text-ledger"
-                : "text-ink dark:text-white"
-            }`}
-          >
-            Finances
-          </Link>
+          <nav className="flex flex-col gap-1.5" aria-label="Navigation principale">
+            <SideLink
+              href="/dashboard"
+              label="Accueil"
+              icon={<Home size={18} />}
+              active={pathname === "/dashboard"}
+            />
+            <SideLink
+              href="/dashboard/invoices"
+              label="Finances"
+              icon={<Wallet size={18} />}
+              active={isActive("/dashboard/invoices")}
+            />
 
-          {/* Gestion — menu déroulant Clients / Devis */}
-          <div className="group relative py-2">
-            <button
-              type="button"
-              className={`flex items-center gap-2 text-lg font-bold hover:text-ledger-deep dark:hover:text-ledger ${
-                isGestionActive
-                  ? "text-ledger-deep dark:text-ledger"
-                  : "text-ink dark:text-white"
-              }`}
-            >
+            <p className="mt-5 mb-1 px-3.5 text-[11px] font-semibold uppercase tracking-wider text-white/55">
               Gestion
-              <ChevronDown
-                size={18}
-                className="transition-transform group-hover:rotate-180"
-              />
-            </button>
+            </p>
+            <SideLink
+              href="/dashboard/clients"
+              label="Clients"
+              icon={<Users size={18} />}
+              active={isActive("/dashboard/clients")}
+            />
+            <SideLink
+              href="/dashboard/quotes"
+              label="Devis"
+              icon={<FileText size={18} />}
+              active={isActive("/dashboard/quotes")}
+            />
 
-            <div className="invisible absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3 opacity-0 transition-all group-hover:visible group-hover:opacity-100">
-              <div className="min-w-[160px] overflow-hidden rounded-xl border border-black/10 bg-white shadow-lg dark:border-white/10 dark:bg-[#262626]">
-                <Link
-                  href="/dashboard/clients"
-                  className="block px-5 py-3 text-sm font-semibold text-ink hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
-                >
-                  Clients
-                </Link>
-                <Link
-                  href="/dashboard/quotes"
-                  className="block px-5 py-3 text-sm font-semibold text-ink hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
-                >
-                  Devis
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <Link
-            href="/dashboard/profile"
-            onClick={handleProfileClick}
-            className={`text-lg font-bold hover:text-ledger-deep dark:hover:text-ledger ${
-              isActive("/dashboard/profile")
-                ? "text-ledger-deep dark:text-ledger"
-                : "text-ink dark:text-white"
-            }`}
-          >
-            Profil
-          </Link>
-        </nav>
-
-        <div className="hidden items-center gap-4 md:flex">
-          <div className="w-36">
-            <SignOutButton />
-          </div>
+            <p className="mt-5 mb-1 px-3.5 text-[11px] font-semibold uppercase tracking-wider text-white/55">
+              Compte
+            </p>
+            <SideLink
+              href="/dashboard/profile"
+              label="Profil"
+              icon={<UserCircle2 size={18} />}
+              active={isActive("/dashboard/profile")}
+              onClick={handleProfileClick}
+            />
+          </nav>
         </div>
-      </header>
+
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-[#D1D5DB] transition-colors hover:bg-white/10 hover:text-white"
+        >
+          <LogOut size={18} />
+          Se déconnecter
+        </button>
+      </aside>
     </>
   );
 }
