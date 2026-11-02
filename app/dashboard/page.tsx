@@ -129,24 +129,24 @@ export default async function DashboardPage() {
             label="PROJETS"
             value={stats.projetsEnAttente}
             subtitle="en attente"
-            iconBg="#EAF3FC"
-            iconColor="#2A89DA"
+            iconBg="#FFF1DD"
+            iconColor="#9A5200"
             icon={<Clock size={18} />}
           />
           <StatCard
             label="CLIENTS"
             value={stats.clientsActifs}
             subtitle="enregistrés"
-            iconBg="#E7FAF9"
-            iconColor="#00A6AC"
+            iconBg="#EFE5FC"
+            iconColor="#7D2AE7"
             icon={<Users size={18} />}
           />
           <StatCard
             label="PROJETS"
             value={stats.projetsEnCours}
             subtitle="en cours"
-            iconBg="#FDEBEA"
-            iconColor="#E5533F"
+            iconBg="#E6F0FB"
+            iconColor="#1D5799"
             icon={<FolderKanban size={18} />}
           />
         </div>
@@ -215,24 +215,24 @@ export default async function DashboardPage() {
             label="PROJETS"
             value={stats.projetsEnAttente}
             subtitle="en attente"
-            iconBg="#EAF3FC"
-            iconColor="#2A89DA"
+            iconBg="#FFF1DD"
+            iconColor="#9A5200"
             icon={<Clock size={18} />}
           />
           <StatCard
             label="CLIENTS"
             value={stats.clientsActifs}
             subtitle="enregistrés"
-            iconBg="#E7FAF9"
-            iconColor="#00A6AC"
+            iconBg="#EFE5FC"
+            iconColor="#7D2AE7"
             icon={<Users size={18} />}
           />
           <StatCard
             label="PROJETS"
             value={stats.projetsEnCours}
             subtitle="en cours"
-            iconBg="#FDEBEA"
-            iconColor="#E5533F"
+            iconBg="#E6F0FB"
+            iconColor="#1D5799"
             icon={<FolderKanban size={18} />}
           />
         </div>
