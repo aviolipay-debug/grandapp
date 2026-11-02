@@ -1,6 +1,6 @@
 // app/dashboard/page.tsx
 import Link from "next/link";
-import { FileText, Users, FolderKanban, Clock, Folder, FolderPlus } from "lucide-react";
+import { FileText, Users, FolderKanban, Clock, FolderPlus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server"; // adapte le chemin si besoin
 import { poppins } from "@/lib/fonts";
 import ProjetsRecentsSection from "./projets-recents";
@@ -49,7 +49,10 @@ export default async function DashboardPage() {
       .limit(6),
   ]);
 
-  const firstName = user?.user_metadata?.first_name ?? "";
+  // Prénom pour le message de bienvenue : "first_name" si présent, sinon le
+  // premier mot du nom complet saisi à l'inscription (full_name).
+  const meta = (user?.user_metadata ?? {}) as { first_name?: string; full_name?: string };
+  const firstName = (meta.first_name ?? meta.full_name?.trim().split(/\s+/)[0] ?? "").trim();
 
   // Étape 2 : celle-ci dépend bien de user.id, donc elle ne peut pas être
   // parallélisée avec l'étape 1 — mais c'est la seule qui attend désormais.
@@ -97,187 +100,114 @@ export default async function DashboardPage() {
     }) ?? [];
 
   return (
-    <>
+    <div className={`flex max-w-6xl flex-col gap-6 sm:gap-7 ${poppins.className}`}>
       <DashboardExitGuard />
 
-      {/* ---------- MOBILE (inchangé) ---------- */}
-      <div className="lg:hidden flex flex-col gap-8 max-w-6xl">
-        {/* En-tête — le bouton disparaît une fois le compte configuré */}
-        {!isConfigured && (
-          <div className="flex items-center justify-center gap-4">
-            <Link
-              href="/onboarding"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/10 transition-colors w-fit"
-            >
-              Configurer mon compte
-            </Link>
-          </div>
-        )}
-
-        {/* Stats — synchronisées avec la version desktop */}
-        <div className={`grid grid-cols-2 gap-4 ${poppins.className}`}>
-          <StatCard
-            label="DEVIS"
-            value={stats.devisGeneres}
-            subtitle="générés"
-            dark
-            iconBg="rgba(255,255,255,0.15)"
-            iconColor="#FFFFFF"
-            icon={<FileText size={18} />}
-          />
-          <StatCard
-            label="PROJETS"
-            value={stats.projetsEnAttente}
-            subtitle="en attente"
-            iconBg="#FFF1DD"
-            iconColor="#9A5200"
-            icon={<Clock size={18} />}
-          />
-          <StatCard
-            label="CLIENTS"
-            value={stats.clientsActifs}
-            subtitle="enregistrés"
-            iconBg="#EFE5FC"
-            iconColor="#7D2AE7"
-            icon={<Users size={18} />}
-          />
-          <StatCard
-            label="PROJETS"
-            value={stats.projetsEnCours}
-            subtitle="en cours"
-            iconBg="#E6F0FB"
-            iconColor="#1D5799"
-            icon={<FolderKanban size={18} />}
-          />
+      {/* Bienvenue — et bouton de configuration tant que le compte n'est pas configuré */}
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-extrabold text-ink dark:text-white sm:text-[28px]">
+            {firstName ? `Bonjour, ${firstName}` : "Bonjour"}
+          </h1>
+          <p className="mt-1 text-sm text-muted dark:text-white/50">
+            Voici l&apos;activité de votre entreprise.
+          </p>
         </div>
+        {!isConfigured && (
+          <Link
+            href="/onboarding"
+            className="inline-flex min-h-[44px] items-center justify-center rounded-2xl bg-ledger-deep px-5 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark"
+          >
+            Configurer mon compte
+          </Link>
+        )}
+      </header>
 
-        {/* Clients récents */}
-        <div className={poppins.className}>
-          <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50 mb-3">
-            Clients récents
-          </h2>
-          <div className="flex flex-wrap gap-4">
-            {clientsRecents.map((client) => (
-              <Link
-                key={client.id}
-                href={`/dashboard/clients/${client.id}`}
-                className="group flex flex-col items-center gap-2 w-24"
-              >
-                <div className="w-20 h-16 rounded-xl bg-white dark:bg-[#262626] border border-black/5 dark:border-white/10 flex items-center justify-center text-[#7D2AE7]">
-                  <Folder size={26} strokeWidth={1.75} />
-                </div>
-                <span className="text-xs font-semibold text-center truncate w-full">
-                  {client.nom}
-                </span>
-              </Link>
-            ))}
+      {/* Stats — 2 colonnes sur mobile, 4 sur grand écran */}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard
+          label="DEVIS"
+          value={stats.devisGeneres}
+          subtitle="générés"
+          dark
+          iconBg="rgba(255,255,255,0.15)"
+          iconColor="#FFFFFF"
+          icon={<FileText size={18} />}
+        />
+        <StatCard
+          label="PROJETS"
+          value={stats.projetsEnAttente}
+          subtitle="en attente"
+          iconBg="#FFF1DD"
+          iconColor="#9A5200"
+          icon={<Clock size={18} />}
+        />
+        <StatCard
+          label="CLIENTS"
+          value={stats.clientsActifs}
+          subtitle="enregistrés"
+          iconBg="#EFE5FC"
+          iconColor="#7D2AE7"
+          icon={<Users size={18} />}
+        />
+        <StatCard
+          label="PROJETS"
+          value={stats.projetsEnCours}
+          subtitle="en cours"
+          iconBg="#E6F0FB"
+          iconColor="#1D5799"
+          icon={<FolderKanban size={18} />}
+        />
+      </div>
+
+      {/* Clients récents — cartes façon dossier violet */}
+      <section className="rounded-3xl border border-black/5 bg-white p-5 dark:border-white/10 dark:bg-[#262626] sm:p-6">
+        <h2 className="mb-4 font-display text-lg font-bold text-ink dark:text-white">
+          Clients récents
+        </h2>
+        <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-4">
+          {clientsRecents.map((client) => (
             <Link
-              href="/dashboard/clients/new"
-              className="group flex flex-col items-center gap-2 w-24"
+              key={client.id}
+              href={`/dashboard/clients/${client.id}`}
+              className="group flex flex-col gap-3 rounded-2xl bg-ledger-soft p-4 transition-shadow hover:shadow-md dark:bg-white/5"
             >
-              <div className="w-20 h-16 rounded-xl border-2 border-dashed border-black/10 dark:border-white/15 flex items-center justify-center text-[#1C1C1C]/40 dark:text-white/40">
-                <FolderPlus size={24} strokeWidth={1.75} />
-              </div>
-              <span className="text-xs font-semibold text-center text-[#1C1C1C]/50 dark:text-white/50">
-                Nouveau
+              <FolderIcon />
+              <span className="truncate text-sm font-semibold text-ink dark:text-white">
+                {client.nom}
               </span>
             </Link>
-          </div>
+          ))}
+          <Link
+            href="/dashboard/clients/new"
+            className="group flex flex-col items-start justify-between gap-3 rounded-2xl border-2 border-dashed border-ledger-deep/30 p-4 text-ledger-deep transition-colors hover:border-ledger-deep hover:bg-ledger-soft dark:border-white/15 dark:text-ledger-light dark:hover:bg-white/5"
+          >
+            <FolderPlus size={30} strokeWidth={1.75} />
+            <span className="text-sm font-semibold">Nouveau client</span>
+          </Link>
         </div>
-      </div>
+      </section>
 
-      {/* ---------- DESKTOP (réorganisé) ---------- */}
-      <div className="hidden lg:flex lg:flex-col gap-8 max-w-6xl">
-        {/* En-tête — le bouton disparaît une fois le compte configuré */}
-        {!isConfigured && (
-          <div className="flex items-center justify-center gap-4">
-            <Link
-              href="/onboarding"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/10 transition-colors w-fit"
-            >
-              Configurer mon compte
-            </Link>
-          </div>
-        )}
+      {/* Projets récents géré par le composant partagé */}
+      <ProjetsRecentsSection projects={projetsRecents} />
+    </div>
+  );
+}
 
-        {/* Stats — 4 cartes sur la même ligne */}
-        <div className={`grid grid-cols-4 gap-4 ${poppins.className}`}>
-          <StatCard
-            label="DEVIS"
-            value={stats.devisGeneres}
-            subtitle="générés"
-            dark
-            iconBg="rgba(255,255,255,0.15)"
-            iconColor="#FFFFFF"
-            icon={<FileText size={18} />}
-          />
-          <StatCard
-            label="PROJETS"
-            value={stats.projetsEnAttente}
-            subtitle="en attente"
-            iconBg="#FFF1DD"
-            iconColor="#9A5200"
-            icon={<Clock size={18} />}
-          />
-          <StatCard
-            label="CLIENTS"
-            value={stats.clientsActifs}
-            subtitle="enregistrés"
-            iconBg="#EFE5FC"
-            iconColor="#7D2AE7"
-            icon={<Users size={18} />}
-          />
-          <StatCard
-            label="PROJETS"
-            value={stats.projetsEnCours}
-            subtitle="en cours"
-            iconBg="#E6F0FB"
-            iconColor="#1D5799"
-            icon={<FolderKanban size={18} />}
-          />
-        </div>
-
-        {/* Clients récents — cartes façon dossier, inspirées de la référence */}
-        <div className={poppins.className}>
-          <h2 className="font-display font-semibold text-sm uppercase tracking-wide text-[#1C1C1C]/50 dark:text-white/50 mb-3">
-            Clients récents
-          </h2>
-          <div className="flex flex-wrap gap-4">
-            {clientsRecents.map((client) => (
-              <Link
-                key={client.id}
-                href={`/dashboard/clients/${client.id}`}
-                className="group flex flex-col items-center gap-2 w-28"
-              >
-                <div className="w-20 h-16 rounded-xl bg-white dark:bg-[#262626] border border-black/5 dark:border-white/10 flex items-center justify-center text-[#7D2AE7] group-hover:shadow-md group-hover:border-transparent transition-all">
-                  <Folder size={26} strokeWidth={1.75} />
-                </div>
-                <span className="text-xs font-semibold text-center truncate w-full">
-                  {client.nom}
-                </span>
-              </Link>
-            ))}
-            <Link
-              href="/dashboard/clients/new"
-              className="group flex flex-col items-center gap-2 w-28"
-            >
-              <div className="w-20 h-16 rounded-xl border-2 border-dashed border-black/10 dark:border-white/15 flex items-center justify-center text-[#1C1C1C]/40 dark:text-white/40 group-hover:text-[#7D2AE7] group-hover:border-[#7D2AE7] transition-colors">
-                <FolderPlus size={24} strokeWidth={1.75} />
-              </div>
-              <span className="text-xs font-semibold text-center text-[#1C1C1C]/50 dark:text-white/50">
-                Nouveau
-              </span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Projets récents géré plus bas par le composant partagé */}
-      </div>
-
-      <div className="max-w-6xl mt-8">
-        <ProjetsRecentsSection projects={projetsRecents} />
-      </div>
-    </>
+// Dossier à deux teintes : violet de marque + reflet cyan décoratif.
+function FolderIcon() {
+  return (
+    <svg width="44" height="36" viewBox="0 0 44 36" fill="none" aria-hidden="true">
+      <path
+        d="M2 8a4 4 0 0 1 4-4h10l4 5h18a4 4 0 0 1 4 4v17a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z"
+        fill="#00C4CC"
+        fillOpacity="0.35"
+      />
+      <path
+        d="M2 14a4 4 0 0 1 4-4h32a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z"
+        fill="#7D2AE7"
+      />
+    </svg>
   );
 }
 
@@ -300,12 +230,17 @@ function StatCard({
 }) {
   return (
     <div
-      className={`rounded-3xl px-5 py-3.5 ${
+      className={`relative overflow-hidden rounded-3xl px-5 py-3.5 ${
         dark
           ? "bg-[#181818] text-white"
           : "border border-black/5 bg-white text-ink dark:border-white/10 dark:bg-[#262626] dark:text-white"
       }`}
     >
+      {/* Liseré décoratif violet → cyan en haut de la carte */}
+      <div
+        className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-ledger-deep to-aqua"
+        aria-hidden="true"
+      />
       <div className="flex items-start justify-between">
         <span className="text-xs font-bold uppercase tracking-wide">{label}</span>
         <div
@@ -315,8 +250,8 @@ function StatCard({
           {icon}
         </div>
       </div>
-      <p className="mt-1.5 text-2xl font-extrabold leading-tight">{value}</p>
-      <p className={`text-sm ${dark ? "text-white/50" : "text-[#9CA3AF]"}`}>{subtitle}</p>
+      <p className="font-display mt-1.5 text-2xl font-extrabold leading-tight">{value}</p>
+      <p className={`text-sm ${dark ? "text-white/50" : "text-muted dark:text-white/50"}`}>{subtitle}</p>
     </div>
   );
 }
