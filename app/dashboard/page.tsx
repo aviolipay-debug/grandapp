@@ -230,17 +230,12 @@ function StatCard({
 }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-3xl px-5 py-3.5 ${
+      className={`rounded-3xl px-5 py-3.5 ${
         dark
           ? "bg-[#181818] text-white"
           : "border border-black/5 bg-white text-ink dark:border-white/10 dark:bg-[#262626] dark:text-white"
       }`}
     >
-      {/* Liseré décoratif violet → cyan en haut de la carte */}
-      <div
-        className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-ledger-deep to-aqua"
-        aria-hidden="true"
-      />
       <div className="flex items-start justify-between">
         <span className="text-xs font-bold uppercase tracking-wide">{label}</span>
         <div
