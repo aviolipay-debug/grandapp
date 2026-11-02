@@ -43,7 +43,7 @@ export default function ResetPasswordPage() {
           <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-[#7D2AE7]/25 blur-3xl dark:bg-[#7D2AE7]/15" />
           <div className="absolute -top-16 right-[-40px] h-80 w-80 rounded-full bg-[#00C4CC]/25 blur-3xl dark:bg-[#00C4CC]/15" />
           <div className="absolute top-72 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-[#2A89DA]/20 blur-3xl dark:bg-[#2A89DA]/10" />
-          <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#FE6F61]/25 blur-3xl dark:bg-[#FE6F61]/15" />
+          <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#7D2AE7]/20 blur-3xl dark:bg-[#7D2AE7]/10" />
         </div>
 
         <div className="w-full max-w-sm rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8">
@@ -51,7 +51,7 @@ export default function ResetPasswordPage() {
             href="/"
             className={`${vastron.className} mb-6 block text-center text-3xl font-semibold text-ink dark:text-white sm:mb-10`}
           >
-            Devisfinance<span className="text-stamp">.</span>
+            Devisfinance<span className="text-ledger-deep dark:text-ledger-light">.</span>
           </Link>
 
           {sent ? (
@@ -91,7 +91,7 @@ export default function ResetPasswordPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="mt-2 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
+                  className="mt-2 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-ledger-dark disabled:opacity-60"
                 >
                   {loading ? "Envoi…" : "Envoyer le lien"}
                 </button>
@@ -100,7 +100,7 @@ export default function ResetPasswordPage() {
           )}
 
           <p className="mt-5 text-center text-sm text-[#6B7280] dark:text-white/50 sm:mt-8">
-            <Link href="/login" className="font-semibold text-ledger-deep dark:text-ledger">
+            <Link href="/login" className="font-semibold text-ledger-deep dark:text-ledger-light">
               ← Retour à la connexion
             </Link>
           </p>
