@@ -1,10 +1,13 @@
+// app/components/loading-overlay.tsx
+//
+// Voile de chargement léger : fond semi-transparent et flou (la page reste
+// devinable derrière), avec le logo « DF » qui pulse au centre.
+// Utilisation inchangée : <LoadingOverlay show={loading} message="Chargement…" />
 "use client";
-
-import { Receipt } from "lucide-react";
 
 export default function LoadingOverlay({
   show,
-  message = "Chargement…",
+  message,
 }: {
   show: boolean;
   message?: string;
@@ -12,28 +15,19 @@ export default function LoadingOverlay({
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="flex flex-col items-center gap-4">
-        <div className="animate-invoice-float flex h-16 w-16 items-center justify-center rounded-2xl bg-[#E5533F] text-white shadow-[0_20px_50px_-15px_rgba(229,83,63,0.6)]">
-          <Receipt size={30} strokeWidth={2} />
-        </div>
-        <p className="text-sm font-semibold text-white">{message}</p>
+    <div
+      role="status"
+      aria-live="polite"
+      className="fixed inset-0 z-[110] flex flex-col items-center justify-center gap-4 bg-white/65 backdrop-blur-md dark:bg-[#262626]/65"
+    >
+      <div className="flex h-14 w-14 animate-pulse items-center justify-center rounded-2xl bg-ledger-deep font-display text-xl font-extrabold text-white motion-reduce:animate-none">
+        DF
       </div>
-
-      <style>{`
-        @keyframes invoice-float {
-          0%, 100% { transform: translateY(0) rotate(-6deg); }
-          50% { transform: translateY(-8px) rotate(6deg); }
-        }
-        .animate-invoice-float {
-          animation: invoice-float 1s ease-in-out infinite;
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .animate-invoice-float {
-            animation: none;
-          }
-        }
-      `}</style>
+      {message ? (
+        <p className="text-sm font-medium text-muted dark:text-white/70">{message}</p>
+      ) : (
+        <span className="sr-only">Chargement…</span>
+      )}
     </div>
   );
 }
