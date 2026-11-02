@@ -88,7 +88,7 @@ export default function DashboardHeader() {
 
   async function handleSignOut() {
     await supabase.auth.signOut();
-    router.push("/");
+    router.push("/login");
     router.refresh();
   }
 
