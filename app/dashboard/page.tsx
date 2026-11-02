@@ -1,6 +1,6 @@
 // app/dashboard/page.tsx
 import Link from "next/link";
-import { FileText, Users, FolderKanban, Clock, FolderPlus } from "lucide-react";
+import { FileText, Users, FolderKanban, Clock, FolderPlus, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server"; // adapte le chemin si besoin
 import { poppins } from "@/lib/fonts";
 import ProjetsRecentsSection from "./projets-recents";
@@ -113,14 +113,25 @@ export default async function DashboardPage() {
             Voici l&apos;activité de votre entreprise.
           </p>
         </div>
-        {!isConfigured && (
+        <div className="flex flex-wrap items-center gap-3">
+          {!isConfigured && (
+            <Link
+              href="/onboarding"
+              className="inline-flex min-h-[44px] items-center justify-center rounded-2xl border border-black/10 px-5 text-sm font-semibold text-ink transition-colors hover:bg-black/5 dark:border-white/15 dark:text-white dark:hover:bg-white/10"
+            >
+              Configurer mon compte
+            </Link>
+          )}
+          {/* Un devis se crée toujours depuis un projet : cette page explique
+              la marche à suivre et mène à la liste des clients. */}
           <Link
-            href="/onboarding"
-            className="inline-flex min-h-[44px] items-center justify-center rounded-2xl bg-ledger-deep px-5 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark"
+            href="/dashboard/quotes/new"
+            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl bg-ledger-deep px-5 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark"
           >
-            Configurer mon compte
+            <Plus size={16} strokeWidth={2.5} />
+            Nouveau devis
           </Link>
-        )}
+        </div>
       </header>
 
       {/* Stats — 2 colonnes sur mobile, 4 sur grand écran */}
