@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import LoadingOverlay from "../../components/loading-overlay";
+import Spinner from "@/app/components/spinner";
 import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
 
 function ResetPasswordConfirmInner() {
@@ -72,7 +72,6 @@ function ResetPasswordConfirmInner() {
 
   return (
     <>
-      <LoadingOverlay show={loading} message="Enregistrement…" />
       <main className="flex min-h-screen items-center justify-center relative isolate overflow-hidden bg-[#F0F0F3] px-6 py-16 dark:bg-[#2F2F2F]">
 
         <div className="w-full max-w-sm rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8">
@@ -173,8 +172,9 @@ function ResetPasswordConfirmInner() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="mt-2 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-ledger-dark disabled:opacity-60"
+                  className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-ledger-dark disabled:opacity-60"
                 >
+                  {loading && <Spinner />}
                   {loading ? "Enregistrement…" : "Enregistrer le mot de passe"}
                 </button>
               </form>
