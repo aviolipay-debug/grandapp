@@ -4,7 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import LoadingOverlay from "../components/loading-overlay";
+import Spinner from "@/app/components/spinner";
 import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
 
 export default function ResetPasswordPage() {
@@ -36,7 +36,6 @@ export default function ResetPasswordPage() {
 
   return (
     <>
-      <LoadingOverlay show={loading} message="Envoi en cours…" />
       <main className="flex min-h-screen items-center justify-center relative isolate overflow-hidden bg-[#F0F0F3] px-6 py-16 dark:bg-[#2F2F2F]">
 
         <div className="w-full max-w-sm rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8">
@@ -84,8 +83,9 @@ export default function ResetPasswordPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="mt-2 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-ledger-dark disabled:opacity-60"
+                  className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-ledger-dark disabled:opacity-60"
                 >
+                  {loading && <Spinner />}
                   {loading ? "Envoi…" : "Envoyer le lien"}
                 </button>
               </form>
