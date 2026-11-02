@@ -409,11 +409,11 @@ export default function OnboardingPage() {
     "w-full rounded-xl border border-paperline bg-white px-5 py-3.5 text-sm text-ink placeholder-[#9CA3AF] outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white dark:placeholder-white/40";
   const labelClass = "mb-2 block text-sm font-medium text-ink dark:text-white/80";
   const addBtnClass =
-    "flex items-center gap-2 text-sm font-semibold text-ledger-deep dark:text-ledger";
+    "flex items-center gap-2 text-sm font-semibold text-ledger-deep dark:text-ledger-light";
 
   if (mode === "loading") {
     return (
-      <div className="flex min-h-screen flex-col bg-[#F7F8FB] font-sans text-ink dark:bg-[#2F2F2F] dark:text-white">
+      <div className="flex min-h-screen flex-col bg-[#F0F0F3] font-sans text-ink dark:bg-[#2F2F2F] dark:text-white">
         <LoadingOverlay show message="Chargement…" />
         <DashboardHeader />
         <main className="flex flex-1 items-center justify-center px-6 py-12 pb-24 md:pb-12">
@@ -426,7 +426,7 @@ export default function OnboardingPage() {
 
   // ---------- MODE "ASSISTANT" (première configuration) ----------
   return (
-    <div className="flex min-h-screen flex-col bg-[#F7F8FB] font-sans text-ink dark:bg-[#2F2F2F] dark:text-white">
+    <div className="flex min-h-screen flex-col bg-[#F0F0F3] font-sans text-ink dark:bg-[#2F2F2F] dark:text-white">
       <LoadingOverlay
         show={loading}
         message={mode === "wizard" ? "Finalisation…" : "Enregistrement…"}
@@ -438,7 +438,7 @@ export default function OnboardingPage() {
           <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-[#7D2AE7]/25 blur-3xl dark:bg-[#7D2AE7]/15" />
           <div className="absolute -top-16 right-[-40px] h-80 w-80 rounded-full bg-[#00C4CC]/25 blur-3xl dark:bg-[#00C4CC]/15" />
           <div className="absolute top-72 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-[#2A89DA]/20 blur-3xl dark:bg-[#2A89DA]/10" />
-          <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#FE6F61]/25 blur-3xl dark:bg-[#FE6F61]/15" />
+          <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#7D2AE7]/20 blur-3xl dark:bg-[#7D2AE7]/10" />
         </div>
 
         <div className="w-full max-w-md rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8">
@@ -720,7 +720,7 @@ export default function OnboardingPage() {
           <p className="mt-4 rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">{error}</p>
         )}
         {saved && !error && (
-          <p className="mt-4 rounded-xl bg-[#E7FAF9] px-4 py-2.5 text-sm font-semibold text-[#00A6AC] dark:bg-white/5">
+          <p className="mt-4 rounded-xl bg-success-soft px-4 py-2.5 text-sm font-semibold text-success dark:bg-white/5">
             Modifications enregistrées.
           </p>
         )}
@@ -739,7 +739,7 @@ export default function OnboardingPage() {
               type="button"
               onClick={handlePrimaryAction}
               disabled={loading}
-              className="flex-1 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
+              className="flex-1 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-ledger-dark disabled:opacity-60"
             >
               {loading
                 ? mode === "wizard"
@@ -753,7 +753,7 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={goNext}
-              className="flex-1 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-stamp"
+              className="flex-1 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-ledger-dark"
             >
               Suivant
             </button>
