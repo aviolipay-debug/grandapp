@@ -413,7 +413,7 @@ export default function OnboardingPage() {
 
   if (mode === "loading") {
     return (
-      <div className="flex min-h-screen flex-col bg-[#F0F0F3] font-sans text-ink dark:bg-[#2F2F2F] dark:text-white">
+      <div className="flex min-h-screen flex-col bg-[#F0F0F3] font-sans md:pl-64 text-ink dark:bg-[#2F2F2F] dark:text-white">
         <LoadingOverlay show message="Chargement…" />
         <DashboardHeader />
         <main className="flex flex-1 items-center justify-center px-6 py-12 pb-24 md:pb-12">
@@ -426,7 +426,7 @@ export default function OnboardingPage() {
 
   // ---------- MODE "ASSISTANT" (première configuration) ----------
   return (
-    <div className="flex min-h-screen flex-col bg-[#F0F0F3] font-sans text-ink dark:bg-[#2F2F2F] dark:text-white">
+    <div className="flex min-h-screen flex-col bg-[#F0F0F3] font-sans md:pl-64 text-ink dark:bg-[#2F2F2F] dark:text-white">
       <LoadingOverlay
         show={loading}
         message={mode === "wizard" ? "Finalisation…" : "Enregistrement…"}
