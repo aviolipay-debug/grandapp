@@ -126,7 +126,7 @@ export default async function DashboardPage() {
               la marche à suivre et mène à la liste des clients. */}
           <Link
             href="/dashboard/quotes/new"
-            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl bg-ledger-deep px-5 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark"
+            className="hidden lg:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl bg-ledger-deep px-5 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark"
           >
             <Plus size={16} strokeWidth={2.5} />
             Nouveau devis
