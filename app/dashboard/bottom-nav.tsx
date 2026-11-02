@@ -53,6 +53,9 @@ export default function BottomNav() {
     pathname?.startsWith("/dashboard/clients") || pathname?.startsWith("/dashboard/quotes");
   const isProfil = pathname?.startsWith("/dashboard/profile") || pathname?.startsWith("/onboarding");
 
+  // Quand la fenêtre "Gestion" est ouverte, seul l'onglet Gestion est actif :
+  // les autres repassent en gris pour ne jamais afficher deux onglets actifs.
+
   // Ferme la popup en consommant l'entrée d'historique factice si elle existe,
   // sans naviguer ailleurs (utilisé pour le fond noir et le bouton Gestion).
   function closeGestion() {
@@ -118,7 +121,7 @@ export default function BottomNav() {
         <Link
           href="/dashboard"
           onClick={() => setGestionOpen(false)}
-          className={`${TAB_BASE} ${isHome ? TAB_ACTIVE : TAB_IDLE}`}
+          className={`${TAB_BASE} ${isHome && !gestionOpen ? TAB_ACTIVE : TAB_IDLE}`}
         >
           <Home size={20} />
           Accueil
@@ -126,7 +129,7 @@ export default function BottomNav() {
         <Link
           href="/dashboard/invoices"
           onClick={() => setGestionOpen(false)}
-          className={`${TAB_BASE} ${isFinance ? TAB_ACTIVE : TAB_IDLE}`}
+          className={`${TAB_BASE} ${isFinance && !gestionOpen ? TAB_ACTIVE : TAB_IDLE}`}
         >
           <Wallet size={20} />
           Finances
@@ -141,7 +144,7 @@ export default function BottomNav() {
         <Link
           href="/dashboard/profile"
           onClick={() => setGestionOpen(false)}
-          className={`${TAB_BASE} ${isProfil ? TAB_ACTIVE : TAB_IDLE}`}
+          className={`${TAB_BASE} ${isProfil && !gestionOpen ? TAB_ACTIVE : TAB_IDLE}`}
         >
           <UserCircle2 size={20} />
           Profil
