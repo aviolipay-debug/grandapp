@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Client } from "@/lib/types";
+import Spinner from "@/app/components/spinner";
 
 type LineItem = { description: string; quantity: string; unit_price: string };
 
@@ -430,8 +431,9 @@ function NewQuoteForm() {
           <button
             type="submit"
             disabled={loading || !clientId}
-            className="w-full rounded-lg bg-ledger-deep px-5 py-3 text-sm font-semibold text-paper hover:bg-ledger-dark disabled:opacity-60 sm:w-auto"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-ledger-deep px-5 py-3 text-sm font-semibold text-paper hover:bg-ledger-dark disabled:opacity-60 sm:w-auto"
           >
+            {loading && <Spinner />}
             {loading ? "Enregistrement..." : "Créer le devis"}
           </button>
         </div>
