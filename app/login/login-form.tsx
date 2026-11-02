@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import LoadingOverlay from "../components/loading-overlay";
+import Spinner from "@/app/components/spinner";
 import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
 
 export default function LoginForm() {
@@ -57,7 +58,7 @@ export default function LoginForm() {
 
   return (
     <>
-      <LoadingOverlay show={loading || googleLoading} message={loading ? "Connexion…" : "Connexion à Google…"} />
+      <LoadingOverlay show={googleLoading} message="Connexion à Google…" />
       {/* h-screen + justify-between : le logo reste en haut, le formulaire au
           milieu, le lien final en bas — l'espace libre se répartit tout
           autour au lieu d'être compressé, à la manière de la référence Payme,
@@ -135,8 +136,9 @@ export default function LoginForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-2 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-ledger-dark disabled:opacity-60"
+                className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-ledger-deep py-3.5 text-sm font-bold text-white transition-colors hover:bg-ledger-dark disabled:opacity-60"
               >
+                {loading && <Spinner />}
                 {loading ? "Connexion…" : "Se connecter"}
               </button>
             </form>
