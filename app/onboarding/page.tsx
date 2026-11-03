@@ -574,11 +574,11 @@ export default function OnboardingPage() {
               </div>
               {taxIds.map((t, i) => (
                 <div key={i}>
-                  <label className={labelClass}>Numéro d&apos;identification</label>
+                  <label className={labelClass}>N° IFU</label>
                   <input
                     value={t}
                     onChange={(e) => updateTaxId(i, e.target.value)}
-                    placeholder="N° d'identification"
+                    placeholder="N° IFU"
                     className={inputClass}
                   />
                 </div>
@@ -588,7 +588,7 @@ export default function OnboardingPage() {
                 onClick={() => setTaxIds((prev) => [...prev, ""])}
                 className={addBtnClass}
               >
-                + Ajouter un numéro d&apos;identification
+                + Ajouter un N° IFU
               </button>
             </div>
           </div>
