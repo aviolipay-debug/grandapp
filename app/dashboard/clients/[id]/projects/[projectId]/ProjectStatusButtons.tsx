@@ -138,7 +138,7 @@ export default function ProjectStatusButtons({
               <strong className="text-ink dark:text-white">En attente</strong> : le devis a été
               envoyé au client, aucun paiement n&apos;a encore été reçu.{" "}
               <strong className="text-ink dark:text-white">En cours</strong> : un acompte a été
-              reçu et le projet démarre — la Facture et le Bordereau de livraison sont générés
+              reçu et le projet démarre : la Facture et le Bordereau de livraison sont générés
               automatiquement.{" "}
               <strong className="text-ink dark:text-white">Terminé</strong> : le solde a été reçu
               et le projet est clôturé.
@@ -229,7 +229,7 @@ export default function ProjectStatusButtons({
                   className="w-full rounded-lg border border-paperline bg-white px-3 py-2.5 text-sm focus:border-ledger-deep focus:outline-none dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
                 />
                 {/* Dès qu'une facture existe (remainingDue non nul), on
-                    affiche le vrai restant dû — peu importe le bouton
+                    affiche le vrai restant dû : peu importe le bouton
                     cliqué. Le total du devis ne sert que tant qu'aucune
                     facture n'a encore été générée (tout premier passage à
                     "En cours"). */}
