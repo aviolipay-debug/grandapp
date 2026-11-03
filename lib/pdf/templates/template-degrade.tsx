@@ -2,6 +2,7 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import type { DocumentData } from "../types";
 import { fmt, nombreEnLettres } from "../format-helpers";
+import { buildLegalLine } from "../legal-footer";
 
 const BLACK = "#111111";
 const CORAL = "#F2A488";
@@ -60,6 +61,9 @@ const styles = StyleSheet.create({
   footerWrap: { alignItems: "center", marginTop: 40 },
   footerKicker: { fontSize: 11, fontFamily: "Helvetica-BoldOblique", marginBottom: -4 },
   footerMain: { fontSize: 16, fontFamily: "Helvetica-Bold", letterSpacing: 0.5 },
+
+  // Ligne légale (RCCM, N° d'identification), affichée seulement si renseignée
+  legalFooter: { position: "absolute", bottom: 18, left: 42, right: 42, fontSize: 7, color: "#4B4B4B", textAlign: "center" },
 });
 
 export default function TemplateDegrade({ data }: { data: DocumentData }) {
@@ -70,6 +74,7 @@ export default function TemplateDegrade({ data }: { data: DocumentData }) {
   const amountPaid = data.amountPaid ?? 0;
   const remainingDue = data.total - amountPaid;
   const amountWords = `${nombreEnLettres(data.total)} francs CFA`;
+  const legalLine = buildLegalLine(data);
 
   const dueDateLabel = data.kind === "Devis" ? "Date de validité" : "Date d'échéance";
   const showDueDate = data.kind !== "Facture";
@@ -90,7 +95,7 @@ export default function TemplateDegrade({ data }: { data: DocumentData }) {
             <Text style={styles.kicker}>La</Text>
             <Text style={styles.docType}>{data.kind.toUpperCase()}</Text>
             <Text style={styles.metaCenter}>
-              N° {data.number} — {data.issueDate}
+              N° {data.number} · {data.issueDate}
             </Text>
           </View>
 
@@ -188,6 +193,11 @@ export default function TemplateDegrade({ data }: { data: DocumentData }) {
             <Text style={styles.footerMain}>POUR VOTRE CONFIANCE</Text>
           </View>
         </View>
+        {legalLine && (
+          <Text style={styles.legalFooter} fixed>
+            {legalLine}
+          </Text>
+        )}
       </Page>
     </Document>
   );

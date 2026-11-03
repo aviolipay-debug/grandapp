@@ -2,6 +2,7 @@
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import type { DocumentData } from "../types";
 import { fmt, nombreEnLettres } from "../format-helpers";
+import { buildLegalLine } from "../legal-footer";
 
 const YELLOW = "#E9F23A";
 const BLACK = "#0E0E0E";
@@ -63,6 +64,9 @@ const styles = StyleSheet.create({
 
   legal: { fontSize: 7.5, color: "#4B4B4B", marginTop: 24, maxWidth: 340, lineHeight: 1.4 },
   bottomBar: { height: 12, backgroundColor: YELLOW, marginTop: 30, marginLeft: 220 },
+
+  // Ligne légale (RCCM, N° d'identification), affichée seulement si renseignée
+  legalFooter: { position: "absolute", bottom: 20, left: 46, right: 40, fontSize: 7, color: "#4B4B4B", textAlign: "left" },
 });
 
 // Convertisseur nombre -> lettres et formatage de montants : voir ../format-helpers.ts
@@ -75,6 +79,7 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
   const amountPaid = data.amountPaid ?? 0;
   const remainingDue = data.total - amountPaid;
   const amountWords = `${nombreEnLettres(data.total)} francs CFA`;
+  const legalLine = buildLegalLine(data);
 
   const dueDateLabel = data.kind === "Devis" ? "VALIDITÉ" : "ÉCHÉANCE";
   const showDueDate = data.kind !== "Facture"; // Échéance supprimée sur la Facture, gardée (renommée) sur le Bordereau
@@ -200,6 +205,11 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
         </View>
 
         <View style={styles.bottomBar} />
+        {legalLine && (
+          <Text style={styles.legalFooter} fixed>
+            {legalLine}
+          </Text>
+        )}
       </Page>
     </Document>
   );

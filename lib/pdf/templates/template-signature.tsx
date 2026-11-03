@@ -2,6 +2,7 @@
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import type { DocumentData } from "../types";
 import { fmt, nombreEnLettres } from "../format-helpers";
+import { buildLegalLine } from "../legal-footer";
 
 const SAGE = "#A9B48C";
 const PINK = "#F2C9D6";
@@ -65,13 +66,16 @@ const styles = StyleSheet.create({
 
   paiementLabel: { fontSize: 10, fontWeight: 700, marginTop: 40, marginBottom: 6 },
   paiementLine: { fontSize: 8.5, color: MUTED, marginBottom: 2 },
-  // Style dédié à la phrase du montant en lettres — taille augmentée (8.5 ->
+  // Style dédié à la phrase du montant en lettres, taille augmentée (8.5 ->
   // 10) et mot-clé en gras via un Text imbriqué, sans toucher à la taille de
   // la ligne "Titulaire" juste en dessous (qui garde paiementLine).
   amountInWords: { fontSize: 10, color: MUTED, marginBottom: 4 },
   amountInWordsBold: { fontWeight: 700 },
 
   bottomDecor: { textAlign: "center", marginTop: 24 },
+
+  // Ligne légale (RCCM, N° d'identification), affichée seulement si renseignée
+  legalFooter: { position: "absolute", bottom: 12, left: 32, right: 32, fontSize: 7, color: "#6B6B5E", textAlign: "center" },
 });
 
 export default function TemplateSignature({ data }: { data: DocumentData }) {
@@ -82,6 +86,7 @@ export default function TemplateSignature({ data }: { data: DocumentData }) {
   const amountPaid = data.amountPaid ?? 0;
   const remainingDue = data.total - amountPaid;
   const amountWords = `${nombreEnLettres(data.total)} francs CFA`;
+  const legalLine = buildLegalLine(data);
 
   const dueDateLabel = data.kind === "Devis" ? "Validité" : "Échéance";
   const showDueDate = data.kind !== "Facture";
@@ -89,7 +94,7 @@ export default function TemplateSignature({ data }: { data: DocumentData }) {
   const documentWord =
     data.kind === "Devis" ? "devis" : data.kind === "Bordereau" ? "bordereau de livraison" : "facture";
 
-  // Sans logo : le nom de l'entreprise est mis en scène comme une signature —
+  // Sans logo : le nom de l'entreprise est mis en scène comme une signature -
   // premier mot en italique (façon script), reste en gras majuscule.
   const nameParts = data.companyName.trim().split(/\s+/);
   const firstWord = nameParts[0] ?? data.companyName;
@@ -219,6 +224,7 @@ export default function TemplateSignature({ data }: { data: DocumentData }) {
           <Text style={styles.paiementLine}>Titulaire : {data.companyName}</Text>
 
           <Text style={styles.bottomDecor}>✳</Text>
+          {legalLine && <Text style={styles.legalFooter}>{legalLine}</Text>}
         </View>
       </Page>
     </Document>

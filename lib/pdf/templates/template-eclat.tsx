@@ -2,6 +2,7 @@
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import type { DocumentData } from "../types";
 import { fmt, nombreEnLettres } from "../format-helpers";
+import { buildLegalLine } from "../legal-footer";
 
 const ORANGE = "#D97A2E";
 const BLACK = "#111111";
@@ -75,6 +76,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   bottomBarText: { fontSize: 8, color: "#FFFFFF", textAlign: "center" },
+
+  // Ligne légale (RCCM, N° d'identification), affichée seulement si renseignée
+  legalFooter: { position: "absolute", bottom: 36, left: 48, right: 48, fontSize: 7, color: "#6B6B6B", textAlign: "center" },
 });
 
 export default function TemplateEclat({ data }: { data: DocumentData }) {
@@ -85,6 +89,7 @@ export default function TemplateEclat({ data }: { data: DocumentData }) {
   const amountPaid = data.amountPaid ?? 0;
   const remainingDue = data.total - amountPaid;
   const amountWords = `${nombreEnLettres(data.total)} francs CFA`;
+  const legalLine = buildLegalLine(data);
 
   const dueDateLabel = data.kind === "Devis" ? "Date de validité" : "Date de paiement";
   const showDueDate = data.kind !== "Facture";
@@ -201,6 +206,11 @@ export default function TemplateEclat({ data }: { data: DocumentData }) {
               {[data.companyPhone, data.companyAddress].filter(Boolean).join("  ·  ")}
             </Text>
           </View>
+        )}
+        {legalLine && (
+          <Text style={styles.legalFooter} fixed>
+            {legalLine}
+          </Text>
         )}
       </Page>
     </Document>

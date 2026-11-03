@@ -2,6 +2,7 @@
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import type { DocumentData } from "../types";
 import { fmt, nombreEnLettres } from "../format-helpers";
+import { buildLegalLine } from "../legal-footer";
 
 const BLUE = "#2A89DA";
 const BLUE_LIGHT = "#EAF3FC";
@@ -94,6 +95,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   footerText: { fontSize: 7.5, color: "#FFFFFF", fontWeight: 700 },
+
+  // Ligne légale (RCCM, N° d'identification), affichée seulement si renseignée
+  legalFooter: { position: "absolute", bottom: 32, left: 40, right: 40, fontSize: 7, color: "#4B4B4B", textAlign: "center" },
 });
 
 export default function TemplateChantier({ data }: { data: DocumentData }) {
@@ -104,6 +108,7 @@ export default function TemplateChantier({ data }: { data: DocumentData }) {
   const amountPaid = data.amountPaid ?? 0;
   const remainingDue = data.total - amountPaid;
   const amountWords = `${nombreEnLettres(data.total)} francs CFA`;
+  const legalLine = buildLegalLine(data);
 
   const dueDateLabel = data.kind === "Devis" ? "Validité" : "Échéance";
   const showDueDate = data.kind !== "Facture";
@@ -235,6 +240,11 @@ export default function TemplateChantier({ data }: { data: DocumentData }) {
         <View style={styles.footerBar}>
           <Text style={styles.footerText}>{data.companyName}</Text>
         </View>
+        {legalLine && (
+          <Text style={styles.legalFooter} fixed>
+            {legalLine}
+          </Text>
+        )}
       </Page>
     </Document>
   );
