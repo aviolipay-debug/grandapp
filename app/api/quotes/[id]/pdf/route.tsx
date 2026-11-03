@@ -4,7 +4,7 @@ import { formatDateFR } from "@/lib/format-date";
 import DocumentPDF from "@/lib/pdf/document";
 
 // Le PDF doit toujours refléter les données les plus récentes (client,
-// paiements, profil) — on désactive tout cache Next.js sur cette route.
+// paiements, profil), on désactive tout cache Next.js sur cette route.
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -42,7 +42,7 @@ export async function GET(
     : quote.profiles?.company_phone ?? null;
 
   // Numéro(s) d'identification : profiles.tax_ids est un tableau JSON de
-  // textes — on ne garde que les valeurs de type texte, les templates
+  // textes, on ne garde que les valeurs de type texte, les templates
   // ignorent ensuite les valeurs vides (voir lib/pdf/legal-footer.ts).
   const taxIds: string[] = Array.isArray(quote.profiles?.tax_ids)
     ? quote.profiles.tax_ids.filter((v: unknown): v is string => typeof v === "string")
@@ -88,7 +88,7 @@ export async function GET(
       "Content-Disposition": `inline; filename="${asciiFallback}.pdf"; filename*=UTF-8''${encodeURIComponent(filenameBase)}.pdf`,
       // En-têtes renforcés : Cache-Control seul est souvent ignoré par les
       // lecteurs PDF intégrés des navigateurs mobiles (Safari iOS, WebView
-      // Android) une fois le PDF ouvert "inline" — Pragma/Expires/Surrogate-
+      // Android) une fois le PDF ouvert "inline", Pragma/Expires/Surrogate-
       // Control couvrent les cas où ces navigateurs se rabattent sur un
       // comportement de cache plus ancien.
       "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
