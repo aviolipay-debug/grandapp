@@ -2,7 +2,7 @@
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import type { DocumentData } from "../types";
 import { fmt, nombreEnLettres } from "../format-helpers";
-import { buildLegalLine } from "../legal-footer";
+import { buildLegalParts } from "../legal-footer";
 
 const BLUE = "#2A89DA";
 const BLUE_LIGHT = "#EAF3FC";
@@ -97,7 +97,8 @@ const styles = StyleSheet.create({
   footerText: { fontSize: 7.5, color: "#FFFFFF", fontWeight: 700 },
 
   // Ligne légale (RCCM, N° d'identification), affichée seulement si renseignée
-  legalFooter: { position: "absolute", bottom: 32, left: 40, right: 40, fontSize: 7, color: "#4B4B4B", textAlign: "center" },
+  legalFooter: { position: "absolute", bottom: 36, left: 0, right: 0, flexDirection: "row", justifyContent: "center", gap: 28 },
+  legalItem: { fontSize: 9, fontWeight: 700, color: "#2B2B2B" },
 });
 
 export default function TemplateChantier({ data }: { data: DocumentData }) {
@@ -108,7 +109,7 @@ export default function TemplateChantier({ data }: { data: DocumentData }) {
   const amountPaid = data.amountPaid ?? 0;
   const remainingDue = data.total - amountPaid;
   const amountWords = `${nombreEnLettres(data.total)} francs CFA`;
-  const legalLine = buildLegalLine(data);
+  const legalParts = buildLegalParts(data);
 
   const dueDateLabel = data.kind === "Devis" ? "Validité" : "Échéance";
   const showDueDate = data.kind !== "Facture";
@@ -240,10 +241,12 @@ export default function TemplateChantier({ data }: { data: DocumentData }) {
         <View style={styles.footerBar}>
           <Text style={styles.footerText}>{data.companyName}</Text>
         </View>
-        {legalLine && (
-          <Text style={styles.legalFooter} fixed>
-            {legalLine}
-          </Text>
+        {legalParts.length > 0 && (
+          <View style={styles.legalFooter} fixed>
+            {legalParts.map((part, idx) => (
+              <Text key={idx} style={styles.legalItem}>{part}</Text>
+            ))}
+          </View>
         )}
       </Page>
     </Document>

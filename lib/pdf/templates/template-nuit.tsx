@@ -2,7 +2,7 @@
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import type { DocumentData } from "../types";
 import { fmt, nombreEnLettres } from "../format-helpers";
-import { buildLegalLine } from "../legal-footer";
+import { buildLegalParts } from "../legal-footer";
 
 const YELLOW = "#E9D547";
 const BG = "#1E1E1E";
@@ -60,7 +60,8 @@ const styles = StyleSheet.create({
   amountInWordsBold: { fontWeight: 700 },
 
   // Ligne légale (RCCM, N° d'identification), affichée seulement si renseignée
-  legalFooter: { position: "absolute", bottom: 18, left: 40, right: 40, fontSize: 7, color: "#BDBDBD", textAlign: "center" },
+  legalFooter: { position: "absolute", bottom: 20, left: 0, right: 0, flexDirection: "row", justifyContent: "center", gap: 28 },
+  legalItem: { fontSize: 9, fontWeight: 700, color: "#E5E5E5" },
 });
 
 export default function TemplateNuit({ data }: { data: DocumentData }) {
@@ -71,7 +72,7 @@ export default function TemplateNuit({ data }: { data: DocumentData }) {
   const amountPaid = data.amountPaid ?? 0;
   const remainingDue = data.total - amountPaid;
   const amountWords = `${nombreEnLettres(data.total)} francs CFA`;
-  const legalLine = buildLegalLine(data);
+  const legalParts = buildLegalParts(data);
 
   const dueDateLabel = data.kind === "Devis" ? "Validité" : "Échéance";
   const showDueDate = data.kind !== "Facture";
@@ -182,10 +183,12 @@ export default function TemplateNuit({ data }: { data: DocumentData }) {
           Arrêté le présent {documentWord} à la somme de{" "}
           <Text style={styles.amountInWordsBold}>{amountWords}</Text>
         </Text>
-        {legalLine && (
-          <Text style={styles.legalFooter} fixed>
-            {legalLine}
-          </Text>
+        {legalParts.length > 0 && (
+          <View style={styles.legalFooter} fixed>
+            {legalParts.map((part, idx) => (
+              <Text key={idx} style={styles.legalItem}>{part}</Text>
+            ))}
+          </View>
         )}
       </Page>
     </Document>

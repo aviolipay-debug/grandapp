@@ -2,7 +2,7 @@
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import type { DocumentData } from "../types";
 import { fmt, nombreEnLettres } from "../format-helpers";
-import { buildLegalLine } from "../legal-footer";
+import { buildLegalParts } from "../legal-footer";
 
 const YELLOW = "#F2C230";
 const PINK = "#E9C9F0";
@@ -98,7 +98,8 @@ const styles = StyleSheet.create({
   footer: { fontSize: 8.5, fontWeight: 700, marginTop: 30 },
 
   // Ligne légale (RCCM, N° d'identification), affichée seulement si renseignée
-  legalFooter: { position: "absolute", bottom: 20, left: 44, right: 44, fontSize: 7, color: "#4B4B4B", textAlign: "center" },
+  legalFooter: { position: "absolute", bottom: 20, left: 0, right: 0, flexDirection: "row", justifyContent: "center", gap: 28 },
+  legalItem: { fontSize: 9, fontWeight: 700, color: "#2B2B2B" },
 });
 
 export default function TemplateJovial({ data }: { data: DocumentData }) {
@@ -109,7 +110,7 @@ export default function TemplateJovial({ data }: { data: DocumentData }) {
   const amountPaid = data.amountPaid ?? 0;
   const remainingDue = data.total - amountPaid;
   const amountWords = `${nombreEnLettres(data.total)} francs CFA`;
-  const legalLine = buildLegalLine(data);
+  const legalParts = buildLegalParts(data);
 
   const dueDateLabel = data.kind === "Devis" ? "Validité" : "Échéance";
   const showDueDate = data.kind !== "Facture";
@@ -233,10 +234,12 @@ export default function TemplateJovial({ data }: { data: DocumentData }) {
         </View>
 
         {data.notes && <Text style={styles.footer}>{data.notes}</Text>}
-        {legalLine && (
-          <Text style={styles.legalFooter} fixed>
-            {legalLine}
-          </Text>
+        {legalParts.length > 0 && (
+          <View style={styles.legalFooter} fixed>
+            {legalParts.map((part, idx) => (
+              <Text key={idx} style={styles.legalItem}>{part}</Text>
+            ))}
+          </View>
         )}
       </Page>
     </Document>

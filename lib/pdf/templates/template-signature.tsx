@@ -2,7 +2,7 @@
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import type { DocumentData } from "../types";
 import { fmt, nombreEnLettres } from "../format-helpers";
-import { buildLegalLine } from "../legal-footer";
+import { buildLegalParts } from "../legal-footer";
 
 const SAGE = "#A9B48C";
 const PINK = "#F2C9D6";
@@ -75,7 +75,8 @@ const styles = StyleSheet.create({
   bottomDecor: { textAlign: "center", marginTop: 24 },
 
   // Ligne légale (RCCM, N° d'identification), affichée seulement si renseignée
-  legalFooter: { position: "absolute", bottom: 12, left: 32, right: 32, fontSize: 7, color: "#6B6B5E", textAlign: "center" },
+  legalFooter: { position: "absolute", bottom: 14, left: 0, right: 0, flexDirection: "row", justifyContent: "center", gap: 28 },
+  legalItem: { fontSize: 9, fontWeight: 700, color: "#2B2B22" },
 });
 
 export default function TemplateSignature({ data }: { data: DocumentData }) {
@@ -86,7 +87,7 @@ export default function TemplateSignature({ data }: { data: DocumentData }) {
   const amountPaid = data.amountPaid ?? 0;
   const remainingDue = data.total - amountPaid;
   const amountWords = `${nombreEnLettres(data.total)} francs CFA`;
-  const legalLine = buildLegalLine(data);
+  const legalParts = buildLegalParts(data);
 
   const dueDateLabel = data.kind === "Devis" ? "Validité" : "Échéance";
   const showDueDate = data.kind !== "Facture";
@@ -224,7 +225,13 @@ export default function TemplateSignature({ data }: { data: DocumentData }) {
           <Text style={styles.paiementLine}>Titulaire : {data.companyName}</Text>
 
           <Text style={styles.bottomDecor}>✳</Text>
-          {legalLine && <Text style={styles.legalFooter}>{legalLine}</Text>}
+          {legalParts.length > 0 && (
+            <View style={styles.legalFooter}>
+              {legalParts.map((part, i) => (
+                <Text key={i} style={styles.legalItem}>{part}</Text>
+              ))}
+            </View>
+          )}
         </View>
       </Page>
     </Document>

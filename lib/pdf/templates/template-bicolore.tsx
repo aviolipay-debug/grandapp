@@ -2,7 +2,7 @@
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import type { DocumentData } from "../types";
 import { fmt, nombreEnLettres } from "../format-helpers";
-import { buildLegalLine } from "../legal-footer";
+import { buildLegalParts } from "../legal-footer";
 
 const PURPLE = "#B9A6F0";
 const YELLOW = "#F2CA52";
@@ -72,7 +72,8 @@ const styles = StyleSheet.create({
   bottomBar: { backgroundColor: YELLOW, height: 26, marginTop: 30 },
 
   // Ligne légale (RCCM, N° d'identification), affichée seulement si renseignée
-  legalFooter: { position: "absolute", bottom: 8, left: 40, right: 40, fontSize: 7, color: "#1A1A1A", textAlign: "left" },
+  legalFooter: { position: "absolute", bottom: 12, left: 0, right: 0, flexDirection: "row", justifyContent: "center", gap: 28 },
+  legalItem: { fontSize: 9, fontWeight: 700, color: "#1A1A1A" },
 });
 
 export default function TemplateBicolore({ data }: { data: DocumentData }) {
@@ -83,7 +84,7 @@ export default function TemplateBicolore({ data }: { data: DocumentData }) {
   const amountPaid = data.amountPaid ?? 0;
   const remainingDue = data.total - amountPaid;
   const amountWords = `${nombreEnLettres(data.total)} francs CFA`;
-  const legalLine = buildLegalLine(data);
+  const legalParts = buildLegalParts(data);
 
   const dueDateLabel = data.kind === "Devis" ? "Validité du devis" : "Échéance";
   const showDueDate = data.kind !== "Facture";
@@ -205,10 +206,12 @@ export default function TemplateBicolore({ data }: { data: DocumentData }) {
         )}
 
         <View style={styles.bottomBar} />
-        {legalLine && (
-          <Text style={styles.legalFooter} fixed>
-            {legalLine}
-          </Text>
+        {legalParts.length > 0 && (
+          <View style={styles.legalFooter} fixed>
+            {legalParts.map((part, idx) => (
+              <Text key={idx} style={styles.legalItem}>{part}</Text>
+            ))}
+          </View>
         )}
       </Page>
     </Document>

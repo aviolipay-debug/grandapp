@@ -2,7 +2,7 @@
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import type { DocumentData } from "../types";
 import { fmt, nombreEnLettres } from "../format-helpers";
-import { buildLegalLine } from "../legal-footer";
+import { buildLegalParts } from "../legal-footer";
 
 const YELLOW = "#E9F23A";
 const BLACK = "#0E0E0E";
@@ -66,7 +66,8 @@ const styles = StyleSheet.create({
   bottomBar: { height: 12, backgroundColor: YELLOW, marginTop: 30, marginLeft: 220 },
 
   // Ligne légale (RCCM, N° d'identification), affichée seulement si renseignée
-  legalFooter: { position: "absolute", bottom: 20, left: 46, right: 40, fontSize: 7, color: "#4B4B4B", textAlign: "left" },
+  legalFooter: { position: "absolute", bottom: 20, left: 0, right: 0, flexDirection: "row", justifyContent: "center", gap: 28 },
+  legalItem: { fontSize: 9, fontWeight: 700, color: "#2B2B2B" },
 });
 
 // Convertisseur nombre -> lettres et formatage de montants : voir ../format-helpers.ts
@@ -79,7 +80,7 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
   const amountPaid = data.amountPaid ?? 0;
   const remainingDue = data.total - amountPaid;
   const amountWords = `${nombreEnLettres(data.total)} francs CFA`;
-  const legalLine = buildLegalLine(data);
+  const legalParts = buildLegalParts(data);
 
   const dueDateLabel = data.kind === "Devis" ? "VALIDITÉ" : "ÉCHÉANCE";
   const showDueDate = data.kind !== "Facture"; // Échéance supprimée sur la Facture, gardée (renommée) sur le Bordereau
@@ -205,10 +206,12 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
         </View>
 
         <View style={styles.bottomBar} />
-        {legalLine && (
-          <Text style={styles.legalFooter} fixed>
-            {legalLine}
-          </Text>
+        {legalParts.length > 0 && (
+          <View style={styles.legalFooter} fixed>
+            {legalParts.map((part, idx) => (
+              <Text key={idx} style={styles.legalItem}>{part}</Text>
+            ))}
+          </View>
         )}
       </Page>
     </Document>
