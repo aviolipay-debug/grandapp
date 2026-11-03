@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Building2, Lock, ShieldCheck, AlertTriangle, LogOut, Eye, EyeOff, ChevronDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { isValidPin } from "@/lib/pin";
+import Spinner from "@/app/components/spinner";
 import { setFinancePin, verifyOldFinancePin } from "./actions";
 
 const RESET_CONFIRM_WORD = "SUPPRIMER";
@@ -29,8 +30,8 @@ export default function ProfileForm({
   const [fullName] = useState(initialFullName);
   const [companyName] = useState(initialCompanyName);
 
-  // Code PIN de la page Finances — on ne connaît plus que son existence
-  // (booléen), jamais son hash : la vérification et la mise à jour se font
+  // Code PIN de la page Finances : on ne connaît plus que son existence
+  // (booléen), jamais son hash. La vérification et la mise à jour se font
   // entièrement côté serveur via la Server Action setFinancePin (./actions.ts).
   const [hasPin, setHasPin] = useState(initialHasPin);
   // pinStep ne concerne que la modification (hasPin=true) : "verify" affiche
@@ -43,7 +44,7 @@ export default function ProfileForm({
   const [pinSaved, setPinSaved] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
 
-  // Popup de code PIN — masqué par défaut, ouvert via le bouton.
+  // Popup de code PIN : masqué par défaut, ouvert via le bouton.
   const [showPinModal, setShowPinModal] = useState(false);
 
   function openPinModal() {
@@ -88,7 +89,7 @@ export default function ProfileForm({
 
     setPasswordSaving(true);
 
-    // On vérifie le mot de passe actuel en tentant une connexion avec —
+    // On vérifie le mot de passe actuel en tentant une connexion avec,
     // Supabase ne fournit pas de vérification directe sans ré-authentifier.
     const { error: verifyError } = await supabase.auth.signInWithPassword({
       email,
@@ -125,7 +126,7 @@ export default function ProfileForm({
     }, 900);
   }
 
-  // Réinitialisation du compte — supprime toutes les données métier
+  // Réinitialisation du compte : supprime toutes les données métier
   // (clients, projets, devis, factures, paiements) mais garde la
   // configuration du compte (profil, entreprise, PIN).
   const [showResetModal, setShowResetModal] = useState(false);
@@ -141,7 +142,7 @@ export default function ProfileForm({
 
   async function handleSignOut() {
     await supabase.auth.signOut();
-    router.push("/");
+    router.push("/login");
     router.refresh();
   }
 
@@ -244,7 +245,7 @@ export default function ProfileForm({
       return;
     }
 
-    // Le code PIN est aussi effacé — un nouveau devra être défini.
+    // Le code PIN est aussi effacé : un nouveau devra être défini.
     const { error: pinResetError } = await supabase
       .from("profiles")
       .update({ finance_pin_hash: null })
@@ -304,7 +305,7 @@ export default function ProfileForm({
     setPinSaving(true);
 
     // oldPin n'est transmis que pour une modification (déjà validé à
-    // l'étape précédente) — le serveur le revérifie quand même avant
+    // l'étape précédente). Le serveur le revérifie quand même avant
     // d'enregistrer. Voir app/dashboard/profile/actions.ts.
     const result = await setFinancePin(hasPin ? { oldPin, newPin } : { newPin });
 
@@ -334,6 +335,13 @@ export default function ProfileForm({
 
   const labelClass = "mb-1.5 block text-sm font-semibold text-ink dark:text-white";
 
+  // Classes communes des boutons principaux (violet de marque, avec cercle
+  // de chargement à gauche du texte).
+  const primaryBtn =
+    "flex flex-1 items-center justify-center gap-2 rounded-xl bg-ledger-deep py-3 text-sm font-bold text-white transition-colors hover:bg-ledger-dark disabled:opacity-60";
+  const secondaryBtn =
+    "flex-1 rounded-xl border border-paperline py-3 text-sm font-semibold text-ink hover:bg-paper disabled:opacity-60 dark:border-white/10 dark:text-white dark:hover:bg-white/5";
+
   // Champ classique (texte simple) plutôt qu'un style "4 cases + input
   // caché" : un champ visible reçoit le focus natif immédiatement, sans le
   // léger délai d'ouverture du clavier observé sur mobile avec un input de
@@ -355,7 +363,7 @@ export default function ProfileForm({
         value={value}
         onChange={(e) => setValue(e.target.value.replace(/\D/g, "").slice(0, 4))}
         placeholder="••••"
-        className={`w-full rounded-xl border bg-[#F7F7FB] px-4 py-3 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-ledger dark:bg-[#2F2F2F] dark:text-white ${
+        className={`w-full rounded-xl border bg-paper px-4 py-3 text-center text-lg tracking-[0.5em] text-ink outline-none transition-colors focus:border-ledger dark:bg-[#2F2F2F] dark:text-white ${
           hasError ? "border-stamp" : "border-paperline dark:border-white/10"
         }`}
       />
@@ -372,7 +380,7 @@ export default function ProfileForm({
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
             placeholder="••••••••"
-            className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+            className="w-full rounded-xl border border-paperline bg-paper px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
           />
           <button
             type="button"
@@ -394,7 +402,7 @@ export default function ProfileForm({
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             placeholder="••••••••"
-            className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+            className="w-full rounded-xl border border-paperline bg-paper px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
           />
           <button
             type="button"
@@ -416,7 +424,7 @@ export default function ProfileForm({
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="••••••••"
-            className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+            className="w-full rounded-xl border border-paperline bg-paper px-4 py-3 pr-11 text-sm text-ink outline-none transition-colors focus:border-ledger dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
           />
           <button
             type="button"
@@ -433,7 +441,7 @@ export default function ProfileForm({
         <p className="rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">{passwordError}</p>
       )}
       {passwordSaved && !passwordError && (
-        <p className="rounded-xl bg-[#E7FAF9] px-4 py-2.5 text-sm font-semibold text-[#00A6AC] dark:bg-white/5">
+        <p className="rounded-xl bg-success-soft px-4 py-2.5 text-sm font-semibold text-success dark:bg-white/5">
           Mot de passe mis à jour.
         </p>
       )}
@@ -446,46 +454,46 @@ export default function ProfileForm({
 
       {/* Carte unique : identité, profil entreprise, sécurité PIN, mot de passe */}
       <div className="divide-y divide-paperline rounded-2xl border border-paperline bg-white dark:divide-white/10 dark:border-white/10 dark:bg-[#262626]">
-        {/* Identité — le nom affiché est celui de l'entreprise */}
+        {/* Identité : le nom affiché est celui de l'entreprise */}
         <div className="flex items-center gap-4 p-5">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#E9F23A] text-xl font-bold text-ink">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-ledger-deep text-xl font-bold text-white">
             {initial}
           </div>
           <div className="min-w-0">
             <p className="truncate font-display text-lg font-bold text-ink dark:text-white">
               {companyName || fullName || "Utilisateur"}
             </p>
-            <p className="truncate text-sm text-[#6B7280] dark:text-white/50">{email}</p>
+            <p className="truncate text-sm text-muted dark:text-white/50">{email}</p>
           </div>
         </div>
 
         {/* Profil de l'entreprise (assistant existant) */}
         <Link
           href="/onboarding"
-          className="flex items-center justify-between p-5 transition-colors hover:bg-[#F7F7FB] dark:hover:bg-white/5"
+          className="flex items-center justify-between p-5 transition-colors hover:bg-paper dark:hover:bg-white/5"
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-info-soft text-info dark:bg-white/10 dark:text-white">
               <Building2 size={18} />
             </div>
             <div>
               <p className="text-sm font-semibold text-ink dark:text-white">Profil de l&apos;entreprise</p>
-              <p className="text-xs text-[#6B7280] dark:text-white/50">
+              <p className="text-xs text-muted dark:text-white/50">
                 Nom, secteur, logo, modèle de facture…
               </p>
             </div>
           </div>
         </Link>
 
-        {/* Code PIN de la page Finances — bouton discret, la saisie se fait en popup */}
+        {/* Code PIN de la page Finances : bouton discret, la saisie se fait en popup */}
         <div className="flex items-center justify-between p-5 sm:p-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F3EEFC] text-[#5B21B6] dark:bg-white/10">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ledger-soft text-ledger-deep dark:bg-white/10 dark:text-ledger-light">
               <ShieldCheck size={18} />
             </div>
             <div>
-              <p className="text-sm font-semibold text-ink dark:text-white">Sécurité — Finances</p>
-              <p className="text-xs text-[#6B7280] dark:text-white/50">
+              <p className="text-sm font-semibold text-ink dark:text-white">Sécurité : Finances</p>
+              <p className="text-xs text-muted dark:text-white/50">
                 {hasPin ? "Code PIN activé" : "Aucun code PIN défini"}
               </p>
             </div>
@@ -493,7 +501,7 @@ export default function ProfileForm({
           <button
             type="button"
             onClick={openPinModal}
-            className="shrink-0 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-white hover:bg-stamp"
+            className="shrink-0 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark"
           >
             {hasPin ? (
               "Modifier"
@@ -506,7 +514,7 @@ export default function ProfileForm({
           </button>
         </div>
 
-        {/* Mot de passe — menu déroulant inline (même comportement desktop et mobile) */}
+        {/* Mot de passe : menu déroulant inline (même comportement desktop et mobile) */}
         <div>
           <button
             type="button"
@@ -514,14 +522,14 @@ export default function ProfileForm({
             className="flex w-full items-center justify-between p-5 sm:p-6"
           >
             <span className="flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-info-soft text-info dark:bg-white/10 dark:text-white">
                 <Lock size={18} />
               </span>
               <span className="text-left">
                 <span className="block text-sm font-semibold text-ink dark:text-white">
                   Mot de passe
                 </span>
-                <span className="hidden text-xs text-[#6B7280] dark:text-white/50 sm:block">
+                <span className="hidden text-xs text-muted dark:text-white/50 sm:block">
                   Dernière modification non affichée
                 </span>
               </span>
@@ -545,15 +553,12 @@ export default function ProfileForm({
                 <button
                   type="button"
                   onClick={() => setShowPasswordMobileOpen(false)}
-                  className="flex-1 rounded-xl border border-paperline py-3 text-sm font-semibold text-ink hover:bg-[#F7F7FB] dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+                  className={secondaryBtn}
                 >
                   Fermer
                 </button>
-                <button
-                  type="submit"
-                  disabled={passwordSaving}
-                  className="flex-1 rounded-xl bg-ledger-deep py-3 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
-                >
+                <button type="submit" disabled={passwordSaving} className={primaryBtn}>
+                  {passwordSaving && <Spinner size={16} />}
                   {passwordSaving ? "Enregistrement…" : "Enregistrer"}
                 </button>
               </div>
@@ -566,7 +571,7 @@ export default function ProfileForm({
       <button
         type="button"
         onClick={handleSignOut}
-        className="flex items-center justify-center gap-2 rounded-xl border border-paperline py-3.5 text-sm font-semibold text-ink transition-colors hover:bg-[#F7F7FB] dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+        className="flex items-center justify-center gap-2 rounded-xl border border-paperline py-3.5 text-sm font-semibold text-ink transition-colors hover:bg-paper dark:border-white/10 dark:text-white dark:hover:bg-white/5"
       >
         <LogOut size={16} />
         Se déconnecter
@@ -586,7 +591,7 @@ export default function ProfileForm({
       {showPinModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
-          onClick={() => setShowPinModal(false)}
+          onClick={() => !pinSaving && setShowPinModal(false)}
         >
           {hasPin && pinStep === "verify" ? (
             // Modification, étape 1 : valider l'ancien code (ou le code de
@@ -596,11 +601,11 @@ export default function ProfileForm({
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-sm rounded-2xl border border-paperline bg-white p-6 dark:border-white/10 dark:bg-[#262626] sm:p-7"
             >
-              <h2 className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#6B7280] dark:text-white/50">
+              <h2 className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ledger-deep dark:text-ledger-light">
                 <ShieldCheck size={14} />
-                Sécurité — Finances
+                Sécurité : Finances
               </h2>
-              <p className="mb-5 text-sm text-[#6B7280] dark:text-white/50">
+              <p className="mb-5 text-sm text-muted dark:text-white/50">
                 Entrez votre code actuel (ou le code de secours) pour continuer.
               </p>
 
@@ -618,15 +623,13 @@ export default function ProfileForm({
                   <button
                     type="button"
                     onClick={() => setShowPinModal(false)}
-                    className="flex-1 rounded-xl border border-paperline py-3 text-sm font-semibold text-ink hover:bg-[#F7F7FB] dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+                    disabled={pinSaving}
+                    className={secondaryBtn}
                   >
                     Annuler
                   </button>
-                  <button
-                    type="submit"
-                    disabled={pinSaving}
-                    className="flex-1 rounded-xl bg-ledger-deep py-3 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
-                  >
+                  <button type="submit" disabled={pinSaving} className={primaryBtn}>
+                    {pinSaving && <Spinner size={16} />}
                     {pinSaving ? "Vérification…" : "Valider"}
                   </button>
                 </div>
@@ -640,11 +643,11 @@ export default function ProfileForm({
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-sm rounded-2xl border border-paperline bg-white p-6 dark:border-white/10 dark:bg-[#262626] sm:p-7"
             >
-              <h2 className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#6B7280] dark:text-white/50">
+              <h2 className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ledger-deep dark:text-ledger-light">
                 <ShieldCheck size={14} />
-                Sécurité — Finances
+                Sécurité : Finances
               </h2>
-              <p className="mb-5 text-sm text-[#6B7280] dark:text-white/50">
+              <p className="mb-5 text-sm text-muted dark:text-white/50">
                 {hasPin
                   ? "Choisissez votre nouveau code à 4 chiffres."
                   : "Définissez un code à 4 chiffres demandé à chaque ouverture de la page Finances."}
@@ -669,7 +672,7 @@ export default function ProfileForm({
                   <p className="rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">{pinError}</p>
                 )}
                 {pinSaved && !pinError && (
-                  <p className="rounded-xl bg-[#E7FAF9] px-4 py-2.5 text-sm font-semibold text-[#00A6AC] dark:bg-white/5">
+                  <p className="rounded-xl bg-success-soft px-4 py-2.5 text-sm font-semibold text-success dark:bg-white/5">
                     Code PIN enregistré.
                   </p>
                 )}
@@ -678,15 +681,13 @@ export default function ProfileForm({
                   <button
                     type="button"
                     onClick={() => (hasPin ? setPinStep("verify") : setShowPinModal(false))}
-                    className="flex-1 rounded-xl border border-paperline py-3 text-sm font-semibold text-ink hover:bg-[#F7F7FB] dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+                    disabled={pinSaving}
+                    className={secondaryBtn}
                   >
                     {hasPin ? "Retour" : "Annuler"}
                   </button>
-                  <button
-                    type="submit"
-                    disabled={pinSaving}
-                    className="flex-1 rounded-xl bg-ledger-deep py-3 text-sm font-bold text-white transition-colors hover:bg-stamp disabled:opacity-60"
-                  >
+                  <button type="submit" disabled={pinSaving} className={primaryBtn}>
+                    {pinSaving && <Spinner size={16} />}
                     {pinSaving ? "Enregistrement…" : "Enregistrer"}
                   </button>
                 </div>
@@ -696,7 +697,7 @@ export default function ProfileForm({
         </div>
       )}
 
-      {/* Popup d'avertissement — réinitialisation du compte */}
+      {/* Popup d'avertissement : réinitialisation du compte */}
       {showResetModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
@@ -712,7 +713,7 @@ export default function ProfileForm({
             <h2 className="text-center font-display text-lg font-bold text-ink dark:text-white">
               Réinitialiser le compte ?
             </h2>
-            <p className="mt-2 text-center text-sm text-[#6B7280] dark:text-white/50">
+            <p className="mt-2 text-center text-sm text-muted dark:text-white/50">
               Tous vos clients, projets, devis, factures et paiements seront{" "}
               <span className="font-semibold text-stamp">définitivement supprimés</span>, ainsi
               que votre code PIN (à redéfinir ensuite). Votre profil et votre entreprise
@@ -731,7 +732,7 @@ export default function ProfileForm({
                 placeholder={RESET_CONFIRM_WORD}
                 autoFocus
                 disabled={resetLoading}
-                className="w-full rounded-xl border border-paperline bg-[#F7F7FB] px-4 py-3 text-center text-sm uppercase tracking-widest text-ink outline-none transition-colors focus:border-stamp dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
+                className="w-full rounded-xl border border-paperline bg-paper px-4 py-3 text-center text-sm uppercase tracking-widest text-ink outline-none transition-colors focus:border-stamp dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
               />
             </div>
 
@@ -746,7 +747,7 @@ export default function ProfileForm({
                 type="button"
                 onClick={() => setShowResetModal(false)}
                 disabled={resetLoading}
-                className="flex-1 rounded-xl border border-paperline py-3 text-sm font-semibold text-ink hover:bg-[#F7F7FB] disabled:opacity-60 dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+                className={secondaryBtn}
               >
                 Annuler
               </button>
@@ -754,8 +755,9 @@ export default function ProfileForm({
                 type="button"
                 onClick={handleResetAccount}
                 disabled={resetLoading}
-                className="flex-1 rounded-xl bg-stamp py-3 text-sm font-bold text-white transition-colors hover:bg-stamp/90 disabled:opacity-60"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-stamp py-3 text-sm font-bold text-white transition-colors hover:bg-stamp/90 disabled:opacity-60"
               >
+                {resetLoading && <Spinner size={16} />}
                 {resetLoading ? "Suppression…" : "Tout supprimer"}
               </button>
             </div>
