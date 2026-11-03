@@ -17,10 +17,19 @@ export default function NewClientPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Formate le numéro à la volée avec un espace tous les 2 chiffres
-  // (ex: "01 66 08 13 51"), comme pour le Contact primaire dans l'onboarding.
+  // Numéro local : espace tous les 2 chiffres (ex: "01 66 08 13 51"), comme pour
+  // le Contact primaire dans l'onboarding.
+  // Numéro international (commence par "+"), par exemple "+229 01 66 08 13 51" :
+  // le "+" est conservé et la saisie est laissée libre (chiffres et espaces),
+  // car l'indicatif pays n'a pas toujours la même longueur.
   function handlePhoneChange(value: string) {
-    const formatted = value.replace(/\D/g, "").replace(/(\d{2})(?=\d)/g, "$1 ");
+    let formatted: string;
+    if (value.trim().startsWith("+")) {
+      const rest = value.replace(/[^\d ]/g, "").replace(/ {2,}/g, " ").replace(/^ /, "");
+      formatted = "+" + rest;
+    } else {
+      formatted = value.replace(/\D/g, "").replace(/(\d{2})(?=\d)/g, "$1 ");
+    }
     setForm((prev) => ({ ...prev, phone: formatted }));
   }
 
