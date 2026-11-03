@@ -56,7 +56,7 @@ function NewQuoteForm() {
       });
   }, [supabase]);
 
-  // Le nom du projet sert directement d'"objet" du devis — plus besoin de le saisir.
+  // Le nom du projet sert directement d'"objet" du devis, plus besoin de le saisir.
   useEffect(() => {
     if (!projectId) {
       setProjectName(null);
@@ -99,7 +99,7 @@ function NewQuoteForm() {
     setItems((prev) => prev.filter((_, i) => i !== index));
   }
 
-  // Un devis doit toujours être créé depuis un projet — pas d'accès direct.
+  // Un devis doit toujours être créé depuis un projet, pas d'accès direct.
   if (!projectId) {
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center sm:px-0">
@@ -108,7 +108,7 @@ function NewQuoteForm() {
         </h1>
         <p className="mt-2 text-sm text-[#6B7280] dark:text-white/60">
           Pour créer un devis, ouvrez la fiche du client concerné, choisissez
-          (ou créez) le projet, puis lancez le devis depuis là — l&apos;objet
+          (ou créez) le projet, puis lancez le devis depuis là : l&apos;objet
           du devis reprend automatiquement le nom du projet.
         </p>
         <Link
@@ -240,7 +240,7 @@ function NewQuoteForm() {
               </p>
             ) : (
               <p className="text-xs text-[#6B7280] dark:text-white/50">
-                Ce devis n&apos;est rattaché à aucun projet — l&apos;objet sera vide.
+                Ce devis n&apos;est rattaché à aucun projet : l&apos;objet sera vide.
               </p>
             )}
           </div>
