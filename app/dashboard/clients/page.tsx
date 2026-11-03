@@ -17,7 +17,7 @@ export default async function ClientsPage() {
         <h1 className="font-display text-2xl font-bold text-ink dark:text-white">Vos Clients</h1>
         <Link
           href="/dashboard/clients/new"
-          className="rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
+          className="rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark"
         >
           Nouveau client
         </Link>
@@ -39,7 +39,7 @@ export default async function ClientsPage() {
                   href={`/dashboard/clients/${c.id}`}
                   className="flex min-w-0 flex-1 items-center gap-3 py-4"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#2A89DA] dark:bg-white/10">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ledger-soft text-ledger-deep dark:bg-ledger-light/15 dark:text-ledger-light">
                     {c.type === "entreprise" ? <Building2 size={18} /> : <User size={18} />}
                   </div>
 
@@ -53,7 +53,7 @@ export default async function ClientsPage() {
                       )}
                     </div>
                     <p className="mt-1 truncate text-sm text-[#6B7280] dark:text-white/50">
-                      {c.email ?? "—"}
+                      {c.email ?? "-"}
                       {c.phone ? ` · ${c.phone}` : ""}
                     </p>
                   </div>
@@ -68,4 +68,3 @@ export default async function ClientsPage() {
     </div>
   );
 }
-
