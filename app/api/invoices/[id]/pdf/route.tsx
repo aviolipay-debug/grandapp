@@ -4,7 +4,7 @@ import { formatDateFR } from "@/lib/format-date";
 import DocumentPDF from "@/lib/pdf/document";
 
 // Le PDF doit toujours refléter les données les plus récentes (client,
-// paiements, profil) — on désactive tout cache Next.js sur cette route.
+// paiements, profil), on désactive tout cache Next.js sur cette route.
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -44,7 +44,7 @@ export async function GET(
     : invoice.profiles?.company_phone ?? null;
 
   // Numéro(s) d'identification : profiles.tax_ids est un tableau JSON de
-  // textes — on ne garde que les valeurs de type texte, les templates
+  // textes, on ne garde que les valeurs de type texte, les templates
   // ignorent ensuite les valeurs vides (voir lib/pdf/legal-footer.ts).
   const taxIds: string[] = Array.isArray(invoice.profiles?.tax_ids)
     ? invoice.profiles.tax_ids.filter((v: unknown): v is string => typeof v === "string")
@@ -58,7 +58,7 @@ export async function GET(
         number: invoice.invoice_number,
         objet: invoice.objet ?? null,
         // Date affichée = la vraie date de création de ce document
-        // (created_at), pas invoice.issue_date — ce dernier est copié depuis
+        // (created_at), pas invoice.issue_date, ce dernier est copié depuis
         // le devis d'origine au moment de la génération automatique de la
         // facture/bordereau, et affichait donc à tort la date du devis.
         issueDate: formatDateFR(invoice.created_at),
