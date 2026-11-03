@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/client"; // adapte le chemin si bes
 import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
 import LoadingOverlay from "../components/loading-overlay";
 
-// Pages principales du compte — préchargées dès l'arrivée sur le dashboard
+// Pages principales du compte, préchargées dès l'arrivée sur le dashboard
 // (connexion, inscription, ou retour de Google) pour que la navigation entre
 // elles soit quasi instantanée ensuite.
 //
@@ -19,7 +19,7 @@ import LoadingOverlay from "../components/loading-overlay";
 // cookie de sécurité à chaque requête via cookies()), donc un prefetch()
 // déclenche une vraie exécution serveur (authentification + requête Supabase)
 // à chaque fois que ce header est monté, sans aucun gain réel pour
-// l'utilisateur — ça ne faisait qu'ajouter des appels Supabase inutiles à
+// l'utilisateur, ça ne faisait qu'ajouter des appels Supabase inutiles à
 // chaque navigation dans le dashboard.
 const MAIN_ROUTES = [
   "/dashboard",
@@ -66,7 +66,7 @@ export default function DashboardHeader() {
   const supabase = createClient();
   const [isProfileNavPending, startProfileNav] = useTransition();
 
-  // Précharge le contenu des pages principales dès que ce header est monté —
+  // Précharge le contenu des pages principales dès que ce header est monté -
   // c'est-à-dire dès que l'utilisateur arrive sur une page du dashboard,
   // quel que soit le point d'entrée (connexion, inscription, OAuth).
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function DashboardHeader() {
   }, [router]);
 
   // isProfileNavPending reste vrai jusqu'à ce que React ait fini de préparer
-  // la page /dashboard/profile — contrairement à usePathname, qui change dès
+  // la page /dashboard/profile, contrairement à usePathname, qui change dès
   // le début de la navigation, avant que la nouvelle page soit prête.
   function handleProfileClick(e: React.MouseEvent<HTMLAnchorElement>) {
     e.preventDefault();
@@ -118,7 +118,7 @@ export default function DashboardHeader() {
         </div>
       </header>
 
-      {/* Menu latéral sombre (ordinateur) — fixe à gauche, largeur 16rem.
+      {/* Menu latéral sombre (ordinateur), fixe à gauche, largeur 16rem.
           Les pages qui l'affichent doivent avoir "md:pl-64" sur leur conteneur. */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col justify-between bg-[#181818] px-5 py-7 text-white md:flex">
         <div className="flex flex-col gap-8">
