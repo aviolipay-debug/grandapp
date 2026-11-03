@@ -60,7 +60,7 @@ export default function LoginForm() {
     <>
       <LoadingOverlay show={googleLoading} message="Connexion à Google…" />
       {/* h-screen + justify-between : le logo reste en haut, le formulaire au
-          milieu, le lien final en bas — l'espace libre se répartit tout
+          milieu, le lien final en bas, l'espace libre se répartit tout
           autour au lieu d'être compressé, à la manière de la référence Payme,
           mais avec les couleurs propres à Devisfinance. */}
       <main className="relative isolate flex h-[100dvh] flex-col items-center overflow-hidden bg-[#F0F0F3] px-6 py-8 dark:bg-[#2F2F2F]">
