@@ -22,7 +22,7 @@ function ResetPasswordConfirmInner() {
   const [done, setDone] = useState(false);
 
   // La session de récupération a déjà été établie côté serveur par
-  // /auth/callback (cookies) avant d'arriver ici — on vérifie juste qu'elle
+  // /auth/callback (cookies) avant d'arriver ici, on vérifie juste qu'elle
   // existe, sans refaire l'échange nous-mêmes (ce qui échouait auparavant :
   // le "code verifier" PKCE n'est pas partagé entre un échange serveur et un
   // échange client, d'où l'erreur "PKCE code verifier not found in storage").
@@ -55,7 +55,7 @@ function ResetPasswordConfirmInner() {
     setLoading(true);
 
     // Le lien reçu par email a déjà ouvert une session de récupération
-    // temporaire — pas besoin de redemander l'ancien mot de passe ici.
+    // temporaire, pas besoin de redemander l'ancien mot de passe ici.
     const { error: updateError } = await supabase.auth.updateUser({
       password: newPassword,
     });
