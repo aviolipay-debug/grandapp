@@ -18,7 +18,7 @@ export default function BottomNav() {
   const [gestionOpen, setGestionOpen] = useState(false);
   const pushedHistoryRef = useRef(false);
 
-  // Ferme automatiquement la popup Gestion à chaque changement de page —
+  // Ferme automatiquement la popup Gestion à chaque changement de page -
   // sinon elle reste affichée si on quitte la page autrement qu'en cliquant
   // sur "Clients"/"Devis" à l'intérieur (autre lien, etc.).
   useEffect(() => {
