@@ -4,11 +4,16 @@
 import { useRef, useState, useTransition } from "react";
 import { HelpCircle } from "lucide-react";
 import { updateProjectStatus, updateProjectStatusWithPayment } from "./actions";
+import Spinner from "@/app/components/spinner";
 
-const projectStatusOptions: { value: "en_cours" | "attente" | "termine"; label: string }[] = [
-  { value: "attente", label: "En attente" },
-  { value: "en_cours", label: "En cours" },
-  { value: "termine", label: "Terminé" },
+const projectStatusOptions: {
+  value: "en_cours" | "attente" | "termine";
+  label: string;
+  active: string; // style du bouton quand ce statut est le statut actuel
+}[] = [
+  { value: "attente", label: "En attente", active: "border-[#9A5200] bg-[#9A5200] text-white" },
+  { value: "en_cours", label: "En cours", active: "border-[#1D5799] bg-[#1D5799] text-white" },
+  { value: "termine", label: "Terminé", active: "border-[#0F7B4B] bg-[#0F7B4B] text-white" },
 ];
 
 export default function ProjectStatusButtons({
@@ -33,10 +38,8 @@ export default function ProjectStatusButtons({
   const [showHelp, setShowHelp] = useState(false);
   const [submittedPaymentId, setSubmittedPaymentId] = useState<string | null>(null);
   // Empêche un double-clic sur "Enregistrer" de créer deux paiements/reçus
-  // par accident : le popup reste ouvert le temps de l'appel serveur, avec
-  // un indicateur DANS le popup lui-même (pas un overlay séparé — un overlay
-  // séparé resterait invisible, caché derrière ce popup qui reste ouvert
-  // pendant toute la durée de l'enregistrement).
+  // par accident : le popup reste ouvert le temps de l'appel serveur, et le
+  // bouton "Enregistrer" affiche un cercle qui tourne pendant ce temps.
   const [paymentSaving, setPaymentSaving] = useState(false);
   // Garde synchrone : contrairement au state React (qui n'a d'effet qu'après
   // un nouveau rendu), un ref est lu/écrit immédiatement. Si les deux clics
@@ -107,8 +110,8 @@ export default function ProjectStatusButtons({
             onClick={() => handleClick(opt.value)}
             className={`rounded-full border px-4 py-1.5 text-xs font-semibold ${
               currentStatus === opt.value
-                ? "border-[#00A6AC] bg-[#00A6AC] text-white"
-                : "border-paperline bg-white text-[#4B5563] hover:border-[#00A6AC] dark:border-white/15 dark:bg-transparent dark:text-white/60"
+                ? opt.active
+                : "border-paperline bg-white text-[#4B5563] hover:border-ledger-deep dark:border-white/15 dark:bg-transparent dark:text-white/60"
             }`}
           >
             {opt.label}
@@ -119,7 +122,7 @@ export default function ProjectStatusButtons({
           type="button"
           onClick={() => setShowHelp(true)}
           aria-label="Comment fonctionnent les statuts de projet"
-          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-paperline text-[#6B7280] hover:border-[#00A6AC] hover:text-[#00A6AC] dark:border-white/15 dark:text-white/40"
+          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-paperline text-[#6B7280] hover:border-ledger-deep hover:text-ledger-deep dark:border-white/15 dark:text-white/40"
         >
           <HelpCircle size={13} strokeWidth={2} />
         </button>
@@ -143,7 +146,7 @@ export default function ProjectStatusButtons({
             <button
               type="button"
               onClick={() => setShowHelp(false)}
-              className="mt-5 w-full rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
+              className="mt-5 w-full rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-ledger-dark"
             >
               Compris
             </button>
@@ -164,7 +167,7 @@ export default function ProjectStatusButtons({
               href={`/api/payments/${submittedPaymentId}/pdf`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 block w-full rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
+              className="mt-5 block w-full rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-ledger-dark"
             >
               Télécharger le reçu
             </a>
@@ -188,7 +191,7 @@ export default function ProjectStatusButtons({
             <button
               type="button"
               onClick={closeNoQuoteAlert}
-              className="mt-5 w-full rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
+              className="mt-5 w-full rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-ledger-dark"
             >
               Fermer
             </button>
@@ -199,18 +202,6 @@ export default function ProjectStatusButtons({
       {modalStatus && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 dark:bg-[#262626]">
-            {/* Indicateur de chargement DANS le popup — visible même si le
-                popup reste ouvert pendant tout l'enregistrement, contrairement
-                à un overlay séparé qui resterait caché derrière lui. */}
-            {paymentSaving && (
-              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-2xl bg-white/95 dark:bg-[#262626]/95">
-                <span className="h-9 w-9 animate-spin rounded-full border-[3px] border-ledger-deep border-t-transparent" />
-                <p className="text-sm font-semibold text-ink dark:text-white">
-                  Enregistrement du paiement…
-                </p>
-              </div>
-            )}
-
             <h2 className="font-display text-lg font-semibold text-ink dark:text-white">
               Enregistrer un paiement
             </h2>
@@ -285,8 +276,9 @@ export default function ProjectStatusButtons({
                 <button
                   type="submit"
                   disabled={paymentSaving}
-                  className="flex-1 rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp disabled:opacity-60"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-ledger-dark disabled:opacity-60"
                 >
+                  {paymentSaving && <Spinner size={16} />}
                   {paymentSaving ? "Enregistrement…" : "Enregistrer"}
                 </button>
               </div>
