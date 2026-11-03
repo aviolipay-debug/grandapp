@@ -15,9 +15,9 @@ import { useEffect } from "react";
  *
  * IMPORTANT : ce composant ne déconnecte JAMAIS l'utilisateur. Une version
  * précédente appelait supabase.auth.signOut() sur mobile après deux retours
- * rapprochés (< 2 s) — y compris quand ces "retours" venaient de la fenêtre
+ * rapprochés (< 2 s), y compris quand ces "retours" venaient de la fenêtre
  * "Gestion" de la barre du bas (qui utilise aussi l'historique du
- * navigateur) — ce qui déconnectait l'utilisateur sans qu'il l'ait demandé.
+ * navigateur), ce qui déconnectait l'utilisateur sans qu'il l'ait demandé.
  */
 export default function DashboardExitGuard() {
   useEffect(() => {
