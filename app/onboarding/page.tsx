@@ -389,7 +389,7 @@ export default function OnboardingPage() {
   }
 
   // Bouton final : "Terminer" -> dashboard (première configuration),
-  // "Enregistrer" -> affiche la confirmation puis redirige aussi vers le dashboard.
+  // "Enregistrer" -> affiche la confirmation puis redirige vers la page profil.
   async function handlePrimaryAction() {
     if (!validateStep()) return;
     await saveProfileData(() => {
@@ -400,7 +400,7 @@ export default function OnboardingPage() {
         setSaved(true);
         router.refresh();
         setTimeout(() => {
-          router.push("/dashboard");
+          router.push("/dashboard/profile");
         }, 1200);
       }
     });
@@ -429,7 +429,7 @@ export default function OnboardingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#F0F0F3] font-sans md:pl-64 text-ink dark:bg-[#2F2F2F] dark:text-white">
       <DashboardHeader />
-      <main className="relative isolate flex flex-1 items-center justify-center overflow-hidden px-6 py-12 pb-24 md:pb-12">
+      <main className="relative isolate flex flex-1 items-start justify-center px-6 py-12 pb-24 md:items-center md:pb-12">
 
         <div className="w-full max-w-md rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8">
         <div className="mb-5 flex gap-2 sm:mb-8">
@@ -443,13 +443,16 @@ export default function OnboardingPage() {
           ))}
         </div>
 
-        <h1 className="font-display text-center text-2xl font-bold text-ink dark:text-white">
-          {steps[step].label}
-        </h1>
-        <p className="mb-4 text-center text-sm text-[#6B7280] dark:text-white/50 sm:mb-6">
-          {steps[step].desc}
-        </p>
-        <div className="mb-4 h-px bg-paperline dark:bg-white/10 sm:mb-6" />
+        {/* En-tête de l'étape : reste visible en haut de l'écran quand on défile */}
+        <div className="sticky top-[60px] z-20 -mx-6 mb-4 bg-white px-6 pb-4 pt-3 dark:bg-[#3a3a3a] sm:-mx-8 sm:mb-6 sm:px-8 md:top-0">
+          <h1 className="font-display text-center text-2xl font-bold text-ink dark:text-white">
+            {steps[step].label}
+          </h1>
+          <p className="text-center text-sm text-[#6B7280] dark:text-white/50">
+            {steps[step].desc}
+          </p>
+          <div className="mt-4 h-px bg-paperline dark:bg-white/10" />
+        </div>
 
         {/* Étape 1 : Structure */}
         {step === 0 && (
