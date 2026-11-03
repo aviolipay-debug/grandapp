@@ -12,7 +12,7 @@ import { TEMPLATES, type TemplateId } from "@/lib/pdf/templates";
 import type { DocumentData } from "@/lib/pdf/types";
 import Spinner from "@/app/components/spinner";
 
-// pdfjs-dist a besoin d'un "worker" séparé pour analyser le PDF — on pointe
+// pdfjs-dist a besoin d'un "worker" séparé pour analyser le PDF, on pointe
 // vers celui hébergé par cdnjs (même version que la librairie installée),
 // ce qui évite toute configuration de bundling côté Next.js/Webpack.
 if (typeof window !== "undefined") {
@@ -21,12 +21,12 @@ if (typeof window !== "undefined") {
 
 // Échelle de rendu des vignettes de l'étape 5. Les vignettes ne s'affichent
 // qu'en ~160px de haut (h-40) : inutile de rasteriser le PDF à pleine
-// résolution (scale 1.4) pour ensuite le réduire en CSS — ça multipliait le
+// résolution (scale 1.4) pour ensuite le réduire en CSS, ça multipliait le
 // temps de rendu de chaque modèle pour rien. 0.55 donne une image encore
 // nette sur les écrans retina tout en étant nettement plus rapide à générer.
 const THUMBNAIL_SCALE = 0.55;
 
-// Convertit la 1ère page d'un PDF (Blob) en image PNG (data URL) — contrairement
+// Convertit la 1ère page d'un PDF (Blob) en image PNG (data URL), contrairement
 // à une <iframe> pointant vers un PDF, une image s'affiche de façon identique
 // sur desktop ET sur mobile (Safari/Chrome Android n'affichent pas les PDF
 // dans une iframe, ils proposent juste un écran "Ouvrir le fichier").
@@ -68,19 +68,19 @@ const sectors = [
 
 type Contact = { indicatif: string; numero: string };
 
-// Modèles disponibles — dérivés directement du dispatch PDF (lib/pdf/templates)
+// Modèles disponibles, dérivés directement du dispatch PDF (lib/pdf/templates)
 // : chaque nouveau modèle ajouté là-bas apparaît automatiquement ici, sans
 // rien à dupliquer.
 const invoiceTemplates = Object.keys(TEMPLATES) as TemplateId[];
 
 const templateLabels: Record<string, string> = {
-  "template-ako": "AKO — Jaune & Noir",
-  "template-nuit": "Nuit — Sombre & Jaune",
-  "template-eclat": "Éclat — Orange & Noir",
-  "template-signature": "Signature — Sauge & Rose",
-  "template-jovial": "Jovial — Jaune & Rose",
-  "template-bicolore": "Bicolore — Violet & Jaune",
-  "template-chantier": "Chantier — Bleu & Blanc technique",
+  "template-ako": "AKO : Jaune & Noir",
+  "template-nuit": "Nuit : Sombre & Jaune",
+  "template-eclat": "Éclat : Orange & Noir",
+  "template-signature": "Signature : Sauge & Rose",
+  "template-jovial": "Jovial : Jaune & Rose",
+  "template-bicolore": "Bicolore : Violet & Jaune",
+  "template-chantier": "Chantier : Bleu & Blanc technique",
 };
 
 export default function OnboardingPage() {
@@ -97,33 +97,33 @@ export default function OnboardingPage() {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Étape 1 — Structure
+  // Étape 1 : Structure
   const [companyName, setCompanyName] = useState("");
   const [sector, setSector] = useState("");
 
-  // Étape 2 — Adresses
+  // Étape 2 : Adresses
   const [siegeSocial, setSiegeSocial] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
   const [companyPhone, setCompanyPhone] = useState("");
   const [contacts, setContacts] = useState<Contact[]>([{ indicatif: "+229", numero: "" }]);
 
-  // Étape 3 — Documents
+  // Étape 3 : Documents
   const [rccm, setRccm] = useState("");
   const [taxIds, setTaxIds] = useState<string[]>([""]);
 
-  // Étape 4 — Fichiers
+  // Étape 4 : Fichiers
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [signatureFile, setSignatureFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
-  // URLs déjà enregistrées en base — conservées si aucun nouveau fichier n'est choisi.
+  // URLs déjà enregistrées en base, conservées si aucun nouveau fichier n'est choisi.
   const [existingLogoUrl, setExistingLogoUrl] = useState<string | null>(null);
   const [existingSignatureUrl, setExistingSignatureUrl] = useState<string | null>(null);
 
-  // Étape 5 — Facture (modèle choisi par le client)
+  // Étape 5 : Facture (modèle choisi par le client)
   const [template, setTemplate] = useState<string>("template-ako");
 
-  // Aperçus PDF réels (pas un dessin approximatif) — un par modèle, générés
+  // Aperçus PDF réels (pas un dessin approximatif), un par modèle, générés
   // avec les vraies infos déjà saisies (nom, adresse, contact, logo) plus
   // quelques lignes d'exemple pour remplir le tableau.
   const [previewUrls, setPreviewUrls] = useState<Record<string, string>>({});
@@ -184,21 +184,21 @@ export default function OnboardingPage() {
   }, [supabase]);
 
   // Génère un vrai rendu PDF (via @react-pdf/renderer) pour chaque modèle
-  // disponible, dès l'étape "Fichier joint" (index 3) — avec le vrai nom
+  // disponible, dès l'étape "Fichier joint" (index 3), avec le vrai nom
   // d'entreprise, la vraie adresse, le vrai contact et le vrai logo déjà
   // sélectionnés (ou un logo générique si pas encore choisi à ce stade).
   //
   // Trois optimisations par rapport à la version précédente :
   // 1. La génération démarre dès l'étape "Fichier joint", PENDANT que
   //    l'utilisateur choisit son logo et finit de remplir le formulaire, au
-  //    lieu d'attendre qu'il arrive sur l'étape "Facture" — le calcul se
+  //    lieu d'attendre qu'il arrive sur l'étape "Facture", le calcul se
   //    fait en arrière-plan, invisible, plutôt que comme un temps d'attente
   //    visible une fois sur la bonne étape.
   // 2. Chaque vignette s'affiche dès qu'elle est prête (au lieu d'attendre
   //    que les 6 modèles soient terminés avant d'afficher quoi que ce soit).
   // 3. Si les données sources (nom, adresse, contact, logo) n'ont pas changé
   //    depuis la dernière génération, on réutilise les aperçus déjà générés
-  //    au lieu de tout recalculer — utile si le logo est choisi APRÈS le
+  //    au lieu de tout recalculer, utile si le logo est choisi APRÈS le
   //    premier passage sur cette étape : une seule régénération a lieu,
   //    déclenchée par le changement de logoPreview, toujours avant que
   //    l'utilisateur n'atteigne l'étape Facture dans le cas courant.
@@ -258,7 +258,7 @@ export default function OnboardingPage() {
             setPreviewUrls((prev) => ({ ...prev, [id]: imageUrl }));
           }
         } catch {
-          // Cette vignette restera "Aperçu indisponible" — les autres modèles
+          // Cette vignette restera "Aperçu indisponible", les autres modèles
           // continuent leur génération indépendamment.
         }
       })()
@@ -477,7 +477,7 @@ export default function OnboardingPage() {
                   onChange={(e) => setSector(e.target.value)}
                   className={inputClass}
                 >
-                  <option value="">—</option>
+                  <option value="">-</option>
                   {sectors.map((s) => (
                     <option key={s} value={s}>
                       {s}
@@ -659,7 +659,7 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* Étape 5 : Facture — vrai aperçu PDF (react-pdf), avec le vrai logo/nom déjà saisis */}
+        {/* Étape 5 : Facture, vrai aperçu PDF (react-pdf), avec le vrai logo/nom déjà saisis */}
         {step === 4 && (
           <div>
             <h2 className="font-display mb-1 text-xl font-bold text-ink dark:text-white">
@@ -680,7 +680,7 @@ export default function OnboardingPage() {
                       : "border-paperline dark:border-white/10"
                   }`}
                 >
-                  {/* Numéro du modèle — aide le client à s'y retrouver et à
+                  {/* Numéro du modèle, aide le client à s'y retrouver et à
                       communiquer facilement lequel il préfère (ex. au téléphone
                       avec le support), plutôt que de décrire l'image. */}
                   <span className="absolute bottom-2 right-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-xs font-bold text-white backdrop-blur-sm">
@@ -691,7 +691,7 @@ export default function OnboardingPage() {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={previewUrls[id]}
-                        alt={`Modèle ${index + 1} — ${templateLabels[id] ?? id}`}
+                        alt={`Modèle ${index + 1} : ${templateLabels[id] ?? id}`}
                         className="h-full w-full object-cover object-top"
                       />
                     ) : (
