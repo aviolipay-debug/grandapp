@@ -13,13 +13,13 @@ export type DocumentData = {
   issueDate: string;
   dueOrExpiryDate: string | null;
   companyName: string;
-  companyAddress: string | null; // Siège social — affiché sous le nom de l'ÉMETTEUR
+  companyAddress: string | null; // Siège social, affiché sous le nom de l'ÉMETTEUR
   companyLogoUrl: string | null;
-  companyPhone?: string | null; // Contact primaire (indicatif + numéro) — affiché sous l'ÉMETTEUR
-  companyRccm?: string | null; // N° Registre du commerce — affiché en pied de page si renseigné
-  companyTaxIds?: string[] | null; // Numéro(s) d'identification — affiché(s) en pied de page si renseigné(s)
+  companyPhone?: string | null; // Contact primaire (indicatif + numéro), affiché sous l'ÉMETTEUR
+  companyRccm?: string | null; // N° Registre du commerce, affiché en pied de page si renseigné
+  companyTaxIds?: string[] | null; // Numéro(s) d'identification, affiché(s) en pied de page si renseigné(s)
   clientName: string;
-  clientPhone?: string | null; // NOUVEAU — remplace l'email sous le nom du CLIENT
+  clientPhone?: string | null; // NOUVEAU, remplace l'email sous le nom du CLIENT
   clientEmail: string | null; // Conservé dans le type mais plus affiché sur le PDF
   clientAddress: string | null;
   items: LineItem[];
@@ -32,7 +32,7 @@ export type DocumentData = {
   notes: string | null;
 };
 
-// Reçu de paiement — document distinct de Devis/Facture/Bordereau, rendu avec
+// Reçu de paiement, document distinct de Devis/Facture/Bordereau, rendu avec
 // un template minimaliste dédié (voir templates/template-recu.tsx), sans
 // passer par le dispatch DocumentPDF/getTemplateComponent.
 export type ReceiptData = {
