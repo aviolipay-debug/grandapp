@@ -25,7 +25,7 @@ const statusStyles: Record<string, string> = {
   cancelled: "bg-[#F3F4F6] text-muted",
 };
 
-// Le champ `status` en base ne passe jamais automatiquement à "overdue" —
+// Le champ `status` en base ne passe jamais automatiquement à "overdue" -
 // on calcule donc le statut réellement affiché à partir de la date
 // d'échéance, plutôt que de se fier uniquement à la colonne stockée.
 function getEffectiveStatus(inv: {
@@ -68,7 +68,7 @@ export default async function InvoicesPage() {
 
   // Si aucun PIN n'est défini pour ce compte, la zone n'est pas protégée
   // (comportement identique à avant). Sinon, il faut un cookie de
-  // déverrouillage valide, vérifié côté serveur — impossible à falsifier
+  // déverrouillage valide, vérifié côté serveur, impossible à falsifier
   // depuis le navigateur.
   const unlocked = !pinHash || isFinanceUnlocked(user.id);
 
@@ -98,7 +98,7 @@ export default async function InvoicesPage() {
   // Une facture "soldée" = entièrement payée. C'est aussi le moment où le
   // projet associé passe au statut "Terminé" dans l'app (l'enregistrement du
   // paiement qui solde la facture est ce qui déclenche ce changement de
-  // statut) — les deux se produisent donc ensemble.
+  // statut), les deux se produisent donc ensemble.
   const facturesSoldees = invoices.filter((inv) => getEffectiveStatus(inv) === "paid").length;
 
   const stats = {
@@ -181,7 +181,7 @@ export default async function InvoicesPage() {
                     </div>
                     <div className="mt-1 flex items-center justify-between gap-2">
                       <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
-                        {inv.clients?.name ?? "—"}
+                        {inv.clients?.name ?? "-"}
                         {inv.due_date ? ` · Échéance ${formatDateFR(inv.due_date)}` : ""}
                       </p>
                       <span
