@@ -1,9 +1,11 @@
+// app/dashboard/clients/new/page.tsx
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import Spinner from "@/app/components/spinner";
 
 type ClientType = "entreprise" | "particulier";
 
@@ -73,7 +75,7 @@ export default function NewClientPage() {
             onClick={() => setClientType("entreprise")}
             className="flex flex-col items-center gap-3 rounded-2xl border border-paperline bg-white p-6 text-center transition-colors hover:border-ledger-deep dark:border-white/10 dark:bg-[#262626]"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-ledger-soft text-ledger-deep dark:bg-ledger-light/15 dark:text-ledger-light">
               <Building2 size={22} />
             </div>
             <div>
@@ -91,7 +93,7 @@ export default function NewClientPage() {
             onClick={() => setClientType("particulier")}
             className="flex flex-col items-center gap-3 rounded-2xl border border-paperline bg-white p-6 text-center transition-colors hover:border-ledger-deep dark:border-white/10 dark:bg-[#262626]"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-ledger-soft text-ledger-deep dark:bg-ledger-light/15 dark:text-ledger-light">
               <User size={22} />
             </div>
             <div>
@@ -114,18 +116,18 @@ export default function NewClientPage() {
       <button
         type="button"
         onClick={() => setClientType(null)}
-        className="mb-4 text-sm font-semibold text-ledger-deep"
+        className="mb-4 text-sm font-semibold text-ledger-deep dark:text-ledger-light"
       >
         ← Changer le type de client
       </button>
 
       <div className="rounded-2xl border border-paperline bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#2F2F2F] sm:p-8">
         <div className="mb-6 flex flex-col items-center gap-2 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-ledger-soft text-ledger-deep dark:bg-ledger-light/15 dark:text-ledger-light">
             {clientType === "entreprise" ? <Building2 size={20} /> : <User size={20} />}
           </div>
           <h1 className="font-display text-xl font-bold text-ink dark:text-white">
-            Nouveau client {clientType === "entreprise" ? "— Entreprise" : "— Particulier"}
+            Nouveau client {clientType === "entreprise" ? ": Entreprise" : ": Particulier"}
           </h1>
         </div>
 
@@ -180,8 +182,9 @@ export default function NewClientPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-lg bg-ledger-deep px-5 py-3 text-sm font-semibold text-paper transition-colors hover:bg-stamp disabled:opacity-60 sm:w-auto sm:px-10"
+                className="w-full flex w-full items-center justify-center gap-2 rounded-lg bg-ledger-deep px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark disabled:opacity-60 sm:w-auto sm:px-10"
               >
+                {loading && <Spinner size={16} />}
                 {loading ? "Enregistrement..." : "Enregistrer le client"}
               </button>
             </div>
