@@ -11,8 +11,8 @@ export default async function DashboardPage() {
 
   // Étape 1 : on ne fait attendre que ce qui est réellement indépendant de
   // l'utilisateur. Les 4 compteurs et les 2 listes n'ont pas besoin de
-  // connaître user.id — RLS filtre déjà automatiquement sur l'utilisateur
-  // connecté — donc ils partent EN MÊME TEMPS que la récupération de
+  // connaître user.id, RLS filtre déjà automatiquement sur l'utilisateur
+  // connecté, donc ils partent EN MÊME TEMPS que la récupération de
   // l'utilisateur, au lieu d'attendre bêtement leur tour. On passe ainsi de
   // 8 allers-retours Supabase en série à seulement 2 étapes.
   const [
@@ -55,7 +55,7 @@ export default async function DashboardPage() {
   const firstName = (meta.first_name ?? meta.full_name?.trim().split(/\s+/)[0] ?? "").trim();
 
   // Étape 2 : celle-ci dépend bien de user.id, donc elle ne peut pas être
-  // parallélisée avec l'étape 1 — mais c'est la seule qui attend désormais.
+  // parallélisée avec l'étape 1, mais c'est la seule qui attend désormais.
   const { data: profile } = user
     ? await supabase.from("profiles").select("company_name").eq("id", user.id).single()
     : { data: null };
@@ -75,7 +75,7 @@ export default async function DashboardPage() {
     projetsRecentsData?.map((p) => {
       // Si le devis le plus récent du projet a été refusé, on l'affiche tel
       // quel ("Refusé", en rouge) plutôt que le statut brut du projet
-      // (attente/en_cours/termine), qui ne connaît pas cette notion — c'est
+      // (attente/en_cours/termine), qui ne connaît pas cette notion, c'est
       // une valeur d'affichage calculée, jamais stockée en base.
       const quotesForProject = ((p as any).quotes ?? []) as {
         status: string;
@@ -94,7 +94,7 @@ export default async function DashboardPage() {
         date: new Date(p.created_at).toLocaleDateString("fr-FR"),
         projet: p.name,
         statut: statutAffiche,
-        client: (p as any).clients?.name ?? "—",
+        client: (p as any).clients?.name ?? "-",
         clientId: (p as any).clients?.id ?? null,
       };
     }) ?? [];
@@ -103,7 +103,7 @@ export default async function DashboardPage() {
     <div className={`flex max-w-6xl flex-col gap-6 sm:gap-7 ${poppins.className}`}>
       <DashboardExitGuard />
 
-      {/* Bienvenue — et bouton de configuration tant que le compte n'est pas configuré */}
+      {/* Bienvenue, et bouton de configuration tant que le compte n'est pas configuré */}
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-extrabold text-ink dark:text-white sm:text-[28px]">
@@ -134,7 +134,7 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      {/* Stats — 2 colonnes sur mobile, 4 sur grand écran */}
+      {/* Stats, 2 colonnes sur mobile, 4 sur grand écran */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           label="DEVIS"
@@ -171,7 +171,7 @@ export default async function DashboardPage() {
         />
       </div>
 
-      {/* Clients récents — cartes façon dossier violet */}
+      {/* Clients récents, cartes façon dossier violet */}
       <section className="rounded-3xl border border-black/5 bg-white p-5 dark:border-white/10 dark:bg-[#262626] sm:p-6">
         <h2 className="mb-4 font-display text-lg font-bold text-ink dark:text-white">
           Clients récents
