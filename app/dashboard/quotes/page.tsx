@@ -14,9 +14,9 @@ const statusLabels: Record<string, string> = {
 
 const statusStyles: Record<string, string> = {
   draft: "bg-[#F3F4F6] text-[#6B7280]",
-  sent: "bg-[#EAF3FC] text-[#2A89DA]",
-  accepted: "bg-[#E7FAF9] text-[#00A6AC]",
-  declined: "bg-[#FDEBEA] text-[#E5533F]",
+  sent: "bg-info-soft text-info",
+  accepted: "bg-success-soft text-success",
+  declined: "bg-danger-soft text-danger",
   expired: "bg-[#F3F4F6] text-[#6B7280]",
 };
 
@@ -35,7 +35,7 @@ export default async function QuotesPage() {
         <h1 className="font-display text-2xl font-bold text-ink dark:text-white">Vos Devis</h1>
         <Link
           href="/dashboard/clients"
-          className="rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-paper hover:bg-stamp"
+          className="rounded-lg bg-ledger-deep px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark"
         >
           Nouveau devis
         </Link>
@@ -62,7 +62,7 @@ export default async function QuotesPage() {
                   href={href}
                   className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-[#F7F7FB] active:bg-[#F0F0F5] dark:hover:bg-white/5 sm:px-6"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F3EEFC] text-ledger-deep dark:bg-white/10">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ledger-soft text-ledger-deep dark:bg-ledger-light/15 dark:text-ledger-light">
                     <FileText size={18} />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -76,7 +76,7 @@ export default async function QuotesPage() {
                     </div>
                     <div className="mt-1 flex items-center justify-between gap-2">
                       <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
-                        {q.clients?.name ?? "—"} · {formatDateFR(q.issue_date)}
+                        {q.clients?.name ?? "-"} · {formatDateFR(q.issue_date)}
                       </p>
                       <span
                         className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
