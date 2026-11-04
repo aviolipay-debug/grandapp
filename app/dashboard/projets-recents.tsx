@@ -5,7 +5,6 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Search, SlidersHorizontal, X } from "lucide-react";
 import { poppins } from "@/lib/fonts";
-import DeleteButton from "@/app/components/delete-button";
 
 type Projet = {
   id: string;
@@ -160,7 +159,7 @@ export default function ProjetsRecentsSection({ projects }: { projects: Projet[]
               >
                 <Link
                   href={projectHref(p)}
-                  className="flex items-center justify-between gap-3 py-4 pl-4 pr-14"
+                  className="flex items-center justify-between gap-3 px-4 py-4"
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-medium truncate">{p.projet}</p>
@@ -172,12 +171,6 @@ export default function ProjetsRecentsSection({ projects }: { projects: Projet[]
                     <ProjectStatusBadge statut={p.statut} />
                   </div>
                 </Link>
-                <DeleteButton
-                  kind="project"
-                  id={p.id}
-                  name={p.projet}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                />
               </div>
             ))
           )}
@@ -274,12 +267,6 @@ export default function ProjetsRecentsSection({ projects }: { projects: Projet[]
                   </span>
                   <ArrowUpRight size={16} className="text-[#1C1C1C]/30 dark:text-white/30" />
                 </Link>
-                <DeleteButton
-                  kind="project"
-                  id={p.id}
-                  name={p.projet}
-                  className="absolute right-4 top-1/2 -translate-y-1/2"
-                />
               </div>
             ))
           )}
