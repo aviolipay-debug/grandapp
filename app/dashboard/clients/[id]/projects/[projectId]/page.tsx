@@ -1,6 +1,5 @@
 // app/dashboard/clients/[id]/projects/[projectId]/page.tsx
 import Link from "next/link";
-import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateFR } from "@/lib/format-date";
 import ProjectStatusButtons from "./ProjectStatusButtons";
@@ -16,9 +15,9 @@ const statusLabels: Record<string, string> = {
 
 const statusStyles: Record<string, string> = {
   draft: "bg-[#F3F4F6] text-[#6B7280]",
-  sent: "bg-[#EAF3FC] text-[#2A89DA]",
-  accepted: "bg-[#E7FAF9] text-[#00A6AC]",
-  declined: "bg-[#FDEBEA] text-[#E5533F]",
+  sent: "bg-info-soft text-info",
+  accepted: "bg-success-soft text-success",
+  declined: "bg-danger-soft text-danger",
   expired: "bg-[#F3F4F6] text-[#6B7280]",
 };
 
@@ -29,7 +28,7 @@ export default async function ProjectDetailPage({
 }) {
   const supabase = createClient();
 
-  // Le projet et les devis ne dépendent pas l'un de l'autre — on les
+  // Le projet et les devis ne dépendent pas l'un de l'autre, on les
   // lance en parallèle plutôt qu'en série pour gagner un aller-retour réseau.
   const [{ data: projectData }, { data: quotes }] = await Promise.all([
     supabase
@@ -63,7 +62,7 @@ export default async function ProjectDetailPage({
     ? Number(facture.total) - Number(facture.amount_paid)
     : null;
 
-  // Total du devis en cours — affiché dans la popup de paiement au premier
+  // Total du devis en cours, affiché dans la popup de paiement au premier
   // passage à "En cours" (avant qu'une facture n'existe, donc avant que
   // remainingDue ne soit calculable).
   const quoteTotal = quotes && quotes.length > 0 ? Number(quotes[0].total) : null;
@@ -82,38 +81,37 @@ export default async function ProjectDetailPage({
     <div>
       <Link
         href={`/dashboard/clients/${params.id}`}
-        className="text-sm font-semibold text-ledger-deep"
+        className="text-sm font-semibold text-ledger-deep dark:text-ledger-light"
       >
         ← {(project.clients as any)?.name ?? "Client"}
       </Link>
 
-      <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="font-display text-2xl font-bold text-ink dark:text-white">
-          {project.name}
-        </h1>
+      <h1 className="mt-2 font-display text-2xl font-bold text-ink dark:text-white">
+        {project.name}
+      </h1>
+
+      {/* Statut du projet, "En cours" et "Terminé" ouvrent une popup de paiement,
+          ou une alerte "Aucun Devis rattaché" si aucun devis n'existe encore. */}
+      <div className="mt-5 flex items-center justify-between gap-3">
+        <p className="text-xs font-semibold uppercase tracking-wide text-[#6B7280] dark:text-white/40">
+          Statut du projet
+        </p>
         {quotes && quotes.length > 0 ? (
           <Link
             href={`/dashboard/quotes/${quotes[0].id}/edit`}
-            className="flex w-fit items-center gap-1.5 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-paper hover:bg-stamp"
+            className="rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark"
           >
             Modifier le devis
           </Link>
         ) : (
           <Link
             href={`/dashboard/quotes/new?project_id=${project.id}&client_id=${params.id}`}
-            className="flex w-fit items-center gap-1.5 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-paper hover:bg-stamp"
+            className="rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark"
           >
-            <Plus size={16} />
             Nouveau devis
           </Link>
         )}
       </div>
-
-      {/* Statut du projet — "En cours" et "Terminé" ouvrent une popup de paiement,
-          ou une alerte "Aucun Devis rattaché" si aucun devis n'existe encore. */}
-      <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-[#6B7280] dark:text-white/40">
-        Statut du projet
-      </p>
       <ProjectStatusButtons
         projectId={project.id}
         clientId={params.id}
@@ -136,8 +134,8 @@ export default async function ProjectDetailPage({
                 key={q.id}
                 href={`/api/quotes/${q.id}/pdf?v=${cacheBust}`}
                 filename={`devis-${q.quote_number}.pdf`}
-                iconBg="#F3EEFC"
-                iconColor="#5B21B6"
+                iconBg="#EFE5FC"
+                iconColor="#7D2AE7"
                 title={`Devis · ${q.quote_number}`}
                 subtitle={`${formatDateFR(q.issue_date)} · ${statusLabels[q.status] ?? q.status}`}
                 amount={`${Number(q.total).toLocaleString("fr-FR")} ${q.currency}`}
@@ -148,8 +146,8 @@ export default async function ProjectDetailPage({
               <DocumentPreviewRow
                 href={`/api/invoices/${facture.id}/pdf?v=${cacheBust}`}
                 filename={`facture-${facture.invoice_number}.pdf`}
-                iconBg="#E7FAF9"
-                iconColor="#00A6AC"
+                iconBg="#E3F6EC"
+                iconColor="#0F7B4B"
                 title={`Facture · ${facture.invoice_number}`}
                 subtitle={formatDateFR(facture.issue_date)}
                 amount={`${Number(facture.total).toLocaleString("fr-FR")} ${facture.currency}`}
@@ -160,8 +158,8 @@ export default async function ProjectDetailPage({
               <DocumentPreviewRow
                 href={`/api/invoices/${bordereau.id}/pdf?v=${cacheBust}`}
                 filename={`bordereau-${bordereau.invoice_number}.pdf`}
-                iconBg="#EAF3FC"
-                iconColor="#2A89DA"
+                iconBg="#E6F0FB"
+                iconColor="#1D5799"
                 title={`Bordereau de livraison · ${bordereau.invoice_number}`}
                 subtitle={formatDateFR(bordereau.issue_date)}
               />
