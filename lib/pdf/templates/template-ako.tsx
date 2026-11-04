@@ -62,7 +62,6 @@ const styles = StyleSheet.create({
   amountInWords: { fontSize: 10, textAlign: "center", marginTop: 24, color: "#2B2B2B" },
   amountInWordsBold: { fontWeight: 700 },
 
-  legal: { fontSize: 7.5, color: "#4B4B4B", marginTop: 24, maxWidth: 340, lineHeight: 1.4 },
   bottomBar: { height: 12, backgroundColor: YELLOW, marginTop: 30, marginLeft: 220 },
 
   // Ligne légale (RCCM, N° d'identification), affichée seulement si renseignée
@@ -198,10 +197,6 @@ export default function TemplateAko({ data }: { data: DocumentData }) {
           <Text style={styles.amountInWords}>
             Arrêté le présent {documentWord} à la somme de{" "}
             <Text style={styles.amountInWordsBold}>{amountWords}</Text>
-          </Text>
-
-          <Text style={styles.legal}>
-            En cas de retard de paiement, et conformément au code de commerce, une indemnité de retard ainsi que des frais de recouvrement peuvent être exigibles.
           </Text>
         </View>
 

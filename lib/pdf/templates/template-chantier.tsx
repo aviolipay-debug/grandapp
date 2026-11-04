@@ -81,7 +81,6 @@ const styles = StyleSheet.create({
   amountInWords: { fontSize: 10, textAlign: "center", marginTop: 26, color: "#2B2B2B" },
   amountInWordsBold: { fontWeight: 700 },
 
-  legal: { fontSize: 7.5, color: "#4B4B4B", marginTop: 20, lineHeight: 1.4 },
 
   footerBar: {
     position: "absolute",
@@ -230,11 +229,6 @@ export default function TemplateChantier({ data }: { data: DocumentData }) {
           <Text style={styles.amountInWords}>
             Arrêté le présent {documentWord} à la somme de{" "}
             <Text style={styles.amountInWordsBold}>{amountWords}</Text>
-          </Text>
-
-          <Text style={styles.legal}>
-            En cas de retard de paiement, et conformément au code de commerce, une indemnité de
-            retard ainsi que des frais de recouvrement peuvent être exigibles.
           </Text>
         </View>
 
