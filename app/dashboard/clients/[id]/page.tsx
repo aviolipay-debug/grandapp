@@ -1,6 +1,6 @@
 // app/dashboard/clients/[id]/page.tsx
 import Link from "next/link";
-import { Building2, User, Plus, FolderKanban, ChevronRight } from "lucide-react";
+import { Building2, User, FolderKanban, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import DeleteButton from "@/app/components/delete-button";
 
@@ -50,9 +50,8 @@ export default async function ClientDetailPage({
         </h2>
         <Link
           href={`/dashboard/clients/${client.id}/projects/new`}
-          className="flex items-center gap-1.5 rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark"
+          className="rounded-lg bg-ledger-deep px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark"
         >
-          <Plus size={16} />
           Nouveau projet
         </Link>
       </div>
