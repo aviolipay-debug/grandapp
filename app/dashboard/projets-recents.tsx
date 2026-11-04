@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Search, SlidersHorizontal, X } from "lucide-react";
 import { poppins } from "@/lib/fonts";
+import DeleteButton from "@/app/components/delete-button";
 
 type Projet = {
   id: string;
@@ -149,25 +150,35 @@ export default function ProjetsRecentsSection({ projects }: { projects: Projet[]
             </p>
           ) : (
             filtered.map((p, i) => (
-              <Link
+              <div
                 key={p.id}
-                href={projectHref(p)}
-                className={`flex items-center justify-between gap-3 px-4 py-4 ${
+                className={`relative ${
                   i !== filtered.length - 1
                     ? "border-b border-black/5 dark:border-white/10"
                     : ""
                 }`}
               >
-                <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">{p.projet}</p>
-                  <p className="text-xs text-[#1C1C1C]/50 dark:text-white/50 truncate">
-                    {p.client} · {p.date}
-                  </p>
-                </div>
-                <div className="shrink-0">
-                  <ProjectStatusBadge statut={p.statut} />
-                </div>
-              </Link>
+                <Link
+                  href={projectHref(p)}
+                  className="flex items-center justify-between gap-3 py-4 pl-4 pr-14"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{p.projet}</p>
+                    <p className="text-xs text-[#1C1C1C]/50 dark:text-white/50 truncate">
+                      {p.client} · {p.date}
+                    </p>
+                  </div>
+                  <div className="shrink-0">
+                    <ProjectStatusBadge statut={p.statut} />
+                  </div>
+                </Link>
+                <DeleteButton
+                  kind="project"
+                  id={p.id}
+                  name={p.projet}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                />
+              </div>
             ))
           )}
         </div>
@@ -228,7 +239,7 @@ export default function ProjetsRecentsSection({ projects }: { projects: Projet[]
         </div>
 
         <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-[#262626] overflow-hidden">
-          <div className="grid grid-cols-[120px_1fr_140px_1fr_40px] gap-4 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-[#1C1C1C]/40 dark:text-white/40 border-b border-black/5 dark:border-white/10">
+          <div className="grid grid-cols-[120px_1fr_140px_1fr_80px] gap-4 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-[#1C1C1C]/40 dark:text-white/40 border-b border-black/5 dark:border-white/10">
             <span>Date</span>
             <span>Projet</span>
             <span>Statut</span>
@@ -241,25 +252,35 @@ export default function ProjetsRecentsSection({ projects }: { projects: Projet[]
             </p>
           ) : (
             filtered.map((p, i) => (
-              <Link
+              <div
                 key={p.id}
-                href={projectHref(p)}
-                className={`grid grid-cols-[120px_1fr_140px_1fr_40px] gap-4 items-center px-5 py-4 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors ${
+                className={`relative ${
                   i !== filtered.length - 1
                     ? "border-b border-black/5 dark:border-white/10"
                     : ""
                 }`}
               >
-                <span className="text-sm text-[#1C1C1C]/60 dark:text-white/60">{p.date}</span>
-                <span className="text-sm font-medium truncate">{p.projet}</span>
-                <span>
-                  <ProjectStatusBadge statut={p.statut} />
-                </span>
-                <span className="text-sm text-[#1C1C1C]/70 dark:text-white/70 truncate">
-                  {p.client}
-                </span>
-                <ArrowUpRight size={16} className="text-[#1C1C1C]/30 dark:text-white/30" />
-              </Link>
+                <Link
+                  href={projectHref(p)}
+                  className="grid grid-cols-[120px_1fr_140px_1fr_80px] gap-4 items-center px-5 py-4 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors"
+                >
+                  <span className="text-sm text-[#1C1C1C]/60 dark:text-white/60">{p.date}</span>
+                  <span className="text-sm font-medium truncate">{p.projet}</span>
+                  <span>
+                    <ProjectStatusBadge statut={p.statut} />
+                  </span>
+                  <span className="text-sm text-[#1C1C1C]/70 dark:text-white/70 truncate">
+                    {p.client}
+                  </span>
+                  <ArrowUpRight size={16} className="text-[#1C1C1C]/30 dark:text-white/30" />
+                </Link>
+                <DeleteButton
+                  kind="project"
+                  id={p.id}
+                  name={p.projet}
+                  className="absolute right-4 top-1/2 -translate-y-1/2"
+                />
+              </div>
             ))
           )}
         </div>
