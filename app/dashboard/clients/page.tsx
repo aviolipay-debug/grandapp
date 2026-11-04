@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Building2, User, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import type { Client } from "@/lib/types";
+import DeleteButton from "@/app/components/delete-button";
 
 export default async function ClientsPage() {
   const supabase = createClient();
@@ -60,6 +61,8 @@ export default async function ClientsPage() {
 
                   <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
                 </Link>
+
+                <DeleteButton kind="client" id={c.id} name={c.name} />
               </div>
             ))}
           </div>
