@@ -1,6 +1,6 @@
 // app/dashboard/page.tsx
 import Link from "next/link";
-import { FileText, Users, FolderKanban, Clock, FolderPlus, Plus } from "lucide-react";
+import { FileText, Users, FolderKanban, Clock, FolderPlus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server"; // adapte le chemin si besoin
 import { poppins } from "@/lib/fonts";
 import ProjetsRecentsSection from "./projets-recents";
@@ -128,7 +128,6 @@ export default async function DashboardPage() {
             href="/dashboard/clients"
             className="hidden lg:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl bg-ledger-deep px-5 text-sm font-semibold text-white transition-colors hover:bg-ledger-dark"
           >
-            <Plus size={16} strokeWidth={2.5} />
             Nouveau devis
           </Link>
         </div>
