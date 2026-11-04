@@ -110,13 +110,13 @@ export default async function InvoicesPage() {
 
   return (
     <div className={poppins.className}>
-      <h1 className="hidden font-display text-2xl font-bold text-ink dark:text-white sm:block">Finances</h1>
-      <p className="mt-1 hidden text-sm text-[#6B7280] dark:text-white/50 sm:block">
+      <h1 className="font-display text-2xl font-bold text-ink dark:text-white">Finances</h1>
+      <p className="mt-1 text-sm text-[#6B7280] dark:text-white/50">
         Vue d&apos;ensemble de vos encaissements et factures.
       </p>
 
       {/* Vue d'ensemble */}
-      <div className="mt-3 grid grid-cols-2 gap-4 sm:mt-6 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           label="Encaissé"
           value={stats.encaisse.toLocaleString("fr-FR")}
