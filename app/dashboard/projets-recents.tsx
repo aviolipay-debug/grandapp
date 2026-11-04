@@ -265,7 +265,7 @@ export default function ProjetsRecentsSection({ projects }: { projects: Projet[]
                   <span className="text-sm text-[#1C1C1C]/70 dark:text-white/70 truncate">
                     {p.client}
                   </span>
-                  <ArrowUpRight size={16} className="text-[#1C1C1C]/30 dark:text-white/30" />
+                  <ArrowUpRight size={16} className="justify-self-end text-[#1C1C1C]/30 dark:text-white/30" />
                 </Link>
               </div>
             ))
