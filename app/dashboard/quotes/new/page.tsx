@@ -4,7 +4,7 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Plus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Client } from "@/lib/types";
 import Spinner from "@/app/components/spinner";
@@ -371,7 +371,6 @@ function NewQuoteForm() {
             onClick={addItem}
             className="mt-3 flex w-full items-center justify-center gap-1.5 text-sm font-semibold text-ledger-deep dark:text-ledger-light"
           >
-            <Plus size={16} />
             Ajouter une ligne
           </button>
         </div>
