@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { FileText, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { formatDateFR } from "@/lib/format-date";
+import { formatDateShort, formatDocNumber } from "@/lib/format-short";
 
 const statusLabels: Record<string, string> = {
   draft: "Brouillon",
@@ -68,7 +68,7 @@ export default async function QuotesPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
                       <p className="truncate font-medium text-ink dark:text-white">
-                        {q.quote_number}
+                        {formatDocNumber("Devis", q.quote_number)}
                       </p>
                       <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
                         {Number(q.total).toLocaleString("fr-FR")} {q.currency}
@@ -76,7 +76,7 @@ export default async function QuotesPage() {
                     </div>
                     <div className="mt-1 flex items-center justify-between gap-2">
                       <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
-                        {q.clients?.name ?? "-"} · {formatDateFR(q.issue_date)}
+                        {q.clients?.name ?? "-"} · {formatDateShort(q.issue_date)}
                       </p>
                       <span
                         className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
