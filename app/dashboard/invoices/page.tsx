@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Receipt, ChevronRight, Wallet, Clock, CheckCircle2, FileStack } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { formatDateFR } from "@/lib/format-date";
+import { formatDateShort, formatDocNumber } from "@/lib/format-short";
 import { poppins } from "@/lib/fonts";
 import { isFinanceUnlocked } from "@/lib/session/finance-unlock";
 import FinancePinGate from "./finance-pin-gate";
@@ -171,7 +171,7 @@ export default async function InvoicesPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
                       <p className="truncate font-medium text-ink dark:text-white">
-                        {inv.invoice_number}
+                        {formatDocNumber("Facture", inv.invoice_number)}
                       </p>
                       <p className="shrink-0 font-mono text-sm font-semibold text-ink dark:text-white">
                         {remaining > 0
@@ -182,7 +182,7 @@ export default async function InvoicesPage() {
                     <div className="mt-1 flex items-center justify-between gap-2">
                       <p className="truncate text-sm text-[#6B7280] dark:text-white/50">
                         {inv.clients?.name ?? "-"}
-                        {inv.due_date ? ` · Échéance ${formatDateFR(inv.due_date)}` : ""}
+                        {inv.due_date ? ` · ${formatDateShort(inv.due_date)}` : ""}
                       </p>
                       <span
                         className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
