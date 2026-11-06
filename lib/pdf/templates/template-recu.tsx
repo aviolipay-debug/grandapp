@@ -3,7 +3,7 @@
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import type { ReceiptData } from "../types";
 import { fmt, nombreEnLettres } from "../format-helpers";
-import { formatDateShort } from "../format-short";
+import { formatDateShort } from "../../format-short";
 
 const INK = "#0E0E0E";
 const MUTED = "#5B6070";
