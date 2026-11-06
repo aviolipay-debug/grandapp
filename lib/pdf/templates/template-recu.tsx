@@ -1,9 +1,11 @@
 // lib/pdf/templates/template-recu.tsx
-// Reçu de paiement, style "ticket" : petit ticket blanc centré sur fond gris clair.
+// Reçu de paiement, style "ticket" : ticket blanc centré sur fond gris clair.
+// Le logo est toujours imprimé en niveaux de gris sur ce document.
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import type { ReceiptData } from "../types";
 import { fmt, nombreEnLettres } from "../format-helpers";
 import { formatDateShort } from "../../format-short";
+import { grayscaleLogo } from "../grayscale-logo";
 
 const INK = "#0E0E0E";
 const MUTED = "#5B6070";
@@ -18,50 +20,50 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica",
     color: INK,
     backgroundColor: PAGE_BG,
-    paddingTop: 56,
+    paddingTop: 64,
     alignItems: "center",
   },
   ticket: {
-    width: 360,
+    width: 420,
     backgroundColor: "#FFFFFF",
     borderRadius: 14,
-    paddingTop: 34,
-    paddingBottom: 30,
-    paddingHorizontal: 30,
+    paddingTop: 40,
+    paddingBottom: 36,
+    paddingHorizontal: 36,
   },
 
   head: { alignItems: "center" },
-  logo: { width: 48, height: 48, borderRadius: 24, objectFit: "cover" },
+  logo: { width: 60, height: 60, borderRadius: 30, objectFit: "cover" },
   logoFallback: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: VIOLET_SOFT,
     alignItems: "center",
     justifyContent: "center",
   },
-  logoFallbackText: { fontFamily: "Helvetica-Bold", fontSize: 16, color: VIOLET },
-  companyName: { fontFamily: "Helvetica-Bold", fontSize: 14, marginTop: 10, textAlign: "center" },
-  companyLine: { fontSize: 9.5, color: MUTED, marginTop: 2, textAlign: "center" },
+  logoFallbackText: { fontFamily: "Helvetica-Bold", fontSize: 19, color: VIOLET },
+  companyName: { fontFamily: "Helvetica-Bold", fontSize: 16, marginTop: 12, textAlign: "center" },
+  companyLine: { fontSize: 10.5, color: MUTED, marginTop: 2, textAlign: "center" },
 
-  title: { fontFamily: "Helvetica-Bold", fontSize: 11, letterSpacing: 2, textAlign: "center", marginTop: 22 },
-  meta: { fontFamily: "Courier", fontSize: 10.5, color: MUTED, textAlign: "center", marginTop: 4 },
+  title: { fontFamily: "Helvetica-Bold", fontSize: 12, letterSpacing: 2, textAlign: "center", marginTop: 26 },
+  meta: { fontFamily: "Courier", fontSize: 11.5, color: MUTED, textAlign: "center", marginTop: 4 },
 
-  dash: { borderTopWidth: 1.5, borderTopStyle: "dashed", borderTopColor: DASH, marginVertical: 20 },
+  dash: { borderTopWidth: 1.5, borderTopStyle: "dashed", borderTopColor: DASH, marginVertical: 24 },
 
-  row: { flexDirection: "row", justifyContent: "space-between", marginBottom: 12 },
+  row: { flexDirection: "row", justifyContent: "space-between", marginBottom: 14 },
   rowLast: { flexDirection: "row", justifyContent: "space-between" },
-  rowLabel: { fontFamily: "Courier", fontSize: 10.5, color: MUTED },
-  rowValue: { fontFamily: "Courier-Bold", fontSize: 10.5, textAlign: "right", maxWidth: 200 },
+  rowLabel: { fontFamily: "Courier", fontSize: 11.5, color: MUTED },
+  rowValue: { fontFamily: "Courier-Bold", fontSize: 11.5, textAlign: "right", maxWidth: 230 },
 
   totalRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
-  totalLabel: { fontFamily: "Helvetica-Bold", fontSize: 11, letterSpacing: 1 },
-  totalValue: { fontFamily: "Courier-Bold", fontSize: 22, color: INK },
+  totalLabel: { fontFamily: "Helvetica-Bold", fontSize: 12, letterSpacing: 1 },
+  totalValue: { fontFamily: "Courier-Bold", fontSize: 25, color: INK },
 
-  words: { fontSize: 10.5, color: MUTED, textAlign: "center", marginTop: 18, lineHeight: 1.5 },
+  words: { fontSize: 11.5, color: MUTED, textAlign: "center", marginTop: 20, lineHeight: 1.5 },
   wordsBold: { fontFamily: "Helvetica-Bold", color: INK },
 
-  thanks: { fontFamily: "Helvetica-Bold", fontSize: 10.5, textAlign: "center", marginTop: 16 },
+  thanks: { fontFamily: "Helvetica-Bold", fontSize: 11.5, textAlign: "center", marginTop: 18 },
 });
 
 function initials(name: string): string {
@@ -99,7 +101,7 @@ export default function TemplateRecu({ data }: { data: ReceiptData }) {
         <View style={styles.ticket}>
           <View style={styles.head}>
             {data.companyLogoUrl ? (
-              <Image src={data.companyLogoUrl} style={styles.logo} />
+              <Image src={() => grayscaleLogo(data.companyLogoUrl as string)} style={styles.logo} />
             ) : (
               <View style={styles.logoFallback}>
                 <Text style={styles.logoFallbackText}>{initials(data.companyName)}</Text>
