@@ -1,98 +1,147 @@
 // lib/pdf/templates/template-recu.tsx
+// Reçu de paiement, style "ticket" : petit ticket blanc centré sur fond gris clair.
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import type { ReceiptData } from "../types";
 import { fmt, nombreEnLettres } from "../format-helpers";
+import { formatDateShort } from "../format-short";
 
 const INK = "#0E0E0E";
-const MUTED = "#6B7280";
-const ACCENT = "#00A6AC";
-const LINE = "#E5E7EB";
+const MUTED = "#5B6070";
+const VIOLET = "#7D2AE7";
+const VIOLET_SOFT = "#EFE5FC";
+const DASH = "#C9CBD3";
+const PAGE_BG = "#F0F0F3";
 
 const styles = StyleSheet.create({
   page: {
     fontSize: 10,
     fontFamily: "Helvetica",
     color: INK,
-    padding: 48,
-  },
-  logo: { width: 70, height: 70, borderRadius: 35, objectFit: "cover", marginBottom: 24 },
-  companyName: { fontSize: 13, fontWeight: 700, marginBottom: 24 },
-  title: { fontSize: 20, fontWeight: 700, marginBottom: 4 },
-  subtitle: { fontSize: 9.5, color: MUTED, marginBottom: 28 },
-  amountBlock: {
+    backgroundColor: PAGE_BG,
+    paddingTop: 56,
     alignItems: "center",
-    borderTop: `1px solid ${LINE}`,
-    borderBottom: `1px solid ${LINE}`,
-    paddingVertical: 24,
-    marginBottom: 24,
   },
-  amountLabel: { fontSize: 9, color: MUTED, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 },
-  amountValue: { fontSize: 30, fontWeight: 700, color: ACCENT },
-  row: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 7 },
-  rowLabel: { fontSize: 9.5, color: MUTED },
-  rowValue: { fontSize: 9.5, fontWeight: 700, textAlign: "right" },
-  // Taille augmentée (8.5 -> 10) et montant en lettres en gras via un Text
-  // imbriqué (amountWordsBold), qui hérite de la taille/couleur du parent.
-  amountWords: { fontSize: 10, color: MUTED, textAlign: "center", marginTop: 26 },
-  amountWordsBold: { fontWeight: 700 },
-  footer: { fontSize: 7.5, color: MUTED, textAlign: "center", marginTop: 40 },
+  ticket: {
+    width: 360,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
+    paddingTop: 34,
+    paddingBottom: 30,
+    paddingHorizontal: 30,
+  },
+
+  head: { alignItems: "center" },
+  logo: { width: 48, height: 48, borderRadius: 24, objectFit: "cover" },
+  logoFallback: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: VIOLET_SOFT,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoFallbackText: { fontFamily: "Helvetica-Bold", fontSize: 16, color: VIOLET },
+  companyName: { fontFamily: "Helvetica-Bold", fontSize: 14, marginTop: 10, textAlign: "center" },
+  companyLine: { fontSize: 9.5, color: MUTED, marginTop: 2, textAlign: "center" },
+
+  title: { fontFamily: "Helvetica-Bold", fontSize: 11, letterSpacing: 2, textAlign: "center", marginTop: 22 },
+  meta: { fontFamily: "Courier", fontSize: 10.5, color: MUTED, textAlign: "center", marginTop: 4 },
+
+  dash: { borderTopWidth: 1.5, borderTopStyle: "dashed", borderTopColor: DASH, marginVertical: 20 },
+
+  row: { flexDirection: "row", justifyContent: "space-between", marginBottom: 12 },
+  rowLast: { flexDirection: "row", justifyContent: "space-between" },
+  rowLabel: { fontFamily: "Courier", fontSize: 10.5, color: MUTED },
+  rowValue: { fontFamily: "Courier-Bold", fontSize: 10.5, textAlign: "right", maxWidth: 200 },
+
+  totalRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
+  totalLabel: { fontFamily: "Helvetica-Bold", fontSize: 11, letterSpacing: 1 },
+  totalValue: { fontFamily: "Courier-Bold", fontSize: 22, color: INK },
+
+  words: { fontSize: 10.5, color: MUTED, textAlign: "center", marginTop: 18, lineHeight: 1.5 },
+  wordsBold: { fontFamily: "Helvetica-Bold", color: INK },
+
+  thanks: { fontFamily: "Helvetica-Bold", fontSize: 10.5, textAlign: "center", marginTop: 16 },
 });
+
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const letters = parts.slice(0, 2).map((p) => p.charAt(0).toUpperCase());
+  return letters.join("") || "?";
+}
+
+// "REC-FAC-0042-1" devient "0042-1"
+function shortReceiptNumber(value: string): string {
+  return value.replace(/^REC-/i, "").replace(/^[A-Za-z]+-/, "");
+}
+
+// "FAC-0042" devient "N° 0042"
+function shortInvoiceNumber(value: string): string {
+  const digits = value.replace(/^[A-Za-z]+[-_ ]?/, "");
+  return `N° ${digits || value}`;
+}
 
 export default function TemplateRecu({ data }: { data: ReceiptData }) {
   const amountWords = `${nombreEnLettres(data.amount)} francs CFA`;
+  const contactLine = [data.companyPhone, data.companyAddress].filter(Boolean).join(" · ");
+
+  const rows: { label: string; value: string }[] = [
+    { label: "Reçu de", value: data.clientName },
+  ];
+  if (data.clientPhone) rows.push({ label: "Numéro", value: data.clientPhone });
+  rows.push({ label: "Paiement", value: data.methodLabel });
+  rows.push({ label: "Facture", value: shortInvoiceNumber(data.invoiceNumber) });
+  if (data.objet) rows.push({ label: "Objet", value: data.objet });
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {data.companyLogoUrl ? (
-          <Image src={data.companyLogoUrl} style={styles.logo} />
-        ) : (
-          <Text style={styles.companyName}>{data.companyName}</Text>
-        )}
-        <Text style={styles.title}>Reçu de paiement</Text>
-        <Text style={styles.subtitle}>
-          {data.receiptNumber} · {data.paymentDate}
-        </Text>
-        <View style={styles.amountBlock}>
-          <Text style={styles.amountLabel}>Montant reçu</Text>
-          <Text style={styles.amountValue}>
-            {fmt(data.amount)} {data.currency}
+        <View style={styles.ticket}>
+          <View style={styles.head}>
+            {data.companyLogoUrl ? (
+              <Image src={data.companyLogoUrl} style={styles.logo} />
+            ) : (
+              <View style={styles.logoFallback}>
+                <Text style={styles.logoFallbackText}>{initials(data.companyName)}</Text>
+              </View>
+            )}
+            <Text style={styles.companyName}>{data.companyName}</Text>
+            {contactLine ? <Text style={styles.companyLine}>{contactLine}</Text> : null}
+          </View>
+
+          <Text style={styles.title}>REÇU DE PAIEMENT</Text>
+          <Text style={styles.meta}>
+            N° {shortReceiptNumber(data.receiptNumber)} · {formatDateShort(data.paymentDate)}
           </Text>
+
+          <View style={styles.dash} />
+
+          <View>
+            {rows.map((r, i) => (
+              <View style={i === rows.length - 1 ? styles.rowLast : styles.row} key={r.label}>
+                <Text style={styles.rowLabel}>{r.label}</Text>
+                <Text style={styles.rowValue}>{r.value}</Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={styles.dash} />
+
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>TOTAL REÇU</Text>
+            <Text style={styles.totalValue}>
+              {fmt(data.amount)} {data.currency}
+            </Text>
+          </View>
+
+          <Text style={styles.words}>
+            Reçu la somme de <Text style={styles.wordsBold}>{amountWords}</Text>
+          </Text>
+
+          <View style={[styles.dash, { marginBottom: 0 }]} />
+
+          <Text style={styles.thanks}>Merci pour votre confiance</Text>
         </View>
-        <View>
-          <View style={styles.row}>
-            <Text style={styles.rowLabel}>Reçu de</Text>
-            <Text style={styles.rowValue}>{data.clientName}</Text>
-          </View>
-          {data.clientPhone && (
-            <View style={styles.row}>
-              <Text style={styles.rowLabel}>Numéro</Text>
-              <Text style={styles.rowValue}>{data.clientPhone}</Text>
-            </View>
-          )}
-          <View style={styles.row}>
-            <Text style={styles.rowLabel}>Mode de paiement</Text>
-            <Text style={styles.rowValue}>{data.methodLabel}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.rowLabel}>Facture concernée</Text>
-            <Text style={styles.rowValue}>{data.invoiceNumber}</Text>
-          </View>
-          {data.objet && (
-            <View style={styles.row}>
-              <Text style={styles.rowLabel}>Objet</Text>
-              <Text style={styles.rowValue}>{data.objet}</Text>
-            </View>
-          )}
-        </View>
-        <Text style={styles.amountWords}>
-          Reçu la somme de <Text style={styles.amountWordsBold}>{amountWords}</Text>
-        </Text>
-        <Text style={styles.footer}>
-          {data.companyName}
-          {data.companyPhone ? ` · ${data.companyPhone}` : ""}
-          {data.companyAddress ? ` · ${data.companyAddress}` : ""}
-        </Text>
       </Page>
     </Document>
   );
