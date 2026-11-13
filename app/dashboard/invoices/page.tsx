@@ -224,7 +224,7 @@ function StatCard({
     <div
       className={`rounded-3xl px-3 py-3.5 sm:px-5 ${
         highlight
-          ? "bg-ledger-deep text-white"
+          ? "bg-ledger-dark text-white"
           : "border border-black/5 bg-white text-ink dark:border-white/10 dark:bg-[#262626] dark:text-white"
       }`}
     >
