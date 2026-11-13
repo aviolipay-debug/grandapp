@@ -14,11 +14,12 @@ export function formatDateShort(value: string | null | undefined): string {
   return `${m[3]} ${month} ${m[1]}`;
 }
 
-// "FAC-0003" devient "Facture N° 0003", "DEV-0001" devient "Devis N° 0001".
+// "FAC-0003" devient "Facture N° 003", "DEV-0001" devient "Devis N° 001".
 // Si le numéro n'a pas de préfixe, on le garde tel quel après "N°".
 export function formatDocNumber(label: string, number: string | null | undefined): string {
   const raw = (number ?? "").trim();
   if (!raw) return label;
-  const digits = raw.replace(/^[A-Za-z]+[-_ ]?/, "");
+  // On retire aussi un zéro de tête : "0003" s'affiche "003".
+  const digits = raw.replace(/^[A-Za-z]+[-_ ]?/, "").replace(/^0(?=\d{3,})/, "");
   return `${label} N° ${digits || raw}`;
 }
