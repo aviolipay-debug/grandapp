@@ -122,6 +122,7 @@ export default async function InvoicesPage() {
           value={stats.encaisse.toLocaleString("fr-FR")}
           subtitle={currency}
           accent="#7D2AE7"
+          highlight
           icon={<Wallet size={18} />}
         />
         <StatCard
@@ -210,26 +211,34 @@ function StatCard({
   subtitle,
   accent,
   icon,
+  highlight = false,
 }: {
   label: string;
   value: string | number;
   subtitle: string;
   accent: string;
   icon: React.ReactNode;
+  highlight?: boolean;
 }) {
   return (
-    <div className="rounded-3xl border border-black/5 bg-white px-3 py-3.5 text-ink dark:border-white/10 dark:bg-[#262626] dark:text-white sm:px-5">
+    <div
+      className={`rounded-3xl px-3 py-3.5 sm:px-5 ${
+        highlight
+          ? "bg-ledger-deep text-white"
+          : "border border-black/5 bg-white text-ink dark:border-white/10 dark:bg-[#262626] dark:text-white"
+      }`}
+    >
       <div className="flex items-start justify-between">
         <span className="text-xs font-bold uppercase tracking-wide">{label}</span>
         <div
           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-white"
-          style={{ backgroundColor: accent }}
+          style={{ backgroundColor: highlight ? "rgba(255,255,255,0.2)" : accent }}
         >
           {icon}
         </div>
       </div>
       <p className="font-display mt-1.5 whitespace-nowrap text-2xl font-extrabold leading-tight">{value}</p>
-      <p className="text-sm text-[#9CA3AF]">{subtitle}</p>
+      <p className={`text-sm ${highlight ? "text-white/80" : "text-[#9CA3AF]"}`}>{subtitle}</p>
     </div>
   );
 }
