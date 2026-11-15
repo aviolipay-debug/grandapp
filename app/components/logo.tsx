@@ -20,7 +20,7 @@ export function LogoIcon({
       className={className}
       aria-hidden="true"
     >
-      <rect width="264" height="264" rx="64" fill="#4C168F" />
+      <rect width="264" height="264" rx="64" fill="#7D2AE7" />
       <path
         d="M82 48h70l42 42v113a22 22 0 0 1-22 22H92a22 22 0 0 1-22-22V70a22 22 0 0 1 12-22Z"
         fill="#fff"
@@ -79,8 +79,7 @@ export default function Logo({
 }) {
   const devis =
     variant === "light" ? "text-white" : "text-[#17151D] dark:text-white";
-  const finance =
-    variant === "light" ? "text-ledger-light" : "text-[#4C168F] dark:text-ledger-light";
+  const finance = "text-[#7D2AE7]";
 
   return (
     <span
