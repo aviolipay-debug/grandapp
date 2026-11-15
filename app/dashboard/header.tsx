@@ -7,7 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { LogOut, Home, Wallet, Users, FileText, UserCircle2 } from "lucide-react";
 import ThemeToggle from "../theme-toggle";
 import { createClient } from "@/lib/supabase/client"; // adapte le chemin si besoin
-import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
+import Logo from "../components/logo";
 import LoadingOverlay from "../components/loading-overlay";
 
 // Pages principales du compte, préchargées dès l'arrivée sur le dashboard
@@ -101,11 +101,8 @@ export default function DashboardHeader() {
         <div className="flex items-center">
           <ThemeToggle />
         </div>
-        <Link
-          href="/dashboard"
-          className={`${vastron.className} justify-self-center text-2xl font-semibold text-ink dark:text-white`}
-        >
-          Devisfinance<span className="text-ledger-deep dark:text-ledger-light">.</span>
+        <Link href="/dashboard" aria-label="Devisfinance" className="justify-self-center">
+          <Logo size={28} />
         </Link>
         <div className="flex items-center justify-end">
           <button
@@ -122,11 +119,8 @@ export default function DashboardHeader() {
           Les pages qui l'affichent doivent avoir "md:pl-64" sur leur conteneur. */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col justify-between bg-[#181818] px-5 py-7 text-white md:flex">
         <div className="flex flex-col gap-8">
-          <Link
-            href="/dashboard"
-            className={`${vastron.className} px-1 text-2xl font-semibold text-white`}
-          >
-            Devisfinance<span className="text-ledger-light">.</span>
+          <Link href="/dashboard" aria-label="Devisfinance" className="px-1">
+            <Logo size={34} variant="light" />
           </Link>
 
           <nav className="flex flex-col gap-1.5" aria-label="Navigation principale">
