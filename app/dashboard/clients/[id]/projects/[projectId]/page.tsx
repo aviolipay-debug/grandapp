@@ -1,7 +1,7 @@
 // app/dashboard/clients/[id]/projects/[projectId]/page.tsx
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { formatDateFR } from "@/lib/format-date";
+import { formatDateShort } from "@/lib/format-short";
 import ProjectStatusButtons from "./ProjectStatusButtons";
 import DocumentPreviewRow from "./DocumentPreviewRow";
 
@@ -137,7 +137,7 @@ export default async function ProjectDetailPage({
                 iconBg="#EFE5FC"
                 iconColor="#7D2AE7"
                 title={`Devis · ${q.quote_number}`}
-                subtitle={`${formatDateFR(q.issue_date)} · ${statusLabels[q.status] ?? q.status}`}
+                subtitle={`${formatDateShort(q.issue_date)} · ${statusLabels[q.status] ?? q.status}`}
                 amount={`${Number(q.total).toLocaleString("fr-FR")} ${q.currency}`}
               />
             ))}
@@ -149,7 +149,7 @@ export default async function ProjectDetailPage({
                 iconBg="#E3F6EC"
                 iconColor="#0F7B4B"
                 title={`Facture · ${facture.invoice_number}`}
-                subtitle={formatDateFR(facture.issue_date)}
+                subtitle={formatDateShort(facture.issue_date)}
                 amount={`${Number(facture.total).toLocaleString("fr-FR")} ${facture.currency}`}
               />
             )}
@@ -161,7 +161,7 @@ export default async function ProjectDetailPage({
                 iconBg="#E6F0FB"
                 iconColor="#1D5799"
                 title={`Bordereau de livraison · ${bordereau.invoice_number}`}
-                subtitle={formatDateFR(bordereau.issue_date)}
+                subtitle={formatDateShort(bordereau.issue_date)}
               />
             )}
           </div>
