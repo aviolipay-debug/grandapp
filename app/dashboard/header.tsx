@@ -107,7 +107,7 @@ export default function DashboardHeader() {
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 rounded-full px-2.5 py-2 text-xs font-semibold text-ink transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
           >
-            <Heart size={16} className="text-stamp" />
+            <Heart size={16} />
             Soutenir
           </a>
         </div>
@@ -160,7 +160,7 @@ export default function DashboardHeader() {
             rel="noopener noreferrer"
             className="flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-[#D1D5DB] transition-colors hover:bg-white/10 hover:text-white"
           >
-            <Heart size={18} className="text-stamp" />
+            <Heart size={18} />
             Nous soutenir
           </a>
 
