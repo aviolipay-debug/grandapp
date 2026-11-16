@@ -4,7 +4,7 @@
 import { useEffect, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, Home, Wallet, Users, FileText, UserCircle2 } from "lucide-react";
+import { LogOut, Home, Wallet, Users, FileText, UserCircle2, Heart } from "lucide-react";
 import ThemeToggle from "../theme-toggle";
 import { createClient } from "@/lib/supabase/client"; // adapte le chemin si besoin
 import Logo from "../components/logo";
@@ -27,6 +27,10 @@ const MAIN_ROUTES = [
   "/dashboard/quotes",
   "/dashboard/profile",
 ];
+
+// Adresse de la page "Nous soutenir" (page de don, lien Mobile Money, etc.).
+// Remplacez-la par votre vrai lien : le bouton s'ouvre dans un nouvel onglet.
+const SUPPORT_URL = "#";
 
 // Lien du menu latéral (ordinateur) : l'élément actif est plein violet,
 // les autres sont gris clair avec un léger survol.
@@ -152,18 +156,33 @@ export default function DashboardHeader() {
               icon={<FileText size={18} />}
               active={isActive("/dashboard/quotes")}
             />
-
-            <p className="mt-5 mb-1 px-3.5 text-[11px] font-semibold uppercase tracking-wider text-white/55">
-              Compte
-            </p>
-            <SideLink
-              href="/dashboard/profile"
-              label="Profil"
-              icon={<UserCircle2 size={18} />}
-              active={isActive("/dashboard/profile")}
-              onClick={handleProfileClick}
-            />
           </nav>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <a
+            href={SUPPORT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-[#D1D5DB] transition-colors hover:bg-white/10 hover:text-white"
+          >
+            <Heart size={18} className="text-stamp" />
+            Nous soutenir
+          </a>
+
+          <Link
+            href="/dashboard/profile"
+            onClick={handleProfileClick}
+            aria-current={isActive("/dashboard/profile") ? "page" : undefined}
+            className={`flex items-center gap-3 rounded-xl border px-4 py-3.5 text-sm font-semibold transition-colors ${
+              isActive("/dashboard/profile")
+                ? "border-ledger-deep bg-ledger-deep text-white"
+                : "border-white/15 bg-white/5 text-white hover:bg-white/10"
+            }`}
+          >
+            <UserCircle2 size={20} />
+            Profil
+          </Link>
         </div>
       </aside>
     </>
