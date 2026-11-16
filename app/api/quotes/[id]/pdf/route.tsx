@@ -7,6 +7,8 @@ import DocumentPDF from "@/lib/pdf/document";
 // paiements, profil), on désactive tout cache Next.js sur cette route.
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+// Même région que la base Supabase (Stockholm) : chaque requête est bien plus rapide.
+export const preferredRegion = "arn1";
 
 export async function GET(
   _req: Request,
@@ -14,23 +16,25 @@ export async function GET(
 ) {
   const supabase = createClient();
 
-  const { data: quote } = await supabase
-    .from("quotes")
-    .select(
-      "*, clients(name, email, address, phone), profiles:owner_id(company_name, company_address, company_logo_url, company_phone, company_contacts, invoice_template, rccm_number, tax_ids)"
-    )
-    .eq("id", params.id)
-    .single();
+  // Les deux requêtes sont indépendantes : on les lance en parallèle.
+  const [{ data: quote }, { data: items }] = await Promise.all([
+    supabase
+      .from("quotes")
+      .select(
+        "*, clients(name, email, address, phone), profiles:owner_id(company_name, company_address, company_logo_url, company_phone, company_contacts, invoice_template, rccm_number, tax_ids)"
+      )
+      .eq("id", params.id)
+      .single(),
+    supabase
+      .from("quote_items")
+      .select("*")
+      .eq("quote_id", params.id)
+      .order("sort_order"),
+  ]);
 
   if (!quote) {
     return new Response("Devis introuvable", { status: 404 });
   }
-
-  const { data: items } = await supabase
-    .from("quote_items")
-    .select("*")
-    .eq("quote_id", params.id)
-    .order("sort_order");
 
   // Numéro affiché sous l'ÉMETTEUR = le "Contact primaire" saisi dans le
   // profil (profiles.company_contacts[0]), pas l'ancien champ company_phone.
