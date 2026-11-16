@@ -54,8 +54,7 @@ export default async function ClientsPage() {
                       )}
                     </div>
                     <p className="mt-1 truncate text-sm text-[#6B7280] dark:text-white/50">
-                      {c.email ?? "-"}
-                      {c.phone ? ` · ${c.phone}` : ""}
+                      {c.phone ?? "-"}
                     </p>
                   </div>
 
