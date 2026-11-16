@@ -39,8 +39,7 @@ export default async function ClientDetailPage({
             {client.name}
           </h1>
           <p className="text-sm text-[#6B7280] dark:text-white/50">
-            {client.email ?? "-"}
-            {client.phone ? ` · ${client.phone}` : ""}
+            {client.phone ?? "-"}
           </p>
         </div>
       </div>
