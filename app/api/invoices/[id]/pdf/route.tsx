@@ -1,6 +1,6 @@
 import { renderToStream } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/server";
-import { formatDateFR } from "@/lib/format-date";
+import { formatDateShort } from "@/lib/format-short";
 import DocumentPDF from "@/lib/pdf/document";
 
 // Le PDF doit toujours refléter les données les plus récentes (client,
@@ -65,8 +65,8 @@ export async function GET(
         // (created_at), pas invoice.issue_date, ce dernier est copié depuis
         // le devis d'origine au moment de la génération automatique de la
         // facture/bordereau, et affichait donc à tort la date du devis.
-        issueDate: formatDateFR(invoice.created_at),
-        dueOrExpiryDate: formatDateFR(invoice.due_date) || null,
+        issueDate: formatDateShort(invoice.created_at),
+        dueOrExpiryDate: formatDateShort(invoice.due_date) || null,
         companyName: invoice.profiles?.company_name ?? "Votre entreprise",
         companyAddress: invoice.profiles?.company_address ?? null,
         companyLogoUrl: invoice.profiles?.company_logo_url ?? null,
