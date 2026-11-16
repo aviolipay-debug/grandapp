@@ -1,6 +1,6 @@
 import { renderToStream } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/server";
-import { formatDateFR } from "@/lib/format-date";
+import { formatDateShort } from "@/lib/format-short";
 import DocumentPDF from "@/lib/pdf/document";
 
 // Le PDF doit toujours refléter les données les plus récentes (client,
@@ -59,8 +59,8 @@ export async function GET(
         kind: "Devis",
         number: quote.quote_number,
         objet: quote.objet ?? null,
-        issueDate: formatDateFR(quote.issue_date),
-        dueOrExpiryDate: formatDateFR(quote.expiry_date) || null,
+        issueDate: formatDateShort(quote.issue_date),
+        dueOrExpiryDate: formatDateShort(quote.expiry_date) || null,
         companyName: quote.profiles?.company_name ?? "Votre entreprise",
         companyAddress: quote.profiles?.company_address ?? null,
         companyLogoUrl: quote.profiles?.company_logo_url ?? null,
