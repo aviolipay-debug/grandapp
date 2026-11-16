@@ -30,7 +30,7 @@ export default function ThemeSwitch() {
       type="button"
       onClick={toggle}
       aria-label={dark ? "Passer au thème clair" : "Passer au thème sombre"}
-      className="flex items-center gap-1.5 rounded-full px-2.5 py-2 text-xs font-semibold text-ink transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
+      className="flex items-center gap-1.5 rounded-full px-1 py-2 text-xs font-semibold text-ink transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
     >
       {dark ? <Sun size={16} /> : <Moon size={16} />}
       {dark ? "Clair" : "Sombre"}

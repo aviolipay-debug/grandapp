@@ -93,7 +93,7 @@ export default function DashboardHeader() {
       <LoadingOverlay show={isProfileNavPending} message="Chargement du profil…" />
 
       {/* Header mobile : thème / logo centré / bouton Soutenir (la nav vit dans la bottom-nav) */}
-      <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center border-b border-paperline bg-white px-[6vw] py-4 dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
+      <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center gap-4 border-b border-paperline bg-white px-[6vw] py-4 dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
         <div className="flex items-center">
           <ThemeSwitch />
         </div>
@@ -105,7 +105,7 @@ export default function DashboardHeader() {
             href={SUPPORT_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 rounded-full px-2.5 py-2 text-xs font-semibold text-ink transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
+            className="flex items-center gap-1.5 rounded-full px-1 py-2 text-xs font-semibold text-ink transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
           >
             <Heart size={16} />
             Soutenir
