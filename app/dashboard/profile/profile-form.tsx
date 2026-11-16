@@ -4,13 +4,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Building2, Lock, ShieldCheck, AlertTriangle, LogOut, Eye, EyeOff, ChevronDown } from "lucide-react";
+import { Building2, Lock, ShieldCheck, LogOut, Eye, EyeOff, ChevronDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { isValidPin } from "@/lib/pin";
 import Spinner from "@/app/components/spinner";
 import { setFinancePin, verifyOldFinancePin } from "./actions";
-
-const RESET_CONFIRM_WORD = "SUPPRIMER";
 
 export default function ProfileForm({
   initialEmail,
@@ -126,140 +124,9 @@ export default function ProfileForm({
     }, 900);
   }
 
-  // Réinitialisation du compte : supprime toutes les données métier
-  // (clients, projets, devis, factures, paiements) mais garde la
-  // configuration du compte (profil, entreprise, PIN).
-  const [showResetModal, setShowResetModal] = useState(false);
-  const [resetConfirmText, setResetConfirmText] = useState("");
-  const [resetLoading, setResetLoading] = useState(false);
-  const [resetError, setResetError] = useState<string | null>(null);
-
-  function openResetModal() {
-    setResetConfirmText("");
-    setResetError(null);
-    setShowResetModal(true);
-  }
-
   async function handleSignOut() {
     await supabase.auth.signOut();
     router.push("/login");
-    router.refresh();
-  }
-
-  async function handleResetAccount() {
-    setResetError(null);
-
-    if (resetConfirmText.trim().toUpperCase() !== RESET_CONFIRM_WORD) {
-      setResetError(`Tapez exactement "${RESET_CONFIRM_WORD}" pour confirmer.`);
-      return;
-    }
-
-    setResetLoading(true);
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      setResetError("Session expirée, reconnectez-vous.");
-      setResetLoading(false);
-      return;
-    }
-
-    // Ordre de suppression : enfants d'abord, pour éviter les erreurs de
-    // clé étrangère même si aucune suppression en cascade n'est configurée
-    // côté base de données.
-    const { data: quotesOwned } = await supabase
-      .from("quotes")
-      .select("id")
-      .eq("owner_id", user.id);
-    const quoteIds = (quotesOwned ?? []).map((q) => q.id);
-
-    const { data: invoicesOwned } = await supabase
-      .from("invoices")
-      .select("id")
-      .eq("owner_id", user.id);
-    const invoiceIds = (invoicesOwned ?? []).map((i) => i.id);
-
-    if (invoiceIds.length > 0) {
-      const { error: paymentsError } = await supabase
-        .from("payments")
-        .delete()
-        .in("invoice_id", invoiceIds);
-      if (paymentsError) {
-        setResetError(`Étape paiements : ${paymentsError.message}`);
-        setResetLoading(false);
-        return;
-      }
-    }
-
-    if (quoteIds.length > 0) {
-      const { error: itemsError } = await supabase
-        .from("quote_items")
-        .delete()
-        .in("quote_id", quoteIds);
-      if (itemsError) {
-        setResetError(`Étape lignes de devis : ${itemsError.message}`);
-        setResetLoading(false);
-        return;
-      }
-    }
-
-    const { error: invoicesError } = await supabase
-      .from("invoices")
-      .delete()
-      .eq("owner_id", user.id);
-    if (invoicesError) {
-      setResetError(`Étape factures : ${invoicesError.message}`);
-      setResetLoading(false);
-      return;
-    }
-
-    const { error: quotesError } = await supabase
-      .from("quotes")
-      .delete()
-      .eq("owner_id", user.id);
-    if (quotesError) {
-      setResetError(`Étape devis : ${quotesError.message}`);
-      setResetLoading(false);
-      return;
-    }
-
-    const { error: projectsError } = await supabase
-      .from("projects")
-      .delete()
-      .eq("owner_id", user.id);
-    if (projectsError) {
-      setResetError(`Étape projets : ${projectsError.message}`);
-      setResetLoading(false);
-      return;
-    }
-
-    const { error: clientsError } = await supabase
-      .from("clients")
-      .delete()
-      .eq("owner_id", user.id);
-    if (clientsError) {
-      setResetError(`Étape clients : ${clientsError.message}`);
-      setResetLoading(false);
-      return;
-    }
-
-    // Le code PIN est aussi effacé : un nouveau devra être défini.
-    const { error: pinResetError } = await supabase
-      .from("profiles")
-      .update({ finance_pin_hash: null })
-      .eq("id", user.id);
-    if (pinResetError) {
-      setResetError(`Étape code PIN : ${pinResetError.message}`);
-      setResetLoading(false);
-      return;
-    }
-    setHasPin(false);
-
-    setResetLoading(false);
-    setShowResetModal(false);
-    router.push("/dashboard");
     router.refresh();
   }
 
@@ -577,16 +444,6 @@ export default function ProfileForm({
         Se déconnecter
       </button>
 
-      {/* Zone dangereuse */}
-      <button
-        type="button"
-        onClick={openResetModal}
-        className="flex items-center justify-center gap-2 rounded-xl border-[1.5px] border-stamp bg-stamp/5 py-3.5 text-sm font-bold text-stamp transition-colors hover:bg-stamp hover:text-white"
-      >
-        <AlertTriangle size={16} />
-        Réinitialiser mon compte
-      </button>
-
       {/* Popup de saisie du code PIN */}
       {showPinModal && (
         <div
@@ -697,73 +554,6 @@ export default function ProfileForm({
         </div>
       )}
 
-      {/* Popup d'avertissement : réinitialisation du compte */}
-      {showResetModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
-          onClick={() => !resetLoading && setShowResetModal(false)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-paperline bg-white p-6 dark:border-white/10 dark:bg-[#262626] sm:p-7"
-          >
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-stamp/15 text-stamp">
-              <AlertTriangle size={22} />
-            </div>
-            <h2 className="text-center font-display text-lg font-bold text-ink dark:text-white">
-              Réinitialiser le compte ?
-            </h2>
-            <p className="mt-2 text-center text-sm text-muted dark:text-white/50">
-              Tous vos clients, projets, devis, factures et paiements seront{" "}
-              <span className="font-semibold text-stamp">définitivement supprimés</span>, ainsi
-              que votre code PIN (à redéfinir ensuite). Votre profil et votre entreprise
-              resteront intacts. Cette action est irréversible.
-            </p>
-
-            <div className="mt-5">
-              <label className={labelClass}>
-                Tapez <span className="font-mono font-bold">{RESET_CONFIRM_WORD}</span> pour
-                confirmer
-              </label>
-              <input
-                type="text"
-                value={resetConfirmText}
-                onChange={(e) => setResetConfirmText(e.target.value)}
-                placeholder={RESET_CONFIRM_WORD}
-                autoFocus
-                disabled={resetLoading}
-                className="w-full rounded-xl border border-paperline bg-paper px-4 py-3 text-center text-sm uppercase tracking-widest text-ink outline-none transition-colors focus:border-stamp dark:border-white/10 dark:bg-[#2F2F2F] dark:text-white"
-              />
-            </div>
-
-            {resetError && (
-              <p className="mt-3 rounded-xl bg-stamp/10 px-4 py-2.5 text-sm text-stamp">
-                {resetError}
-              </p>
-            )}
-
-            <div className="mt-5 flex gap-3">
-              <button
-                type="button"
-                onClick={() => setShowResetModal(false)}
-                disabled={resetLoading}
-                className={secondaryBtn}
-              >
-                Annuler
-              </button>
-              <button
-                type="button"
-                onClick={handleResetAccount}
-                disabled={resetLoading}
-                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-stamp py-3 text-sm font-bold text-white transition-colors hover:bg-stamp/90 disabled:opacity-60"
-              >
-                {resetLoading && <Spinner size={16} />}
-                {resetLoading ? "Suppression…" : "Tout supprimer"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
