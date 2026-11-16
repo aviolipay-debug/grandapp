@@ -165,15 +165,6 @@ export default function DashboardHeader() {
             />
           </nav>
         </div>
-
-        <button
-          type="button"
-          onClick={handleSignOut}
-          className="flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-[#D1D5DB] transition-colors hover:bg-white/10 hover:text-white"
-        >
-          <LogOut size={18} />
-          Se déconnecter
-        </button>
       </aside>
     </>
   );
