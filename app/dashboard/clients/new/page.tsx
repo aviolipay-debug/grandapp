@@ -169,6 +169,10 @@ export default function NewClientPage() {
               </label>
               <input
                 value={form.phone}
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="+229 01 00 00 00 00"
                 onChange={(e) => handlePhoneChange(e.target.value)}
                 className="w-full rounded-lg border border-paperline bg-white px-4 py-2.5 text-sm transition-colors focus:border-ledger-deep focus:outline-none focus:ring-2 focus:ring-ledger-deep/10 dark:border-white/10 dark:bg-[#262626] dark:text-white"
               />
