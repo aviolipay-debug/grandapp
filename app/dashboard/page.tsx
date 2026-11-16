@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { FileText, Users, FolderKanban, Clock, FolderPlus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server"; // adapte le chemin si besoin
+import { formatDateShort } from "@/lib/format-short";
 import { poppins } from "@/lib/fonts";
 import ProjetsRecentsSection from "./projets-recents";
 import DashboardExitGuard from "./dashboard-exit-guard";
@@ -91,7 +92,7 @@ export default async function DashboardPage() {
 
       return {
         id: p.id,
-        date: new Date(p.created_at).toLocaleDateString("fr-FR"),
+        date: formatDateShort(p.created_at),
         projet: p.name,
         statut: statutAffiche,
         client: (p as any).clients?.name ?? "-",
