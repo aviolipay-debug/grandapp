@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { pdf } from "@react-pdf/renderer";
-import * as pdfjsLib from "pdfjs-dist";
 import { createClient } from "@/lib/supabase/client";
 import DashboardHeader from "../dashboard/header";
 import BottomNav from "../dashboard/bottom-nav";
@@ -15,9 +14,40 @@ import Spinner from "@/app/components/spinner";
 // pdfjs-dist a besoin d'un "worker" séparé pour analyser le PDF, on pointe
 // vers celui hébergé par cdnjs (même version que la librairie installée),
 // ce qui évite toute configuration de bundling côté Next.js/Webpack.
-if (typeof window !== "undefined") {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+// La librairie n'est chargée qu'au moment où on en a besoin (à partir de
+// l'étape 3), pas au premier affichage de la page.
+let pdfjsPromise: Promise<typeof import("pdfjs-dist")> | null = null;
+function loadPdfjs() {
+  if (!pdfjsPromise) {
+    pdfjsPromise = import("pdfjs-dist").then((m) => {
+      m.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${m.version}/pdf.worker.min.mjs`;
+      return m;
+    });
+  }
+  return pdfjsPromise;
 }
+
+// Réduit le logo (max 256 px) une seule fois : un logo de plusieurs Mo serait
+// sinon décodé et dessiné dans chacun des modèles, ce qui ralentit chaque rendu.
+async function downscaleLogo(src: string, max = 256): Promise<string> {
+  try {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = src;
+    await img.decode();
+    const ratio = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    if (ratio >= 1) return src;
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(img.naturalWidth * ratio);
+    canvas.height = Math.round(img.naturalHeight * ratio);
+    canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL("image/png");
+  } catch {
+    return src;
+  }
+}
+
+const nextTick = () => new Promise<void>((r) => setTimeout(r, 0));
 
 // Échelle de rendu des vignettes de l'étape 5. Les vignettes ne s'affichent
 // qu'en ~160px de haut (h-40) : inutile de rasteriser le PDF à pleine
@@ -31,6 +61,7 @@ const THUMBNAIL_SCALE = 0.55;
 // sur desktop ET sur mobile (Safari/Chrome Android n'affichent pas les PDF
 // dans une iframe, ils proposent juste un écran "Ouvrir le fichier").
 async function renderFirstPageToImage(blob: Blob, scale: number = 1.4): Promise<string> {
+  const pdfjsLib = await loadPdfjs();
   const arrayBuffer = await blob.arrayBuffer();
   const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
   const page = await pdfDoc.getPage(1);
@@ -202,6 +233,54 @@ export default function OnboardingPage() {
   //    premier passage sur cette étape : une seule régénération a lieu,
   //    déclenchée par le changement de logoPreview, toujours avant que
   //    l'utilisateur n'atteigne l'étape Facture dans le cas courant.
+  // Préparation en arrière-plan dès l'étape "Structure" : chargement de la
+  // librairie d'aperçu, puis un rendu à blanc d'un modèle pour "chauffer" le
+  // moteur PDF (polices, calcul de mise en page). Les vrais aperçus, eux,
+  // attendent l'étape "Fichier joint" : avant, le nom, l'adresse et le logo ne
+  // sont pas encore saisis et il faudrait tout recalculer.
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      try {
+        await loadPdfjs();
+        if (cancelled) return;
+        const Component = TEMPLATES[invoiceTemplates[0]];
+        const warm = {
+          kind: "Facture",
+          number: "0001",
+          objet: null,
+          issueDate: "01/01/2026",
+          dueOrExpiryDate: null,
+          companyName: "Votre entreprise",
+          companyAddress: null,
+          companyLogoUrl: null,
+          companyPhone: null,
+          clientName: "Client",
+          clientPhone: null,
+          clientEmail: null,
+          clientAddress: null,
+          items: [{ description: "Prestation", quantity: 1, unit_price: 1000, line_total: 1000 }],
+          subtotal: 1000,
+          discountRate: 0,
+          taxRate: 0,
+          total: 1000,
+          amountPaid: 0,
+          currency: "FCFA",
+          notes: null,
+        } as DocumentData;
+        const blob = await pdf(<Component data={warm} />).toBlob();
+        if (!cancelled) await renderFirstPageToImage(blob, 0.1);
+      } catch {
+        // Simple préparation : une erreur ici n'a aucune conséquence.
+      }
+    };
+    const t = setTimeout(run, 1200);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, []);
+
   useEffect(() => {
     if (step < 3) return;
 
@@ -217,7 +296,7 @@ export default function OnboardingPage() {
     setPreviewsLoading(true);
     setPreviewUrls({});
 
-    const previewData: DocumentData = {
+    const buildData = (logo: string | null): DocumentData => ({
       kind: "Facture",
       number: "0001",
       objet: "Exemple de prestation",
@@ -225,7 +304,7 @@ export default function OnboardingPage() {
       dueOrExpiryDate: null,
       companyName: companyName || "Votre entreprise",
       companyAddress: siegeSocial || null,
-      companyLogoUrl: logoPreview,
+      companyLogoUrl: logo,
       companyPhone: contacts[0]?.numero
         ? `${contacts[0].indicatif} ${contacts[0].numero}`
         : null,
@@ -244,13 +323,24 @@ export default function OnboardingPage() {
       amountPaid: 0,
       currency: "FCFA",
       notes: null,
-    };
+    });
 
     // Chaque modèle est généré indépendamment : dès qu'un rendu est prêt, on
     // met à jour l'état pour afficher SA vignette, sans attendre les autres.
-    const renderJobs = invoiceTemplates.map((id) =>
-      (async () => {
+    // Un modèle à la fois : la première vignette apparaît bien plus tôt qu'avec
+    // 7 rendus lancés ensemble (le navigateur n'a qu'un seul fil de calcul), et
+    // la page reste fluide entre deux rendus. Le modèle choisi passe en premier.
+    (async () => {
+      const smallLogo = logoPreview ? await downscaleLogo(logoPreview) : null;
+      const previewData = buildData(smallLogo);
+      const order: TemplateId[] = [
+        ...invoiceTemplates.filter((id) => id === template),
+        ...invoiceTemplates.filter((id) => id !== template),
+      ];
+      for (const id of order) {
+        if (cancelled) return;
         try {
+          await nextTick();
           const Component = TEMPLATES[id];
           const blob = await pdf(<Component data={previewData} />).toBlob();
           const imageUrl = await renderFirstPageToImage(blob, THUMBNAIL_SCALE);
@@ -258,18 +348,11 @@ export default function OnboardingPage() {
             setPreviewUrls((prev) => ({ ...prev, [id]: imageUrl }));
           }
         } catch {
-          // Cette vignette restera "Aperçu indisponible", les autres modèles
-          // continuent leur génération indépendamment.
+          // Cette vignette restera "Aperçu indisponible", on passe au modèle suivant.
         }
-      })()
-    );
-
-    // Le loader global ne disparaît qu'une fois tous les modèles traités
-    // (succès ou échec), mais l'affichage individuel des vignettes ne
-    // dépend pas de ça.
-    Promise.allSettled(renderJobs).then(() => {
+      }
       if (!cancelled) setPreviewsLoading(false);
-    });
+    })();
 
     return () => {
       cancelled = true;
