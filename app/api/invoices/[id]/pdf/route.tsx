@@ -7,6 +7,8 @@ import DocumentPDF from "@/lib/pdf/document";
 // paiements, profil), on désactive tout cache Next.js sur cette route.
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+// Même région que la base Supabase (Stockholm) : chaque requête est bien plus rapide.
+export const preferredRegion = "arn1";
 
 export async function GET(
   _req: Request,
@@ -14,23 +16,25 @@ export async function GET(
 ) {
   const supabase = createClient();
 
-  const { data: invoice } = await supabase
-    .from("invoices")
-    .select(
-      "*, clients(name, email, address, phone), profiles:owner_id(company_name, company_address, company_logo_url, company_phone, company_contacts, invoice_template, rccm_number, tax_ids)"
-    )
-    .eq("id", params.id)
-    .single();
+  // Les deux requêtes sont indépendantes : on les lance en parallèle.
+  const [{ data: invoice }, { data: items }] = await Promise.all([
+    supabase
+      .from("invoices")
+      .select(
+        "*, clients(name, email, address, phone), profiles:owner_id(company_name, company_address, company_logo_url, company_phone, company_contacts, invoice_template, rccm_number, tax_ids)"
+      )
+      .eq("id", params.id)
+      .single(),
+    supabase
+      .from("invoice_items")
+      .select("*")
+      .eq("invoice_id", params.id)
+      .order("sort_order"),
+  ]);
 
   if (!invoice) {
     return new Response("Facture introuvable", { status: 404 });
   }
-
-  const { data: items } = await supabase
-    .from("invoice_items")
-    .select("*")
-    .eq("invoice_id", params.id)
-    .order("sort_order");
 
   const kind = invoice.document_type === "bordereau" ? "Bordereau" : "Facture";
 
