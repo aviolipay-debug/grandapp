@@ -5,7 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import LoadingOverlay from "../components/loading-overlay";
 import Spinner from "@/app/components/spinner";
-import { vastron } from "@/lib/fonts/vastron"; // police sur-mesure du logo
+import Logo from "../components/logo";
 
 export default function SignupForm() {
   const supabase = createClient();
@@ -73,11 +73,8 @@ export default function SignupForm() {
       <main className="relative isolate flex h-[100dvh] flex-col items-center overflow-hidden bg-[#F0F0F3] px-6 py-8 dark:bg-[#2F2F2F]">
 
         <div className="flex h-full w-full max-w-sm flex-1 flex-col items-center justify-between">
-          <Link
-            href="/"
-            className={`${vastron.className} block text-center text-3xl font-semibold text-ink dark:text-white`}
-          >
-            Devisfinance<span className="text-ledger-deep dark:text-ledger-light">.</span>
+          <Link href="/" aria-label="Devisfinance" className="block text-center flex justify-center">
+            <Logo size={40} />
           </Link>
 
           {success ? (
