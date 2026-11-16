@@ -1,11 +1,12 @@
 // app/dashboard/header.tsx
 "use client";
 
-import { useEffect, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Home, Wallet, Users, FileText, UserCircle2, Heart } from "lucide-react";
 import ThemeSwitch from "../components/theme-switch";
+import SupportModal from "../components/support-modal";
 import Logo from "../components/logo";
 import LoadingOverlay from "../components/loading-overlay";
 
@@ -26,10 +27,6 @@ const MAIN_ROUTES = [
   "/dashboard/quotes",
   "/dashboard/profile",
 ];
-
-// Adresse de la page "Nous soutenir" (page de don, lien Mobile Money, etc.).
-// Remplacez-la par votre vrai lien : le bouton s'ouvre dans un nouvel onglet.
-const SUPPORT_URL = "#";
 
 // Lien du menu latéral (ordinateur) : l'élément actif est plein violet,
 // les autres sont gris clair avec un léger survol.
@@ -67,6 +64,7 @@ export default function DashboardHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const [isProfileNavPending, startProfileNav] = useTransition();
+  const [supportOpen, setSupportOpen] = useState(false);
 
   // Précharge le contenu des pages principales dès que ce header est monté -
   // c'est-à-dire dès que l'utilisateur arrive sur une page du dashboard,
@@ -91,6 +89,7 @@ export default function DashboardHeader() {
   return (
     <>
       <LoadingOverlay show={isProfileNavPending} message="Chargement du profil…" />
+      <SupportModal open={supportOpen} onClose={() => setSupportOpen(false)} />
 
       {/* Header mobile : thème / logo centré / bouton Soutenir (la nav vit dans la bottom-nav) */}
       <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center gap-4 border-b border-paperline bg-white px-[6vw] py-4 dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
@@ -101,15 +100,14 @@ export default function DashboardHeader() {
           <Logo size={24} />
         </Link>
         <div className="flex items-center justify-end">
-          <a
-            href={SUPPORT_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => setSupportOpen(true)}
             className="flex items-center gap-1.5 rounded-full px-1 py-2 text-xs font-semibold text-ink transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
           >
             <Heart size={16} />
             Soutenir
-          </a>
+          </button>
         </div>
       </header>
 
@@ -154,15 +152,14 @@ export default function DashboardHeader() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <a
-            href={SUPPORT_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => setSupportOpen(true)}
             className="flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-[#D1D5DB] transition-colors hover:bg-white/10 hover:text-white"
           >
             <Heart size={18} />
             Nous soutenir
-          </a>
+          </button>
 
           <Link
             href="/dashboard/profile"
