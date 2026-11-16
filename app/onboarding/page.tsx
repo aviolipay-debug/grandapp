@@ -432,7 +432,7 @@ export default function OnboardingPage() {
       <main className="relative isolate flex flex-1 items-start justify-center px-6 py-12 pb-24 md:items-center md:pb-12">
 
         <div className="w-full max-w-md rounded-2xl border border-paperline bg-white p-6 shadow-[0_10px_30px_-15px_rgba(14,19,24,0.25)] dark:border-white/10 dark:bg-[#3a3a3a] dark:shadow-none sm:p-8">
-        <p className="mb-4 text-center text-base font-bold text-ink dark:text-white sm:mb-6">
+        <p className="font-display mb-4 text-center text-base font-bold text-ink dark:text-white sm:mb-6">
           Votre profil
         </p>
         <div className="mb-5 flex gap-2 sm:mb-8">
