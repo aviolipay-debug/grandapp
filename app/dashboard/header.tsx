@@ -4,9 +4,8 @@
 import { useEffect, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, Home, Wallet, Users, FileText, UserCircle2, Heart } from "lucide-react";
-import ThemeToggle from "../theme-toggle";
-import { createClient } from "@/lib/supabase/client"; // adapte le chemin si besoin
+import { Home, Wallet, Users, FileText, UserCircle2, Heart } from "lucide-react";
+import ThemeSwitch from "../components/theme-switch";
 import Logo from "../components/logo";
 import LoadingOverlay from "../components/loading-overlay";
 
@@ -67,7 +66,6 @@ function SideLink({
 export default function DashboardHeader() {
   const pathname = usePathname();
   const router = useRouter();
-  const supabase = createClient();
   const [isProfileNavPending, startProfileNav] = useTransition();
 
   // Précharge le contenu des pages principales dès que ce header est monté -
@@ -90,32 +88,28 @@ export default function DashboardHeader() {
   const isActive = (href: string) =>
     href === "/dashboard" ? pathname === href : !!pathname?.startsWith(href);
 
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
-  }
-
   return (
     <>
       <LoadingOverlay show={isProfileNavPending} message="Chargement du profil…" />
 
-      {/* Header mobile : toggle / logo centré / icône déconnexion (la nav vit dans la bottom-nav) */}
+      {/* Header mobile : thème / logo centré / bouton Soutenir (la nav vit dans la bottom-nav) */}
       <header className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center border-b border-paperline bg-white px-[6vw] py-4 dark:border-white/10 dark:bg-[#2F2F2F] md:hidden">
         <div className="flex items-center">
-          <ThemeToggle />
+          <ThemeSwitch />
         </div>
         <Link href="/dashboard" aria-label="Devisfinance" className="justify-self-center">
-          <Logo size={28} />
+          <Logo size={24} />
         </Link>
         <div className="flex items-center justify-end">
-          <button
-            onClick={handleSignOut}
-            aria-label="Se déconnecter"
-            className="flex h-9 w-9 items-center justify-center rounded-full text-ink hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
+          <a
+            href={SUPPORT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 rounded-full px-2.5 py-2 text-xs font-semibold text-ink transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
           >
-            <LogOut size={18} />
-          </button>
+            <Heart size={16} className="text-stamp" />
+            Soutenir
+          </a>
         </div>
       </header>
 
