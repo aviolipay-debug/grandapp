@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Building2, User, FolderKanban, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { formatDateShort } from "@/lib/format-short";
 import DeleteButton from "@/app/components/delete-button";
 
 export default async function ClientDetailPage({
@@ -78,7 +79,7 @@ export default async function ClientDetailPage({
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-ink dark:text-white">{p.name}</p>
                     <p className="mt-0.5 text-sm text-[#6B7280] dark:text-white/50">
-                      Créé le {new Date(p.created_at).toLocaleDateString("fr-FR")}
+                      Créé le {formatDateShort(p.created_at)}
                     </p>
                   </div>
                   <ChevronRight size={18} className="hidden shrink-0 text-[#9CA3AF] sm:block" />
