@@ -8,10 +8,8 @@ import { X } from "lucide-react";
 
 const AMOUNTS = [1000, 3000, 5000, 10000];
 
-// Liens de paiement par montant (Mobile Money, page de don, etc.).
-// Exemple : { 1000: "https://...", 3000: "https://..." }
-// Tant qu'un montant n'a pas de lien, la carte est seulement sélectionnée.
-const PAYMENT_LINKS: Record<number, string> = {};
+// Page de paiement FedaPay, ouverte dans un nouvel onglet pour tous les montants.
+const PAYMENT_URL = "https://me.fedapay.com/devisfinance";
 
 function formatAmount(n: number) {
   return `${n.toLocaleString("fr-FR")} F`;
@@ -38,8 +36,7 @@ export default function SupportModal({
 
   function choose(amount: number) {
     setSelected(amount);
-    const link = PAYMENT_LINKS[amount];
-    if (link) window.open(link, "_blank", "noopener,noreferrer");
+    window.open(PAYMENT_URL, "_blank", "noopener,noreferrer");
   }
 
   return (
