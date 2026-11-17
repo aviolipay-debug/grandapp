@@ -10,6 +10,7 @@ import LoadingOverlay from "../components/loading-overlay";
 import { TEMPLATES, type TemplateId } from "@/lib/pdf/templates";
 import type { DocumentData } from "@/lib/pdf/types";
 import Spinner from "@/app/components/spinner";
+import SectorPicker from "../components/sector-picker";
 
 // pdfjs-dist a besoin d'un "worker" séparé pour analyser le PDF, on pointe
 // vers celui hébergé par cdnjs (même version que la librairie installée),
@@ -85,15 +86,35 @@ const steps = [
 ];
 
 const sectors = [
-  "Commerce & vente",
-  "Services & conseil",
-  "BTP & construction",
-  "Restauration & hôtellerie",
-  "Technologie",
-  "Santé",
-  "Éducation",
-  "Transport & logistique",
-  "Agriculture",
+  "Services Professionnels",
+  "Commerce de Détail",
+  "Restauration et Alimentation",
+  "Santé et Bien-être",
+  "Services Financiers",
+  "Technologie de l'Information",
+  "Bâtiment et Construction",
+  "Éducation et Formation",
+  "Tourisme et Hébergement",
+  "Services Créatifs",
+  "Agriculture et Agroalimentaire",
+  "Commerce en Ligne / E-commerce",
+  "Services Immobiliers",
+  "Transport et Logistique",
+  "Industrie Manufacturière",
+  "Arts et Divertissement",
+  "Services Environnementaux",
+  "Énergie et Ressources Naturelles",
+  "Mode et Textile",
+  "Télécommunications",
+  "Services aux Entreprises",
+  "Ingénierie et Architecture",
+  "Juridique et Conseil",
+  "Marketing et Publicité",
+  "Associations à But Non Lucratif",
+  "Automobile",
+  "Sciences et Recherche",
+  "Événementiel",
+  "Sports et Loisirs",
   "Autre",
 ];
 
@@ -561,18 +582,12 @@ export default function OnboardingPage() {
               </div>
               <div>
                 <label className={labelClass}>Secteur d&apos;activité *</label>
-                <select
+                <SectorPicker
                   value={sector}
-                  onChange={(e) => setSector(e.target.value)}
-                  className={inputClass}
-                >
-                  <option value="">-</option>
-                  {sectors.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setSector}
+                  options={sectors}
+                  triggerClassName={inputClass}
+                />
               </div>
             </div>
           </div>
