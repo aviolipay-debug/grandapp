@@ -134,9 +134,7 @@ export default function InstallPrompt() {
               Installer Devisfinance
             </h2>
             <p className="mt-1 text-sm text-muted dark:text-white/60">
-              {deferred
-                ? "Ajoutez l'application à votre écran d'accueil pour y accéder en un geste, en plein écran."
-                : "Ajoutez l'application à votre écran d'accueil pour y accéder en un geste."}
+              Installez l&apos;application pour gérer vos devis et factures plus vite.
             </p>
           </div>
         </div>
