@@ -791,17 +791,19 @@ export default function OnboardingPage() {
                     {index + 1}
                   </span>
                   <div className="h-40 w-full overflow-hidden bg-[#F3F4F6] dark:bg-[#1e1e1e]">
-                    {previewUrls[id] ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={previewUrls[id]}
-                        alt={`Modèle ${index + 1} : ${templateLabels[id] ?? id}`}
-                        className="h-full w-full object-cover object-top"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-xs text-[#6B7280] dark:text-white/50">
-                        {previewsLoading ? "Génération de l'aperçu…" : "Aperçu indisponible"}
-                      </div>
+                    {/* Image d'exemple fournie tout de suite (aucun calcul), remplacée
+                        par la vignette personnalisée (nom, logo) dès qu'elle est prête. */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={previewUrls[id] ?? `/templates/preview-${id.replace("template-", "")}.jpg`}
+                      alt={`Modèle ${index + 1} : ${templateLabels[id] ?? id}`}
+                      className="h-full w-full object-cover object-top"
+                    />
+                    {previewsLoading && !previewUrls[id] && (
+                      <span className="absolute left-2 top-2 z-10 flex items-center gap-1.5 rounded-full bg-black/60 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
+                        <Spinner size={10} />
+                        Personnalisation
+                      </span>
                     )}
                   </div>
                 </button>
