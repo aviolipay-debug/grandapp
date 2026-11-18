@@ -787,8 +787,18 @@ export default function OnboardingPage() {
                   {/* Numéro du modèle, aide le client à s'y retrouver et à
                       communiquer facilement lequel il préfère (ex. au téléphone
                       avec le support), plutôt que de décrire l'image. */}
-                  <span className="absolute bottom-2 right-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-xs font-bold text-white backdrop-blur-sm">
-                    {index + 1}
+                  <span className="absolute bottom-1.5 right-1.5 z-10 flex h-8 w-8 items-center justify-center">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-xs font-bold text-white backdrop-blur-sm">
+                      {index + 1}
+                    </span>
+                    {/* Cercle qui tourne autour du chiffre tant que la version
+                        personnalisée de l'aperçu n'est pas prête. */}
+                    {previewsLoading && !previewUrls[id] && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-0 animate-spin rounded-full border-2 border-white/30 border-t-ledger-deep motion-reduce:animate-none"
+                      />
+                    )}
                   </span>
                   <div className="h-40 w-full overflow-hidden bg-[#F3F4F6] dark:bg-[#1e1e1e]">
                     {/* Image d'exemple fournie tout de suite (aucun calcul), remplacée
@@ -799,12 +809,6 @@ export default function OnboardingPage() {
                       alt={`Modèle ${index + 1} : ${templateLabels[id] ?? id}`}
                       className="h-full w-full object-cover object-top"
                     />
-                    {previewsLoading && !previewUrls[id] && (
-                      <span className="absolute left-2 top-2 z-10 flex items-center gap-1.5 rounded-full bg-black/60 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
-                        <Spinner size={10} />
-                        Personnalisation
-                      </span>
-                    )}
                   </div>
                 </button>
               ))}
