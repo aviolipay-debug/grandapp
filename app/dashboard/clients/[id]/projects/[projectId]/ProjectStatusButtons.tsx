@@ -1,6 +1,7 @@
 // app/dashboard/clients/[id]/projects/[projectId]/ProjectStatusButtons.tsx
 "use client";
 
+import SharePdfButton from "@/app/components/share-pdf-button";
 import { useRef, useState, useTransition } from "react";
 import { HelpCircle } from "lucide-react";
 import { updateProjectStatus, updateProjectStatusWithPayment } from "./actions";
@@ -171,6 +172,11 @@ export default function ProjectStatusButtons({
             >
               Télécharger le reçu
             </a>
+            <SharePdfButton
+              variant="full"
+              href={`/api/payments/${submittedPaymentId}/pdf`}
+              filename={`recu-${submittedPaymentId}.pdf`}
+            />
             <button
               type="button"
               onClick={closeReceiptConfirmation}
