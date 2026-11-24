@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDateShort } from "@/lib/format-short";
 import ProjectStatusButtons from "./ProjectStatusButtons";
 import DocumentPreviewRow from "./DocumentPreviewRow";
-import SharePdfButton from "@/app/components/share-pdf-button";
 
 const statusLabels: Record<string, string> = {
   draft: "Brouillon",
@@ -131,53 +130,39 @@ export default async function ProjectDetailPage({
         ) : (
           <div className="divide-y divide-paperline dark:divide-white/10">
             {quotes.map((q) => (
-              <div key={q.id} className="flex items-center pr-3">
-                <div className="min-w-0 flex-1">
-                  <DocumentPreviewRow
-                    href={`/api/quotes/${q.id}/pdf?v=${cacheBust}`}
-                    filename={`devis-${q.quote_number}.pdf`}
-                    iconBg="#EFE5FC"
-                    iconColor="#7D2AE7"
-                    title={`Devis · ${q.quote_number}`}
-                    subtitle={`${formatDateShort(q.issue_date)} · ${statusLabels[q.status] ?? q.status}`}
-                    amount={`${Number(q.total).toLocaleString("fr-FR")} ${q.currency}`}
-                  />
-                </div>
-                <SharePdfButton href={`/api/quotes/${q.id}/pdf?v=${cacheBust}`} filename={`devis-${q.quote_number}.pdf`} />
-              </div>
+              <DocumentPreviewRow
+                key={q.id}
+                href={`/api/quotes/${q.id}/pdf?v=${cacheBust}`}
+                filename={`devis-${q.quote_number}.pdf`}
+                iconBg="#EFE5FC"
+                iconColor="#7D2AE7"
+                title={`Devis · ${q.quote_number}`}
+                subtitle={`${formatDateShort(q.issue_date)} · ${statusLabels[q.status] ?? q.status}`}
+                amount={`${Number(q.total).toLocaleString("fr-FR")} ${q.currency}`}
+              />
             ))}
 
             {facture && (
-              <div className="flex items-center pr-3">
-                <div className="min-w-0 flex-1">
-                  <DocumentPreviewRow
-                    href={`/api/invoices/${facture.id}/pdf?v=${cacheBust}`}
-                    filename={`facture-${facture.invoice_number}.pdf`}
-                    iconBg="#E3F6EC"
-                    iconColor="#0F7B4B"
-                    title={`Facture · ${facture.invoice_number}`}
-                    subtitle={formatDateShort(facture.issue_date)}
-                    amount={`${Number(facture.total).toLocaleString("fr-FR")} ${facture.currency}`}
-                  />
-                </div>
-                <SharePdfButton href={`/api/invoices/${facture.id}/pdf?v=${cacheBust}`} filename={`facture-${facture.invoice_number}.pdf`} />
-              </div>
+              <DocumentPreviewRow
+                href={`/api/invoices/${facture.id}/pdf?v=${cacheBust}`}
+                filename={`facture-${facture.invoice_number}.pdf`}
+                iconBg="#E3F6EC"
+                iconColor="#0F7B4B"
+                title={`Facture · ${facture.invoice_number}`}
+                subtitle={formatDateShort(facture.issue_date)}
+                amount={`${Number(facture.total).toLocaleString("fr-FR")} ${facture.currency}`}
+              />
             )}
 
             {bordereau && (
-              <div className="flex items-center pr-3">
-                <div className="min-w-0 flex-1">
-                  <DocumentPreviewRow
-                    href={`/api/invoices/${bordereau.id}/pdf?v=${cacheBust}`}
-                    filename={`bordereau-${bordereau.invoice_number}.pdf`}
-                    iconBg="#E6F0FB"
-                    iconColor="#1D5799"
-                    title={`Bordereau de livraison · ${bordereau.invoice_number}`}
-                    subtitle={formatDateShort(bordereau.issue_date)}
-                  />
-                </div>
-                <SharePdfButton href={`/api/invoices/${bordereau.id}/pdf?v=${cacheBust}`} filename={`bordereau-${bordereau.invoice_number}.pdf`} />
-              </div>
+              <DocumentPreviewRow
+                href={`/api/invoices/${bordereau.id}/pdf?v=${cacheBust}`}
+                filename={`bordereau-${bordereau.invoice_number}.pdf`}
+                iconBg="#E6F0FB"
+                iconColor="#1D5799"
+                title={`Bordereau de livraison · ${bordereau.invoice_number}`}
+                subtitle={formatDateShort(bordereau.issue_date)}
+              />
             )}
           </div>
         )}
