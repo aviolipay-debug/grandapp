@@ -2,6 +2,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import InstallPrompt from "./components/install-prompt";
+import ExternalPdfLinks from "./components/external-pdf-links";
 
 export const metadata: Metadata = {
   title: "Devisfinance",
@@ -45,6 +46,7 @@ export default function RootLayout({
       <body className="font-body bg-paper text-ink transition-colors dark:bg-[#2F2F2F] dark:text-white">
         {children}
         <InstallPrompt />
+        <ExternalPdfLinks />
       </body>
     </html>
   );
